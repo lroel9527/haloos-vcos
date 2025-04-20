@@ -1,39 +1,37 @@
-# vcos
+# VCOS文档仓库说明
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+## 1. 文档仓库简介
 
-#### 软件架构
-软件架构说明
+本仓库为智能车控OS（VCOS）的全面文档中心，旨在为开发者、集成商和用户提供一站式技术支持。文档内容涵盖API参考、项目概述、快速入门、关键技术解析、开发者手册等内容，力求帮助用户高效上手与深入理解系统。特别地：
 
+|文档类型|内容简介|快速跳转链接|
+|-|-|-|
+|VCOS介绍|智能车控OS（VCOS）的总体介绍文档|[VCOS介绍](./OVERVIEW.md)|
+|快速开始|通过简洁的指引帮助用户迅速完成环境搭建和基本操作|[快速开始](./quick_start/)|
+|芯片移植指南|详细介绍了如何把智能车控OS移植到不同芯片平台|[芯片移植指南](./porting/porting_guide.md)|
+|关键技术讲解|深入解析智能车控OS的关键技术设计理念及重要技术实现，为开发者提供理论与实践支持|[关键技术讲解](./key_technical/)|
+|开发者手册|提供功能组件、内核、开发工具等功能的详细说明，便于用户深入了解功能定义与开发流程|[开发者手册](./user_manual/)|
+|API参考手册集|系统API的全量详细说明，帮助开发者快速查找接口定义，保障高效开发与集成|[API参考手册集](./API_reference/)|
+|配置项参考手册集|系统的全量配置参数说明，便于用户进行系统的自定义设置和优化调整|[配置项参考手册集](./configuration_reference/)|
 
-#### 安装教程
+该仓库内容持续更新，致力于构建完整、准确、易用的工程文档体系，助力项目开发与产品落地
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## 2. 代码目录
 
-#### 使用说明
+VCOS文档在haloosspace/vcos/docs目录下，目录结构如下图所示：
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+```plaintext
+docs                        # 项目文档主目录
+├── API_reference           # API参考文档
+├── OVERVIEW.md             # 项目概述
+├── README.md               # 文档结构简介（即本文）
+├── _static/image           # 文档中用到的图片资源
+├── porting                 # 芯片移植文档
+├── configuration_reference # 配置项参考文档
+├── key_technical           # 关键技术说明
+├── quick_start             # 快速入门指南
+└── user_manual             # 开发者手册与详细说明
+    ├── components          # 功能组件使用说明
+    ├── kernel              # 内核模块文档
+    └── studio              # Studio集成开发环境相关文档
+```
