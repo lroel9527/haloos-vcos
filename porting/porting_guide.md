@@ -259,11 +259,11 @@ SoC适配ARCH的接口需要查看不同ARCH代码对SoC要求的Hook接口，�
 
 |  **接口名称**  |  **实现文件**  |  **接口描述**  |   **注意事项**  |  **配置**  |  **是否必选**  |
 | :-------------| :------------| :-------------|  :-------------|  :--------|  :------------|
-| `void board_early_initialize(void)` | xxx_boot.c | **描述**：实现板子早期初始化，在内核启动的上下文中调用，具体执行阶段看内核启动流程。**入参** 无 **返回值**：无 | 1. API内部不能阻塞，因为在内核的单线程启动流程中，此时未开启调度。2. 此时内核已基本完成初始化，可以调用大部分内核API，但此时没有初始化stdio，smp多核，workqueue。 | CONFIG_BOARD_EARLY_INITIALIZE  | **可选**，当开启对应功能配置时需实现 |
-| `void board_late_initialize(void)` | xxx_boot.c | **描述**：板子延迟初始化。可以等待事件，不在内核启动线程上下文中执行。在独立的AppBringUP线程中执行，当内核初始化完成，开启调度后，当调度到AppBringUP线程时此函数才开始执行。调用board_bringup。**入参** 无 **返回值**：无 | 此时板子延迟初始化和应用初始化并行，启动流程不保证其初始化时序。请在应用中自行保证时序 | CONFIG_BOARD_LATE_INITIALIZE  | **可选**，board_late_initialize/board_app_initialize 二选一 |
-| `int board_app_initialize(uintptr_t arg)` | xxx_appinit.c | **描述**：app通过boardctl的BOARDIOC_INIT命令字控制板子初始化，调用board_bringup。**入参** arg, 类型uintptr_t, boardctl透传这个参数给board **返回值**：OK(0)： 成功，<0: 失败，请返回标准POSIX 错误码（负数） | 在app的线程上下文中执行，注意栈的使用和并发问题。 app控制其调用的时机。 | CONFIG_BOARDCTL  | **可选**，board_late_initialize/board_app_initialize 二选一 |
-| `int board_bringup(void)` | xxx_bringup.c | **描述**：板子后期初始化，板级驱动等.**入参** 无 **返回值**：OK(0)： 成功, <0: 失败，请返回标准POSIX 错误码（负数） | 当CONFIG_BOARD_LATE_INITIALIZE开启，其执行在board_late_initialize（AppBringUP线程上下文）否则其执行在board_app_initialize（app线程上下文）. | 无  | **必选** |
-| `int board_reset(int status)` | xxx_reset.c | **描述**：重启板子。**入参** status, 板子需要重启的事件，板子特定的参数，OS透传参数。 板子重启成功不返回。 **返回值**：板子重启失败的原因 | 无 | CONFIG_BOARDCTL_RESET  | **可选**，当开启对应功能配置时需实现 |
+| `void board_early_initialize(void)` | xxx_boot.c | **描述**：实现板子早期初始化，在内核启动的上下文中调用，具体执行阶段看内核启动流程。 | 1. API内部不能阻塞，因为在内核的单线程启动流程中，此时未开启调度。2. 此时内核已基本完成初始化，可以调用大部分内核API，但此时没有初始化stdio，smp多核，workqueue。 | CONFIG_BOARD_EARLY_INITIALIZE  | **可选**，当开启对应功能配置时需实现 |
+| `void board_late_initialize(void)` | xxx_boot.c | **描述**：板子延迟初始化。可以等待事件，不在内核启动线程上下文中执行。在独立的AppBringUP线程中执行，当内核初始化完成，开启调度后，当调度到AppBringUP线程时此函数才开始执行。调用board_bringup。| 此时板子延迟初始化和应用初始化并行，启动流程不保证其初始化时序。请在应用中自行保证时序 | CONFIG_BOARD_LATE_INITIALIZE  | **可选**，board_late_initialize, board_app_initialize 二选一 |
+| `int board_app_initialize(uintptr_t arg)` | xxx_appinit.c | **描述**：app通过boardctl的BOARDIOC_INIT命令字控制板子初始化，调用board_bringup。<br> **入参**: arg, 类型uintptr_t, boardctl透传这个参数给board<br> **返回值**：OK(0)： 成功，<0: 失败，请返回标准POSIX 错误码（负数） | 在app的线程上下文中执行，注意栈的使用和并发问题。 app控制其调用的时机。 | CONFIG_BOARDCTL  | **可选**，board_late_initialize, board_app_initialize 二选一 |
+| `int board_bringup(void)` | xxx_bringup.c | **描述**：板子后期初始化，板级驱动等.<br> **入参**: 无<br> **返回值**：OK(0)： 成功, <0: 失败，请返回标准POSIX 错误码（负数） | 当CONFIG_BOARD_LATE_INITIALIZE开启，其执行在board_late_initialize（AppBringUP线程上下文）否则其执行在board_app_initialize（app线程上下文）. | 无  | **必选** |
+| `int board_reset(int status)` | xxx_reset.c | **描述**：重启板子。<br>**入参**: status, 板子需要重启的事件，板子特定的参数，OS透传参数。 板子重启成功不返回。<br> **返回值**：板子重启失败的原因 | 无 | CONFIG_BOARDCTL_RESET  | **可选**，当开启对应功能配置时需实现 |
 
 >
 > 注意： 为了APP与板子的交互方式， 内核提供了一种相对标准的实现方式，boardctl，用于实现app通过标准字符设备文件方式和板子交互，其通过ioctl实现。这实现了类似Linux操作文件的方式实现和board交互，但也造成了一定的冗余，当然您也可以选择直接调用board api，简单高效
@@ -487,11 +487,11 @@ struct uart_ops_s
 | ETH数据面 | Std_ReturnType ethif_transmit<br>(<br>uint8 ctrl_idx,<br> eth_buf_idx_type buf_idx,<br> eth_frame_type frame_type,<br> boolean tx_confirmation,<br> uint16 len_byte,<br> const uint8 *phys_addr_ptr<br>) | **描述**：ethif发送数据<br> **入参**：<br>1. ctrl_idx：控制器索引<br> 2. buf_idx：发送缓存索引<br> 3. frame_type：以太帧类型（例如VLAN帧）<br> 4. tx_confirmation：是否需要触发发送确认<br> 5. len_byte：数据长度<br>6. phys_addr_ptr：指向物理目标MAC地址<br> **返回值**：<br> 1. E_OK: 发送成功<br> 2. E_NOT_OK: 发送失败<br> | 1. 不可跨核裸调<br> 2. 建议由UpLayer发起调用<br>| 向下调用  | **必选** |
 | ETH数据面 | void ethif_txconfirmation<br>(<br>uint8 ctrl_idx,<br> eth_buf_idx_type buf_idx<br>)| **描述**：ethif发送回调函数<br> **入参**：<br>1. ctrl_idx：控制器索引<br> 2. buf_idx：发送缓存索引<br> **返回值**：无 | 是驱动回调OS的接口 |  向上回调  | **必选** |
 | ETH数据面 | void ethif_rxindication<br>(<br>uint8 ctrl_idx,<br> eth_frame_type frame_type,<br> boolean is_broadcast,<br> const uint8 *phys_addr_ptr,<br> const eth_data_type *data_ptr,<br> uint16 len_byte<br>) | **描述**：ethif接收回调<br> **入参**：<br>1. ctrl_idx：控制器索引<br> 2. frame_type：以太帧类型（例如VLAN帧）<br> 3. is_broadcast：是否为广播报文<br> 4. phys_addr_ptr：指向接收帧的物理源MAC地址<br> 5. data_ptr：指向payload的指针<br> 6. len_byte：payload长度<br> **返回值**：无 | 是驱动回调OS的接口 |  向上回调  | **必选** |
-| ETH管理面 | Std_ReturnType ethif_get_controller_mode<br> (<br> uint8 ctrl_idx, <br> eth_mode_type *ctrlmode_ptr<br>)| **描述**：获取控制器状态<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. ctrlmode_ptr：模式指针<br> - ETH_MODE_DOWN：控制器禁用<br> - ETH_MODE_ACTIVE：控制器正常工作<br> 返回值：<br>1. E_OK: 获取控制器状态成功<br>2. E_NOT_OK: 获取控制器状态失败 | 1. 不可跨核裸调<br> 2. 对于相同控制器，不可重入 |  向下调用  | **必选** |
-| ETH管理面 | void ethif_ctrlmode_indication<br>(<br> uint8 ctrl_idx,<br> eth_mode_type ctrlmode<br>)| **描述**：设置控制器模式回调<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. ctrlmode：控制器模式<br> - ETH_MODE_DOWN：控制器禁用<br> - ETH_MODE_ACTIVE：控制器正常工作<br> 返回值：无 | 是驱动回调OS的接口 |  向上回调  | **必选** |
+| ETH管理面 | Std_ReturnType ethif_get_controller_mode<br> (<br> uint8 ctrl_idx, <br> eth_mode_type *ctrlmode_ptr<br>)| **描述**：获取控制器状态<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. ctrlmode_ptr：模式指针<br> ETH_MODE_DOWN：控制器禁用<br> ETH_MODE_ACTIVE：控制器正常工作<br> 返回值：<br>1. E_OK: 获取控制器状态成功<br>2. E_NOT_OK: 获取控制器状态失败 | 1. 不可跨核裸调<br> 2. 对于相同控制器，不可重入 |  向下调用  | **必选** |
+| ETH管理面 | void ethif_ctrlmode_indication<br>(<br> uint8 ctrl_idx,<br> eth_mode_type ctrlmode<br>)| **描述**：设置控制器模式回调<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. ctrlmode：控制器模式<br> ETH_MODE_DOWN：控制器禁用<br> ETH_MODE_ACTIVE：控制器正常工作<br> 返回值：无 | 是驱动回调OS的接口 |  向上回调  | **必选** |
 | ETH管理面 | void ethif_set_phys_addr<br>(<br>uint8 ctrl_idx,<br> const uint8 *phys_addr_ptr<br>) | **描述**：设置PHY地址<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. phys_addr_ptr：指向物理源MAC地址<br> 返回值：无 | 1. 由驱动发起调用，用户不应该调用<br>2. 对于相同控制器，不可重入 |  向上回调  | **必选** |
 | ETH管理面 | void ethif_get_phys_addr<br>(<br>uint8 ctrl_idx,<br> uint8 *phys_addr_ptr<br>) | **描述**：获取PHY地址<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. phys_addr_ptr：指向获取到的物理源MAC地址<br> 返回值：无 | 1. 不可跨核裸调<br>2. 对于相同控制器，不可重入 |  向下调用  | **必选** |
-| ETH管理面 | Std_ReturnType ethif_update_phys_addr_filter<br>(<br>uint8 ctrl_idx,<br>const uint8 *phys_addr_ptr, <br>eth_filter_action_type action<br>) | **描述**：更新PHY地址过滤器<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. phys_addr_ptr：要更新的目标PHY地址<br>3. action：<br> - ETH_ADD_TO_FILTER：添加Filter<br> ETH_REMOVE_FROM_FILTER：移除Filter<br> 返回值：1. E_OK: 更新PHY地址过滤器成功<br>2. E_NOT_OK: 更新PHY地址过滤器失败 | 1. 不可跨核裸调<br>2. 对于相同控制器，不可重入 |  向下调用  | **可选**，要更新PHY地址过滤器时需要，例如使能多播、广播。 |
+| ETH管理面 | Std_ReturnType ethif_update_phys_addr_filter<br>(<br>uint8 ctrl_idx,<br>const uint8 *phys_addr_ptr, <br>eth_filter_action_type action<br>) | **描述**：更新PHY地址过滤器<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. phys_addr_ptr：要更新的目标PHY地址<br>3. action：<br> ETH_ADD_TO_FILTER：添加Filter<br> ETH_REMOVE_FROM_FILTER：移除Filter<br> 返回值：1. E_OK: 更新PHY地址过滤器成功<br>2. E_NOT_OK: 更新PHY地址过滤器失败 | 1. 不可跨核裸调<br>2. 对于相同控制器，不可重入 |  向下调用  | **可选**，要更新PHY地址过滤器时需要，例如使能多播、广播。 |
 | ETH管理面 | void ethif_mainfunction_state(void) | **描述**：获取link状态主函数<br> **入参**：无 **返回值**：无 | 用户需自实现：<br> `trcv_get_linkstate`<br> `swt_get_linkstate`|  轮询调用  | **必选** |
 
 
@@ -537,7 +537,4 @@ struct uart_ops_s
 ### 5.2. 子系统验证
 #### 5.2.1. 通信子系统验证
 以太通信功能移植完成后，验证在vcos tcpip模块配置的ip地址可以ping通。
-
-## 6. 最佳实践
-[国产芯驰E3650芯片移植实践](./porting_semidrive_e3650.md)
 

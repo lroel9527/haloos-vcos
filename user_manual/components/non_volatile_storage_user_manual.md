@@ -12,18 +12,23 @@
 memory源代码在haloosspace/components/memory目录下，目录结构如下图所示：
 
 ```plaintext
-memory              # 存储栈代码
-├── docs            # README相关材料
-│   └── images      # 文档相关图片
-├── memif           # 存储驱动适配层，适配不同驱动
-│   ├── inc         # 头文件
-│   ├── plug_in     # 配置项生成文件
-│   └── src         # 源文件
-├── nvm             # 数据存储服务层，非易失性数据管理
-│   ├── inc         # 头文件
-│   ├── plug_in     # 配置项生成文件
-│   └── src         # 源文件
-└── README.md       # memory 仓库介绍
+memory                      # 存储栈代码
+├── CMakeLists.txt          # 存储子系统顶层构建配置，定义模块编译规则
+├── DISCLAIMER.md           # 存储组件免责声明
+├── LICENSE                 # 开源协议
+├── memif                   # 存储驱动适配层，适配不同驱动
+│   ├── CMakeLists.txt      # 构建规则
+│   ├── config_plug_in      # 配置项生成文件
+│   ├── inc                 # 头文件
+│   ├── Kconfig             # memif模块使能配置
+│   └── src                 # 源文件
+├── nvm                     # 数据存储服务层，非易失性数据管理
+│   ├── CMakeLists.txt      # 构建规则
+│   ├── config_plug_in      # 配置项生成文件
+│   ├── inc                 # 头文件
+│   ├── Kconfig             # nvm模块使能配置
+│   └── src                 # 源文件
+└── README.md               # memory仓库介绍
 
 ```
 
@@ -31,7 +36,7 @@ memory              # 存储栈代码
 
 ### 3.1 功能讲解
 
-### 3.1.1 数据存储服务层
+#### 3.1.1 数据存储服务层
 
 数据存储服务层的核心功能包含非易失性数据存储、数据一致性校验、冗余管理、容错管理和并发读写访问等，本章节将展开讲解这些功能
 
@@ -55,7 +60,7 @@ memory              # 存储栈代码
 
 * **支持将Block 标记为无效**：提供功能标记将不再使用的Block置为无效，避免存储无意义数据，以提高存储资源效率
 
-### 3.1.2 存储驱动适配层
+#### 3.1.2 存储驱动适配层
 
 存储驱动适配层通过标准化的接口架构实现了存储介质的跨平台兼容性。该层采用函数绑定机制，基于预定义的驱动操作矩阵注册不同存储介质的控制例程，有效解耦了上层服务与底层硬件的依赖关系。该架构为存储服务层提供了统一的操作语义空间，使业务逻辑层无需感知物理介质的特性差异即可执行标准化的存储操作。这种基于接口契约的架构设计显著提升了系统的灵活性和可移植性
 
@@ -63,11 +68,11 @@ memory              # 存储栈代码
 
 ### 4.1 NvM配置项说明入门
 
-#### NVMBlockDescriptors
+#### 4.1.1 NVMBlockDescriptors
 
 用户要新增数据存储时，应在NVMBlockDescriptors下里新建 Block，必填项里配置了 Block 的基本信息，指明了所要存储数据的地址，长度，ID，并且与驱动抽象层的Block建立映射
 
-##### **必填项**
+**必填项**
 
 * ShortName：用于填写block的名称，推荐格式为 NvMBlockDescriptor_XXX
 * NvMBlockJobPriority：启用NvM优先级功能时配置 block 优先级等级
@@ -81,7 +86,7 @@ memory              # 存储栈代码
 
 > 需要注意的是如果 NvMRamBlockDataAddress 或是 callback 引用其他文件的变量或函数，需要在 NvMCommonVendorParams 中的 NvMCfgCbkIncludeList 中增加头文件配置
 
-##### **选填项**
+**选填项**
 
 * NvMBlockCrcType：配置 CRC 类型，由于 CRC8 误码率达到 1/256，目前仅支持 CRC16 和 CRC32
 * NvMBlockUseCrc：选择是否启用 CRC 校验
@@ -93,7 +98,7 @@ memory              # 存储栈代码
 * NvMSingleBlockCallback：当单块 Block 操作完成（如 Write、Read Block）时触发的回调
 * NvMWriteBlockOnce：用于配置 Block 数据只能存一次，目前开启 NvMWriteBlockOnce 必须配套开启 Crc 校验功能
 
-#### NvMCommon
+#### 4.1.2 NvMCommon
 
 NvMCommon 主要用于控制一些宏等开启，简要介绍 NvMCommon 中一些主要的配置项，只使用读写基本功能时这里保持默认配置即可
 
@@ -108,7 +113,7 @@ NvMCommon 主要用于控制一些宏等开启，简要介绍 NvMCommon 中一�
 
 ![NvM Common Configuration Example](../../_static/image/memory/user_manual/common.png)
 
-#### NvMCommonVendorParams
+#### 4.1.3 NvMCommonVendorParams
 
 进行 NvM_Cfg.c 包含的头文件的配置
 
@@ -116,7 +121,7 @@ NvMCommon 主要用于控制一些宏等开启，简要介绍 NvMCommon 中一�
 
 ### 4.2 MemIf配置项简介
 
-#### MemIfGeneral
+#### 4.2.1 MemIfGeneral
 
 MemIfGeneral 主要用于控制一些宏等开启和设备配置，简要介绍 MemIfGeneral 中一些主要的配置项
 
@@ -129,12 +134,12 @@ MemIfGeneral 主要用于控制一些宏等开启和设备配置，简要介绍 
 
 ### 4.3 使用示例
 
-### 4.3.1 添加配置
+#### 4.3.1 添加配置
 
 * 参考4.1节，在 NvM 中新建Block，配置项中的NvMNvramBlockIdentifier 是后续存储操作的唯一标识(Block ID)
 * 参考4.2节，进行 MemIf 的配置，根据实际芯片移植情况选择勾选使用 Eeprom 还是 Flash 的驱动接口
 
-### 4.3.2 数据存储示例
+#### 4.3.2 数据存储示例
 
 本 Demo 介绍了如何使用API接口写入和读取示例数据
 
