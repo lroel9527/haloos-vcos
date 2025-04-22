@@ -9,9 +9,9 @@
 - 获取CoreID接口实现如下：![图1](../_static/image/porting/E3650_Get_Core_ID.png)
 - SemiDrive预期在不集成OS的情况下，使用上图中分支2，此时CoreID获取接口由MCAL内部实现；
 - 当集成OS的情况下OS必须自行实现GetCoreID接口，不能直接调用MCAL的Mcu_GetCoreID 和 Mcal_GetCpuIndex 接口，否则将有可能导致递归调用。
-- 禁止将非SemiDrive或SemiDrive提供的模块代码放在mcal\目录下；
-- 示例工程配置了相应的Mpu属性，集成商可以根据自己实际工程中的使用场景是否进行删除或者增加mpu的保护区域个数；
-- MCAL Driver 提供和硬件模块相关的底层驱动（EA/FEE包含在内），上层协议栈文件（e.g. CanIf_Types.h，MemIf_Types.h）需要使用 Halo OS 中间件。
+- 禁止将非SemiDrive或SemiDrive提供的模块代码放在mcal/目录下；
+- 示例工程配置了相应的MPU属性，集成商可以根据自己实际工程中的使用场景是否进行删除或者增加MPU的保护区域个数；
+- MCAL Driver 提供和硬件模块相关的底层驱动（EA/FEE包含在内），上层协议栈文件（e.g. CanIf_Types.h，MemIf_Types.h）需要使用 VCOS 中间件。
 
 ### 1.2 GCC 建议添加的编译选项
 |选项|预定义的值|
@@ -25,13 +25,13 @@
 |-Werror|NA|
 |-mno-unaligned-access|NA|
 
-## 2. E3650 vcos 内核移植
+## 2. E3650 VCOS 内核移植
 ### 2.1 芯片相关移植
 E3650 参考适配代码放到 vendor/semidrive 目录，具体可参考仓库[vcos/haloos/vcos_vendor_semidrive](https://gitee.com/haloos/vcos_vendor_semidrive)，目录中文件按需可选，不强制全部实现，具体驱动代码目录参考 vendor 仓库说明的 [README.md](https://gitee.com/haloos/vcos_vendor_semidrive/blob/master/README.md)。
 
 #### 2.1.1 头文件
 
-编译过程中会在编译输出目录的`<out>/<board_name>/<project_name>/include/arch/`` 生成软连接到 `vendor/semidrive/chips/e3650/include``,  `vendor/semidrive/boards/E3650_DEV_KIT/include/`。
+编译过程中会在编译输出目录的`<out>/<board_name>/<project_name>/include/arch/` 生成软连接到 `vendor/semidrive/chips/e3650/include`,  `vendor/semidrive/boards/E3650_DEV_KIT/include/`。
 芯片对外提供的能力，通过以下头文件对外提供。
 |原始头文件路径|对外引用路径|
 |-|-|
@@ -399,7 +399,7 @@ Eth 驱动对上向EthIf 提供数据收发服务底层实现，AUTOSAR 定义Et
 ### 3.1 手动一键生成启动相关镜像
 pacconfig_e3650 目录下提供了适用于 Windows 环境的 e3650_pac.bat 脚本，和适用于 Linux 环境的 e3650_pac.sh 脚本。用户可以输入格式如下的命令进行一键打包，生成芯驰下载工具所需的 PAC 文件。输入参数说明请见下方 3.1.3 章节。
 
-`e3650_pac.bat <编译产物路径>\nuttx.bin 0x208 0xA64000 0x00b00000`;
+`e3650_pac.bat <编译产物路径>/nuttx.bin 0x208 0xA64000 0x00b00000`;
 
 ### 3.2 镜像分布格式
 ![图4](../_static/image/porting/E3650_BPT_Table.png)
