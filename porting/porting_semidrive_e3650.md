@@ -6,7 +6,7 @@
 - Wdg模块为了更好的兼容AUTOSAR标准，对instance进行了拆分，集成商需要根据应用需求进行单个或多个instance(s)的配置；
 - 集成商需要保证FuSaMcalReportError.h/FuSaMcalReportError.c参与编译。该文件旨在保证当关闭Det功能时依然可以上报功能安全相关错误；
 - 在使用AUTOSAR OS的场景下，集成商应在OS中对使用到的ISR进行注册；
-- 获取CoreID接口实现如下：![图1](./_static/image/porting/E3650_Get_Core_ID.png)
+- 获取CoreID接口实现如下：![图1](../_static/image/porting/E3650_Get_Core_ID.png)
 - SemiDrive预期在不集成OS的情况下，使用上图中分支2，此时CoreID获取接口由MCAL内部实现；
 - 当集成OS的情况下OS必须自行实现GetCoreID接口，不能直接调用MCAL的Mcu_GetCoreID 和 Mcal_GetCpuIndex 接口，否则将有可能导致递归调用。
 - 禁止将非SemiDrive或SemiDrive提供的模块代码放在mcal\目录下；
@@ -340,7 +340,7 @@ Uart需要适配的接口定义位于kernel/nuttx/include/nuttx/serial/serial.h 
 
 ## 2.3 通信子系统移植
 ### 2.3.1 以太网适配流程
-![图2](./_static/image/porting/E3650_ETH.png)
+![图2](../_static/image/porting/E3650_ETH.png)
 ### 2.3.1 以太网驱动适配接口
 Eth 驱动对上向EthIf 提供数据收发服务底层实现，AUTOSAR 定义Eth 驱动的相关概念和接口定义。驱动设计旨在满足相关上述需求文档提到的软件需求，且本文不再重复描述 AUTOSAR 针对Eth定义的接口调用序列等信息，具体概念参考AUTOSAR_SWS_EthernetDriver.pdf 。
 
@@ -370,7 +370,7 @@ Eth 驱动对上向EthIf 提供数据收发服务底层实现，AUTOSAR 定义Et
 
 ## 2.4 存储子系统移植
 ### 2.4.1 存储适配流程
-![图3](./_static/image/porting/E3650_EA.png)
+![图3](../_static/image/porting/E3650_EA.png)
 ### 2.4.2 存储驱动适配接口
 #### 2.4.2.1 EA 接口
 | 接口名称 | 功能描述 | 备注 | 
@@ -402,7 +402,7 @@ pacconfig_e3650 目录下提供了适用于 Windows 环境的 e3650_pac.bat 脚�
 `e3650_pac.bat <编译产物路径>\nuttx.bin 0x208 0xA64000 0x00b00000`;
 
 ### 3.2 镜像分布格式
-![图4](./_static/image/porting/E3650_BPT_Table.png)
+![图4](../_static/image/porting/E3650_BPT_Table.png)
 
 ### 3.3 生成 Boot Package 镜像
 Boot Package 是 Safety BootROM （指 ARM Cortex-R52 Plus 固化在芯片内部的启动程序）的下一级启动镜像。SF BootROM 规定了 Boot Package 的格式是 BPT （Boot package table）头与启动镜像组合的方式。芯驰提供了 pacconfig_e3650 工具包可以将编译产物转为芯片&工具识别的 Boot Package 格式。
