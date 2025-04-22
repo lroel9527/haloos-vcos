@@ -1,12 +1,12 @@
 # 工程编译
 
-如果您仅需要编译VCOS相关代码，请按本文使用haloosspace/vcos/build/vcos_build.py指定工程进行编译，编译说明参考[VCOS工程编译说明](https://gitee.com/haloos/vcos_build/blob/master/README.md)；如果需要编译全量的HaloOS代码，请跳转至[HaloOS工程编译](https://gitee.com/haloos/docs/blob/master/quick_start/02_compiling.md)
+如果您仅需要编译VCOS相关代码，请按照本文介绍的方法，使用haloosspace/vcos/build/vcos_build.py指定工程进行编译，编译说明参考[VCOS工程编译说明](https://gitee.com/haloos/vcos_build/blob/master/README.md)；如果需要编译全量的HaloOS代码，请跳转至[HaloOS工程编译](https://gitee.com/haloos/docs/blob/master/quick_start/02_compiling.md)
 
 ## 1. 编译环境准备
 
 ### 1.1. 安装编译环境
 
-> 安装编译环境前，需要先按照[配置工具安装](./02_installing.md)执行Studio依赖插件安装！
+> 安装编译环境前，需要先按照[配置工具安装](./02_installing.md)要求，执行Studio依赖插件的安装
 
 在`haloosspace`根目录，执行以下命令安装编译工具链：
 
@@ -28,7 +28,7 @@ python ./vcos/build/compiling_env.py
 
 ### 2.1. 一键编译
 
-> Windows系统需要以【管理员权限】打开powershell，并切换到`haloosspace`目录
+> Windows系统需要以【管理员权限】打开PowerShell，并切换到`haloosspace`目录
 
 - 切换到`haloosspace/vcos/build`目录：
 
@@ -45,7 +45,7 @@ python ./vcos/build/compiling_env.py
   - 根据memory_demo应用的A2G_TC397_5V_TFT板级配置生成动态代码
   - 通过CMake调用Ninja工具自动化构建
   - 最终编译生成镜像文件
-  - 编译产物默认保存在`haloosspace/output/memory_demo_A2G_TC397_5V_TFT_gcc`目录下
+  - 编译结果默认保存在`haloosspace/output/memory_demo_A2G_TC397_5V_TFT_gcc`目录下
 
 ### 2.2. 编译命令说明
 - 添加应用子目录，重新生成cmake：

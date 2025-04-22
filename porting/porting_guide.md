@@ -480,7 +480,7 @@ struct uart_ops_s
 ![](../_static/image/porting/eth_porting_process.png)
 
 #### 4.1.3. 以太驱动适配接口
-#### 4.1.3.1. ETH
+##### 4.1.3.1. ETH
 |  **接口类型**  |  **接口名称**  |  **接口描述**  |   **注意事项**  |  **调用方向**  |  **是否必选**  |
 | :-------------| :------------| :-------------|  :-------------|  :-----------|  :------------|
 | ETH数据面 | BufReq_ReturnType ethif_provide_tx_buffer<br>(<br>uint8 ctrl_idx,<br> eth_frame_type frame_type,<br> uint8 priority,<br> eth_buf_idx_type *bufidx_ptr,<br> eth_data_type **buf_ptr,<br> uint16 *lenbyte_ptr<br>)|  **描述**：ethif获取发送缓存。<br> **入参**：<br>1. ctrl_idx：控制器索引<br> 2. frame_type：以太帧类型（例如VLAN帧）<br>3. priority：帧优先级（0-7）<br>4. bufidx_ptr：指向申请到的缓存索引<br> 5. buf_ptr：指向申请到的缓存<br> 6. lenbyte_ptr：申请到的缓存长度<br> **返回值**：<br> 1. BUFREQ_OK:  获取发送缓存成功<br> 2. BUFREQ_E_NOT_OK:  获取发送缓存失败<br> 3. BUFREQ_E_BUSY:  所有发送缓存都被占用<br> 4. BUFREQ_E_OVFL:  获取的发送缓存过长<br>| 1. 不可跨核裸调<br> 2. 建议由UpLayer发起调用<br>| 向下调用  | **必选** |
@@ -537,3 +537,5 @@ struct uart_ops_s
 #### 5.2.1. 通信子系统验证
 以太通信功能移植完成后，验证在VCOS tcpip模块配置的ip地址可以ping通。
 
+## 6. 最佳实践
+[芯驰E3650移植实践](./porting_semidrive_e3650.md)

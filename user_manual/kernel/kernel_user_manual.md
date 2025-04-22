@@ -19,27 +19,23 @@ VCOS内核是面向车辆控制的操作系统，支持任务调度、事件驱�
 源代码在haloosspace/components/rt_framework目录下，目录结构如下图所示：
 ```plaintext
 components # 
-└── rt_framework               # 实时框架
-    ├─common                   # 通用平台头文件
-    ├─inc                      # VCOS内核头文件
-    ├─plug_in                  # 配置信息
-    │  ├─auto_config           # 自动配置脚本
-    │  ├─base_config           # 基础配置
-    │  │  ├─base_ecuc          # 内核配置
-    │  │  │  ├─AURIX2G_TC397   # 工程TC397内核配置
-    │  │  │  └─comm_ecuc       # 通用内核配置
-    │  │  ├─bswmd              # 配置项模版
-    │  │  │  └─comm_bswmd      # 配置文件
-    │  │  └─internal_behavior  # 内部版本
-    │  │     └─comm_ib         # 配置文件
-    │  ├─generator             # 代码生成器
-    │  │  ├─context            # 基础函数脚本
-    │  │  └─template           # 生成脚本
-    │  │     └─ui              # 配置文件生成脚本
-    │  └─validation            # 验证
-    │     ├─config             # 语义校验
-    │     └─rules              # 规则校验
-    └─src                      # VCOS内核源文件
+└── rt_framework                # 实时框架
+      ├─config_plug_in          # 配置信息
+      │  ├─auto_config          # 自动配置脚本
+      │  ├─base_config          # 基础配置
+      │  │  ├─base_ecuc         # 内核配置
+      │  │  │  └─comm_ecuc      # 配置文件
+      │  │  └─bswmd             # 配置项模版
+      │  │     └─comm_bswmd     # 配置文件
+      │  ├─generator            # 代码生成器
+      │  │  ├─context           # 基础函数脚本
+      │  │  └─template          # 生成脚本
+      │  │      └─ui            # 配置文件生成脚本
+      │  └─validation           # 验证校验
+      │      ├─config           # 语义校验
+      │      └─rules            # 规则校验
+      ├─inc                     # VCOS内核头文件
+      └─src                     # VCOS内核源文件
 ```
 ## 3. 主要功能描述
 ### 3.1. 功能讲解
@@ -300,11 +296,10 @@ ScheduleTable 是 VCOS 内核中用于基于时间触发的任务与事件调度
 | OsTaskActivation | 整数类型，表示任务允许激活的最大次数； | 
 | OsTaskPriority | 整数类型，此为Task优先级大小； | 
 | OsTaskStackSize | 整数类型，此为Task栈大小； | 
-| OsTaskTicksToWait | 整数类型，此为扩展任务的事件等待时间； | 
 | OsTaskAccessingApplication | 引用类型，表示此Task可被哪些Application访问，可不填； | 
 | OsTaskEventRef | 引用类型，表示此Task绑定哪些Event，可不填； | 
 
-步骤三：在相应Application处引用此新增Task
+步骤三：在相应Application处引用此新增Task  
 Task必须属于一个Application，若没有在相应的Application处引用，则不生成该Task的配置代码；
 ![配置OsTask ](../../_static/image/kernel/user_manual/os_task_03.png)
 
@@ -353,10 +348,10 @@ OsEvent支持RTE自动推导刷新和手动添加，用户无需感知自动推�
 ![配置OsIsr ](../../_static/image/kernel/user_manual/os_isr_03.png)
 
 #### 4.1.6. 配置OsSpinlock
-步骤一：在OsSpinlock处右键点击新增OsSpinlock容器:
+步骤一：在OsSpinlock处右键点击新增OsSpinlock容器  
 ![配置OsIsr ](../../_static/image/kernel/user_manual/os_spinlock_01.png)
 
-步骤二：配置OsSpinlock属性
+步骤二：配置OsSpinlock属性  
 ![配置OsIsr ](../../_static/image/kernel/user_manual/os_spinlock_02.png)
 
 
@@ -376,6 +371,7 @@ OsEvent支持RTE自动推导刷新和手动添加，用户无需感知自动推�
 
 | **配置项**  | **配置说明** | 
 | :---------- | :---------- | 
+| ShortName | Counter的名称。 | 
 | OsCounterType | • 选择Counter的类型，SOFTWARE还是HARDWARE。SOFTWARE对应SW，HARDWARE对应HRT。   <br> • 如果选择HARDWARE，则必须增加OsDriver容器，选择驱动时钟和中断。 | 
 | OsSecondsPerTick | • 如果是SW：此配置项没有意义，填什么都可以。<br> • 如果是HRT：此配置项表示硬件时钟多少秒增加一个tick。例如，硬件时钟是100M频率的，则此配置项填0.00000001。如果是HRT，此配置项必须是1/硬件时钟频率(Hz)。 | 
 | OsCounterMaxAllowedValue | • 如果是SW：此配置项表示Counter所被允许的最大计数值。例如，要设置成Counter最大计数10，此配置项填10。<br> • 如果是HRT：此配置项表示Counter所被允许的最大计数值，但它与硬件时钟紧密相关。例如，硬件时钟计数寄存器是32位的，则此配置项填1073741823。如果是HRT，此配置项会默认为1073741823。 | 
@@ -383,20 +379,15 @@ OsEvent支持RTE自动推导刷新和手动添加，用户无需感知自动推�
 | OsCounterTicksPerBase | • 此配置项没有意义，置灰，不用填。 | 
 | OsCounterAccessingApplication | • 此配置项选择可以访问此Counter的Application，如果不选择，默认为只有Counter所属的Application可以访问。 | 
 
-
 步骤三：配置OsDriver容器  
 如果选择HARDWARE类型，则必须创建OsDriver容器。
 ![配置OsCounter ](../../_static/image/kernel/user_manual/os_counter_03.png)
 
 | **配置项**  | **配置说明** | 
 | :---------- | :---------- | 
+| ShortName | 此为OsDriver容器的名称。 | 
 | OsIsrRef | 此配置项选择Isr。一个时钟源对应一个中断源，一个中断源对应一个Isr。 | 
-| High Resolution | 选填项，只要配置了OsDriver容器，则一定为HRT模式。 | 
-| OsHardwareTimerChannelRef | 此配置项置灰，不用填。 | 
-
-步骤四：配置OsTimeConstants容器  
-OsTimeConstants(s)（置灰，不用填）
-![配置OsCounter ](../../_static/image/kernel/user_manual/os_counter_04.png)
+| OsHardwareTimerChannelRef | 此配置项选择时钟源。 | 
 
 #### 4.1.8. 配置OsScheduleTable
 步骤一：新增OsScheduleTable容器  
@@ -479,7 +470,10 @@ OsTimeConstants(s)（置灰，不用填）
 | OsScheduleTableExplicitPrecision | 整数类型，表示调度表显式同步的精度，默认为0。 | 
 
 #### 4.1.9. 配置OsPublishedInformation
-该选项跟随系统释放版本号以及硬件芯片型号，在新建工程时根据芯片型号以及系统版本默认添加，不支持用户自定义配置。
+该选项跟随系统释放版本号以及硬件芯片型号，在新建工程时根据参考配置工程添加，不支持用户自定义配置。
+ - Infineon A2G_TC397_5V_TFT开发板工程参考配置代码目录在haloosspace/examples/rt_demo/tc397_cfg
+ - SemiDrive E3650_DEV_KIT开发板工程参考配置代码目录在haloosspace/examples/rt_demo/e3650_cfg
+
 ![配置OsPubInfor ](../../_static/image/kernel/user_manual/os_pub_infor_01.png)
 
 #### 4.1.10. 配置EcuC选项EcucHardware
@@ -492,8 +486,35 @@ OsTimeConstants(s)（置灰，不用填）
 ![配置EcucHardware ](../../_static/image/kernel/user_manual/os_ecuc_hardware_02.png)  
 EcucCoreId即配置的逻辑核Id号，EcucCoreHwRef为对应的物理核引用，点击右侧[...]勾选即可。
 
-## 5. 配置项参考规范
+## 5. 内核维测命令  
+内核维测基于VCOS提供的shell命令来实现，说明以下四个常用命令。
+
+### 5.1. 帮助信息(help)
+
+查看当前镜像支持的维测命令可在shell命令中键入help来查看，如下图所示。
+
+![内核维测命令](../../_static/image/kernel/user_manual/os_command_help.png)
+
+### 5.2. 查看任务状态(ps)
+
+ps 命令是一个内置的 shell 命令，用于查看当前系统中运行的任务状态。
+
+![内核维测命令](../../_static/image/kernel/user_manual/os_command_ps.png)
+
+### 5.3. 切换核命令(sc)
+
+因为VCOS内核是多核模式，每一个核上面都有对应的任务信息，借助 sc n (n为core ID，具体根据不同平台core的数量有所不同，从0开始) 命令可以切换到对应核上面查看本核的任务信息。例如借助 sc 1 切换到 Core1 上面进行当前核信息的查看，如下图所示。
+
+![内核维测命令](../../_static/image/kernel/user_manual/os_command_sc.png)
+
+### 5.4. 内核部分测试(ostest)
+
+ostest 命令用于测试内核部分各个模块的功能。
+
+![内核维测命令](../../_static/image/kernel/user_manual/os_command_ostest.png)
+
+## 6. 配置项参考规范
 [OS 配置项参考规范](../../configuration_reference/os_cfg.md)
 
-## 6. 应用接口参考规范
+## 7. 应用接口参考规范
 [OS API 参考规范](../../api_reference/os_api.md)

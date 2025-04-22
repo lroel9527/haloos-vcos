@@ -2,7 +2,7 @@
 
 ## 1. 项目简介
 
-智能车控OS（VCOS）是面向车辆控制的操作系统，支撑智能汽车高安全、高实时的核心车控业务部署。系统通过硬实时调度架构确保动力控制、底盘控制等关键任务精准响应，实现感知与决策系统的高效协同，构建从硬件到软件的全链路安全防护体系。智能车控OS在实时性、确定性以及功能安全保障上实现了很好的性能表现，其设计充分考虑了未来系统的复杂性和高要求，并配备覆盖开发调试、仿真验证的可视化工具链，有效提升车企在智能控制系统开发、测试及迭代的效率
+智能车控OS（VCOS）是面向车辆控制的操作系统，支撑智能汽车高安全、高实时的核心车控业务部署。系统通过硬实时调度架构确保动力控制、底盘控制等关键任务精准响应，实现感知与决策系统的高效协同，构建从硬件到软件的全链路安全防护体系。智能车控OS在实时性和确定性上做到了很好的表现并保障功能安全，并配备覆盖开发调试、仿真验证的可视化工具链，其设计充分考虑了未来系统的复杂性和高要求，有效提升车企在智能控制系统开发、测试及迭代的效率
 
 ## 2. 项目架构
 
@@ -24,15 +24,15 @@
 - 诊断标定：主要提供UDS、XCP等功能
 - 通信服务：主要提供CAN、ETH的协议栈处理和路由管理等功能
 
-内核层：基于Nuttx内核，提供以下功能
+内核层：基于NuttX内核开发，提供以下功能
 
-- 外设驱动
+- 外设驱动框架
 - 内存管理
 - 安全隔离与隔离单元间通信
 - 可以跨多ECU系统的确定性硬实时调度
 - 可以跨多核/异构架构交互的混合部署框架
 
-硬件/模拟器：本系统支持ARM，RISC-V，TriCore，等主流控制平台以及模拟器
+硬件/模拟器：本系统支持ARM，RISC-V，TriCore等主流芯片指令集架构；同时适配自研模拟器，基于软件进行功能模拟验证
 
 ### 2.2. 部署视图
 
@@ -43,22 +43,20 @@
 - MCU：支持英飞凌AURIX系列、瑞萨RH850系列、芯驰E3系列
 - SoC：可适配SoC上Cortex-A/R/M核心，RISC-V核心
 
-在MCU上，本系统不光支持BMP部署，还将支持AMP部署，使得业务隔离更加彻底
-
 ### 2.3. 开发视图
 
 ![开发视图](./_static/image/overview/design_04.png "开发视图")
 
 本系统代码文件目录可以大致分为三个部分：应用代码、系统软件和配套支持软件。以下是各个部分的说明：
 
-应用软件：包含两个代码仓库（packages 和 apps），应用软件依赖于系统软件来实现功能
+应用软件：包含两个代码仓库（examples 和 apps），应用软件依赖于系统软件来实现功能
 
-- examples/apps：用于存放应用示例代码
+- [examples](https://gitee.com/haloos/vcos_examples)/[apps](https://gitee.com/haloos/vcos_apps)：用于存放应用示例代码
 
 系统软件：是整个软件系统的核心，负责提供各种功能和服务
 
-- include：统一接口头文件代码仓库
-- components：功能组件代码仓库，包含若干功能模块，如：
+- [include](https://gitee.com/haloos/vcos_include)：统一接口头文件代码仓库
+- [components](https://gitee.com/haloos/vcos_components)：功能组件代码仓库，包含若干功能模块，如：
   - 实时运行环境（runtime）
   - 系统服务（system_services）
   - 安全（security）
@@ -69,17 +67,19 @@
   - 通信（communication）
   - 诊断（diagnostics）
   - 功能组件配置（configs）
-- kernel：内核代码仓库
+- [kernel](https://gitee.com/haloos/vcos_kernel_nuttx)：内核代码仓库
 - vendor：芯片适配代码仓库
-- drivers：驱动代码仓库
-- external：第三方依赖代码仓库
+  - [英飞凌](https://gitee.com/haloos/vcos_vendor_infineon)
+  - [芯驰](https://gitee.com/haloos/vcos_vendor_semidrive)
+- [drivers](https://gitee.com/haloos/vcos_drivers)：驱动代码仓库
+- [external](https://gitee.com/haloos/vcos_external)：第三方依赖代码仓库
 
 配套支持软件：提供开发和构建支持（配套支持层运行在PC上，为系统开发和应用提供工具和文档支持）
 
-- build：编译构建相关代码仓库
-- vcos_studio：系统配套工具仓库
-- docs：文档仓库
-- tests：测试用例及自动化测试框架
+- [build](https://gitee.com/haloos/vcos_build)：编译构建相关代码仓库
+- [vcos_studio](https://gitee.com/haloos/vcos_studio)：系统配套工具仓库
+- [docs](https://gitee.com/haloos/vcos)：文档仓库
+- [tests](https://gitee.com/haloos/vcos_tests)：测试用例及自动化测试框架
 
 ## 3. 项目特性
 

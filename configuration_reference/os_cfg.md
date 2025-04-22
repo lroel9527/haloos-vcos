@@ -31,17 +31,6 @@
 
 | 配置项属性 | 值（布尔参数配置项） |
 |-|-|
-|名称|OsTrusted|
-|描述|Parameter to specify if an OS-Application is trusted or not.|
-|描述|概述：OsTrusted配置项用于定义操作系统(OS)对象（如任务或中断服务例程）的信任级别，指示该对象是否有权访问受保护的OS资源或执行特定的OS操作。|
-|描述|注意：在AUTOSAR CP 4.4标准中，确保只有那些需要访问敏感或受保护资源的OS对象被配置为OsTrusted；非信任对象应受到严格限制，以防止潜在的安全风险；正确配置信任级别对于系统的安全性至关重要。|
-|说明|​true​​：OS-Application 为可信状态
-​​false​​：OS-Application 为不可信状态（默认值）|
-|多实例个数|1 - 1|
-|默认值|false|
-
-| 配置项属性 | 值（布尔参数配置项） |
-|-|-|
 |名称|OsIsPrivileged|
 |描述|Parameter to specify if an OS-Application is privileged or not.|
 |描述|概述：OsIsPrivileged配置项用于指定操作系统(OS)对象（如任务或中断服务例程）是否在特权模式下运行，这决定了它们能否访问受保护的系统资源。|
@@ -82,7 +71,7 @@
 |描述|Reference to the Core Definition in the Ecuc Module where the CoreId is defined. This reference is used to describe to which Core the OsApplication is bound.|
 |描述|概述：OsApplicationCoreRef 配置项用于指定操作系统应用程序（OsApplication）所分配的核心（Core）引用，确保应用程序与特定的处理器核心关联。|
 |描述|注意：在多核系统中，正确配置OsApplicationCoreRef对于确保应用程序的分配和隔离至关重要；必须确保引用的核心在系统中存在且可用；在配置时应遵循AUTOSAR的多核处理器支持规范。|
-|多实例个数|0 - 1|
+|多实例个数|1 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/EcuC/EcucHardware/EcucCoreDefinition|
 
 | 配置项属性 | 值（关联引用配置项） |
@@ -198,15 +187,6 @@
 
 | 配置项属性 | 值（关联引用配置项） |
 |-|-|
-|名称|OsGptChannelRef|
-|描述|Reference to the GPT channel.|
-|描述|概述：OsGptChannelRef 是一个配置项，用于指定操作系统定时器（General Purpose Timer，GPT）通道的引用，这样系统就可以使用该通道来实现定时功能。|
-|描述|注意：在配置OsGptChannelRef时，需要确保引用的GPT通道已在系统中定义并可用；此外，应当检查该通道是否与其他系统组件的需求发生冲突；在AUTOSAR CP 4.4标准中，应当遵循模块间的接口和配置规范来确保正确的引用和使用。|
-|多实例个数|0 - 1|
-|目标引用项的路径|/AUTOSAR/EcucDefs/Gpt/GptChannelConfigSet/GptChannelConfiguration|
-
-| 配置项属性 | 值（关联引用配置项） |
-|-|-|
 |名称|OsIsrRef|
 |描述|Reference to the ISR.|
 |描述|概述：OsIsrRef 是一个配置项，用于指定中断服务例程（ISR）与操作系统中断对象的关联，确保系统能够正确识别和处理中断。|
@@ -222,26 +202,6 @@
 |描述|注意：在配置OsHardwareTimerChannelRef时，需要确保引用的硬件定时器通道与实际硬件资源相匹配；此外，应避免多个操作系统对象引用同一硬件定时器通道，以防止资源冲突；在多核系统中，还需考虑定时器通道与处理器核心的关联性。|
 |多实例个数|1 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsPublishedInformation/OsDerivativeInformation/OsHardWareTimer|
-
-### 4.2. OsTimeConstant
-
-| 容器属性 | 值（容器） |
-|-|-|
-|名称|OsTimeConstant|
-|描述|Allows the user to define constants which can be e.g. used to compare time values with timer tick values.|
-|描述|概述：OsTimeConstant 用于定义操作系统中的时间常量，如系统时钟的周期或任务的时间间隔。|
-|描述|注意：确保OsTimeConstant与硬件时钟能力相匹配；在多任务系统中，合理配置时间常量以避免任务冲突和资源竞争；时间常量的配置应符合AUTOSAR CP 4.4标准的时间管理要求。|
-|说明|在代码生成阶段，时间值将被转换为定时器节拍值，后续可通过OsConstName常量进行访问。该转换过程采用四舍五入原则，将时间值就近匹配为最接近的节拍值。|
-|多实例个数|0 - inf|
-
-| 配置项属性 | 值（浮点型参数配置项） |
-|-|-|
-|名称|OsTimeValue|
-|描述|This parameter contains the value of the constant in seconds.|
-|描述|概述：OsTimeValue 用于表示操作系统中的时间值，通常用于配置任务或中断的时间属性，如周期时间或延迟时间。|
-|描述|注意：确保时间值符合实际硬件和操作系统的时间分辨率和范围；在多任务和多核环境中，时间配置应考虑任务间的同步和资源共享问题；避免设置过小的时间值，可能导致系统过载或响应不及时。|
-|多实例个数|1 - 1|
-|取值范围|0 - 458129844|
 
 ## 5. OsEvent
 
@@ -359,7 +319,7 @@
 |描述|Reference to applications which have an access to this object.|
 |描述|概述：OsSchTblAccessingApplication配置项用于指定哪些AUTOSAR应用程序可以访问操作系统的调度表，这有助于控制对调度表的访问权限，确保系统的安全性和稳定性。|
 |描述|注意：在配置时需确保只有被信任的应用程序被授权访问调度表；不当的访问权限配置可能导致系统安全性降低；AUTOSAR CP 4.4标准中对于操作系统调度表的访问控制提供了详细的规范，需要严格遵守。|
-|多实例个数|1 - 32|
+|多实例个数|0 - 32|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsApplication|
 
 ### 7.1. OsScheduleTableAutostart
@@ -589,16 +549,6 @@
 
 | 配置项属性 | 值（枚举参数配置项） |
 |-|-|
-|名称|OsTaskSchedule|
-|描述|The OsTaskSchedule attribute defines the preemptability of the task.|
-|描述|概述：OsTaskSchedule配置项用于定义操作系统任务的调度策略，如全抢占式、非抢占式或混合调度策略，影响任务的运行和调度行为。|
-|描述|注意：AUTOSAR CP 4.4标准中，任务调度策略的选择对系统响应时间和资源利用率有重要影响；选择非抢占式调度时，需特别注意任务执行时间，避免长时间占用CPU导致系统响应延迟；在配置OsTaskSchedule时，应确保与系统设计的实时性要求相匹配。|
-|说明|若该属性设置为NON，则不得为此任务分配任何内部资源。|
-|多实例个数|1 - 1|
-|默认值|FULL|
-
-| 配置项属性 | 值（枚举参数配置项） |
-|-|-|
 |名称|OsTaskType|
 |描述|The OsTaskType attribute defines the type of the task.|
 |描述|概述：OsTaskType配置项用于定义操作系统任务的类型，它决定了任务的调度行为，如任务是基于时间的（周期性）还是事件驱动的（非周期性）。|
@@ -636,23 +586,13 @@
 |默认值|1024|
 |取值范围|128 - 65535|
 
-| 配置项属性 | 值（整型参数配置项） |
-|-|-|
-|名称|OsTaskTicksToWait|
-|描述|The ticks to wait is defined by the value of this attribute.|
-|描述|概述：OsTaskTicksToWait配置项用于定义操作系统任务在等待某事件或条件时，可以等待的最大tick数，超过这个值任务将停止等待。|
-|描述|注意：该配置项的值需要根据系统的实时性要求和任务的优先级仔细设置；过小的值可能导致任务频繁唤醒，增加系统开销；AUTOSAR CP 4.4标准中没有直接对应的配置项，具体实现可能依赖于底层OS的配置。|
-|多实例个数|1 - 1|
-|默认值|4294967295|
-|取值范围|0 - 4294967295|
-
 | 配置项属性 | 值（关联引用配置项） |
 |-|-|
 |名称|OsTaskAccessingApplication|
 |描述|Reference to applications which have an access to this object.|
 |描述|概述：OsTaskAccessingApplication 配置项用于指定哪些AUTOSAR应用程序可以访问特定的操作系统任务，确保任务的访问控制符合系统安全要求。|
 |描述|注意：在配置时需确保只有授权的应用程序能够访问对应的任务；此配置项与系统的安全等级和隔离机制密切相关；在多应用系统中，正确配置此项对于避免潜在的安全风险至关重要。|
-|多实例个数|1 - 32|
+|多实例个数|0 - 32|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsApplication|
 
 | 配置项属性 | 值（关联引用配置项） |
@@ -692,7 +632,7 @@
 |描述|OsPublishedInformation is used for additional published parameters and information.|
 |描述|概述：OsPublishedInformation配置项定义了操作系统模块发布的信息，这些信息通常包括操作系统的供应商、版本号以及其他相关的标识信息。|
 |描述|注意：在AUTOSAR CP 4.4标准中，确保OsPublishedInformation中的信息准确反映了当前使用的操作系统的实际属性；此配置项通常由操作系统供应商预先定义，用户不需要修改；在整个项目或产品的生命周期中，应保持此信息的一致性，以便于软件的维护和兼容性检查。|
-|多实例个数|0 - 65535|
+|多实例个数|1 - 1|
 
 | 配置项属性 | 值（字符串参数配置项） |
 |-|-|
@@ -763,3 +703,69 @@
 |多实例个数|0 - 1|
 |取值范围|0 - Inf|
 
+## 11. OsMemmoryMap
+
+| 容器属性 | 值（容器） |
+|-|-|
+|名称|OsMemmoryMap|
+|描述|OsMemmoryMap is used for additional memmap parameters and information.|
+|描述|概述：OsMemmoryMap配置项定义了操作系统模块生成内存映射代码需要的信息。|
+|描述|注意：完成OsMemmmoryMap配置后，还需要结合内存映射方法对变量使用内存映射属性进行指定和修改内存映射脚本，来实现完整的内存映射流程。|
+|多实例个数|1 - 1|
+
+### 11.1 OsMemmapLayer
+
+| 容器属性 | 值（容器） |
+|-|-|
+|名称|OsMemmapLayer|
+|描述|OsMemmapLayer defines the name of the memmap layer provided.|
+|描述|概述：OsMemmapLayer 配置项用于指定内存映射中的软件层级，允许多个内存映射软件层级。|
+|描述|注意：用户必须配置至少一个内存映射软件层级，并存在唯一一个内部软件层级，作为内部底层的软件层级。|
+|多实例个数|1 - 16|
+
+| 配置项属性 | 值（布尔参数配置项） |
+|-|-|
+|名称|OsInternalLayer|
+|描述|Parameter to specify if the layer is defined as the internal memmap layer or not. |
+|描述|概述：OsInternalLayer说明该层级作为内部底层的内存映射软件层级。|
+|描述|注意：必须存在唯一一个OsInternalLayer。|
+|说明|错误：该层级并不是内部底层内存映射软件层级。|
+|多实例个数|1 - 1|
+
+### 11.2 OsMemmapModule
+
+| 容器属性 | 值（容器） |
+|-|-|
+|名称|OsMemmapModule|
+|描述|OsMemmapModule defines the name of a memmap module.|
+|描述|概述：OsMemmapModule 配置项用于指定内存映射中的用户自定义模块的模块名称。|
+|描述|注意：用户可自定义多个内存映射模块，操作系统会为每一个模块生成对应的模块头文件供用户使用。|
+|多实例个数|0 - 65535|
+
+| 配置项属性 | 值（布尔参数配置项） |
+|-|-|
+|名称|OsMemmapUseCalibration|
+|描述|True: generate calibration mapping for the module.|
+|描述|概述：OsMemmapUseCalibration说明该模块需要生成标定段。|
+|描述|注意：如果在不需要标定段的情况下，打开了这个选项，会造成冗余代码。|
+|说明|错误：该层级不生成标定段。|
+|多实例个数|1 - 1|
+
+
+| 配置项属性 | 值（关联引用配置项） |
+|-|-|
+|名称|OsMemmapUseLayer|
+|描述|Defines the name of the memmap layer the module is related to.|
+|描述|概述：OsMemmapUseLayer 配置项用于指定模块关联的内存映射软件层级。|
+|描述|注意：用户必须将配置的内存映射模块定义到一个内存映射软件层级上。|
+|多实例个数|1 - 1|
+|目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsMemmoryMap/OsMemmapLayer|
+
+| 配置项属性 | 值（关联引用配置项） |
+|-|-|
+|名称|OsMemmapApplicationRef|
+|描述|Defines the name of the applications the module is related to.|
+|描述|概述：OsMemmapApplicationRef 配置项用于指定模块相关的applications。|
+|描述|注意：用户可以配置关联多个application，根据无关联，单关联或多关联，会产生不一样的内存映射宏供用户使用。|
+|多实例个数|0 - 32|
+|目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsMemmoryMap/OsMemmapLayer|

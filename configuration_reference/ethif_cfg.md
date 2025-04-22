@@ -5,7 +5,7 @@
 |名称|EthIf|
 |描述|Configuration of the EthIf (Ethernet Interface) module.|
 |描述|概述：EthIf是以太网接口模块，它提供了以太网通信接口，用于抽象底层的以太网驱动和控制器。|
-|描述|注意：在配置EthIf模块时，需要确保它与底层的Eth驱动和硬件控制器的配置相匹配；此外，还要考虑与上层通信管理和网络管理模块的交互.|
+|描述|注意：在配置EthIf模块时，需要确保它与底层的Eth驱动和硬件控制器的配置相匹配|
 |多实例个数|0 - 1|
 
 ## 1. EthIfConfigSet
@@ -215,23 +215,6 @@
 |描述|Reference to the frame owner to assign the RxIndication function.|
 |多实例个数|0 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/EthIf/EthIfConfigSet/EthIfFrameOwnerConfig|
-
-
-| 容器属性 | 值（容器） |
-|-|-|
-|名称|EthIfSwitchMgmtInfoIndicationConfig|
-|描述|Configuration of Switch Management callback function.|
-|描述|概述：EthIfSwitchMgmtInfoIndicationConfig配置项用于定义以太网交换机管理信息指示的配置参数，这些参数控制着交换机管理信息如何被指示给上层软件。|
-|描述|注意：确保此配置项与网络管理和诊断需求相匹配；配置参数必须与实际硬件和网络拓扑一致；如果项目不使用以太网交换机或不需要管理信息指示，该配置项可能不需要。|
-|多实例个数|0 - 65535|
-
-| 配置项属性 | 值（函数名配置项） |
-|-|-|
-|名称|EthIfSwitchMgmtInfoIndicationFunction|
-|描述|Enables/Disables the ingress Switch management info indication redirected call to upper layers who registered for the call.|
-|描述|概述：EthIfSwitchMgmtInfoIndicationFunction 配置项用于指定一个回调函数，该函数在以太网交换机管理信息（如链路状态变化）发生时被调用，以通知上层软件组件。|
-|描述|注意：在配置此回调函数时，需要确保它与实际的以太网驱动和硬件支持的功能相匹配；此外，该回调函数的实现应避免执行长时间的操作或调用可能导致阻塞的API，以免影响网络通信的实时性；最后，确保该函数在系统中被正确注册，以便在交换机管理信息发生变化时能够被正确调用。|
-|多实例个数|1 - 1|
 
 ### 1.6. EthIfTransceiver
 

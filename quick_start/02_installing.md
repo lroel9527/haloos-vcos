@@ -1,13 +1,13 @@
 # 工具安装
 
 本文将基于VCOS开放的rt_demo应用快速完成代码生成，以支持后续编译与验证。在Windows系统上我们将展示界面的初步使用，在Linux系统上我们将展示工具命令行的基本用法。配置工具的详细用法可以参考：[VCOS Studio 配置工具开发者手册](../user_manual/studio/configurator_tool_user_manual.md)（包括在Linux下如何使用界面做配置）
-> 注意：本工具强依赖于python3.8.10，请在【[代码下载](01_downloading.md)】中获取安装方法；如果已安装，请忽略
+> 注意：本工具强依赖于Python3.8.10，请在【[代码下载](01_downloading.md)】中获取安装方法；如果已安装，请忽略
 
 ## 1. Windows系统
 
 ### 1.1. 安装Studio依赖插件
 
-1. 以【管理员权限】打开powershell，在HaloOS根目录`haloosspace`下
+1. 以【管理员权限】打开PowerShell，在HaloOS根目录`haloosspace`下
 2. 执行以下命令
 
     ```bash
@@ -25,7 +25,7 @@
     ![选择打开工程](../_static/image/quick_start/start_02.jpeg "选择打开工程")
 
 2. 在弹出的文件选择界面里选择`haloosspace/apps/rt_demo/platform_cfg/tc397_cfg/rt_demo.vcosproject`，点击【打开】
-    > 提示：这里以rt_demo为例，如果需要打开其他工程，可以选其他的vcosproject工程文件打开
+    > 提示：这里以rt_demo为例，如果需要打开其他工程，可以选择相应的vcosproject工程文件
 
     ![打开预设工程](../_static/image/quick_start/start_03.png "打开预设工程")
 
@@ -54,12 +54,12 @@
     python ./vcos/vcos_studio/configurator/init_env.py -a
     ```
 
-    > 在高版本的Ubuntu下如果python3.8-venv找不到，请运行`sudo add-apt-repository ppa:deadsnakes/ppa`以添加 deadsnakes PPA源（用于提供旧版本 Python），然后再次运行上述命令
+    > 在高版本的Ubuntu下如果Python3.8-venv找不到，请运行`sudo add-apt-repository ppa:deadsnakes/ppa`以添加 deadsnakes PPA源（用于提供旧版本 Python），然后再次运行上述命令
 
 ### 2.2. 命令行生成动态代码
 
 1. 打开Linux终端，在HaloOS根目录`haloosspace`下
-2. 激活虚拟环境默认虚拟环境路径: VCOS代码目录，执行以下命令（每次重新激活工具命令时，需要重新激活虚拟环境）
+2. 激活虚拟环境默认虚拟环境路径: VCOS代码目录，执行以下命令（每次打开终端执行工具相关命令前，需要重新激活虚拟环境）
 
     ```bash
     chmod +x ./vcos/.venv/bin/activate

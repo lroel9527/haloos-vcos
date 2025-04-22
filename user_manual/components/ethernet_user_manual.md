@@ -9,7 +9,9 @@
 ```plaintext
 communication
 ├── CMakeLists.txt          # communication仓库的编译脚本，用于控制编译相关资源
+├── DISCLAIMER.md           # 免责声明文档
 ├── Kconfig                 # communication模块的Kconfig文件
+├── LICENSE                 # 项目许可证文件
 ├── README.md               # communication仓库的readme，用于介绍该代码仓库(即本文)
 ├── external                # 第三方代码目录，用于存放其它开源项目代码
 │   └── lwip                # lwip相关代码目录
@@ -34,14 +36,13 @@ communication
 
 * 设备抽象层封装硬件驱动细节，为协议层提供硬件操作接口
 * 协议层实现各种网络通信协议，为上层应用提供服务
-* 应用层调用协议层提供的服务，进行网络通信
 
 ## 4. 功能配置方法
 ### 4.1. EthIf配置项介绍
 
-#### 4.1.1. EthIfPhysControllers
+#### 4.1.1. EthIfPhysController
 
-![EthIfPhysControllers Diagram](../../_static/image/eth/ethif/phys_controller.png)
+![EthIfPhysController Diagram](../../_static/image/eth/ethif/phys_controller.png)
 
 * 根据以太控制器数量添加EthIfPhysController
 * EthIfPhysControllerIdx默认为0
@@ -52,13 +53,13 @@ communication
 
 * 根据需求创建EthIfController
 * EthIfCtrlId需要从0依次递增填写
-* EthIfPhysControllerRef引用EthIfConfigSet中的EthIfPhysControllers
+* EthIfPhysControllerRef引用EthIfConfigSet中的EthIfPhysController
 
 #### 4.1.3. EthIfFrameOwnerConfigs
 
 ![Frame Owner Configurations](../../_static/image/eth/ethif/frame_owner_configs.png)
 
-* 每个子项为一个帧类型，默认3种帧：ARP帧（2054）、IPv4帧（2048）、时间同步帧（35063）
+* 每个子项为一个帧类型，默认2种帧：ARP帧（2054）、IPv4帧（2048）
 
 #### 4.1.4. EthIfRxIndicationConfigs
 
@@ -66,12 +67,12 @@ communication
 
 * 引用EthIfFrameOwnerConfigs，为每种帧类型配置对应的回调函数（回调函数需自行实现），EthIfRxIndicationFunction配置项填写函数的名称，以及对应的帧类型
 
-#### 4.1.5. EthIfTxConfirmationFunction
+#### 4.1.5. EthIfTxConfirmationConfigs
 
-![EthIfTxConfirmationFunction Diagram](../../_static/image/eth/ethif/tx_confirmation_function.png)
+![EthIfTxConfirmationConfigs Diagram](../../_static/image/eth/ethif/tx_confirmation_function.png)
 
 * EthIfTxConfirmationFunction配置项填写函数的名称，需配置为已实现的函数
-* FrameOwnerRef填写对应的帧类型
+* FrameOwnerRef配置项填写对应的帧类型
 
 ### 4.2. TcpIp模块配置项介绍
 
@@ -113,7 +114,7 @@ communication
 
 * 参考4.2.3节，添加socket
 
-### 5.4. TCP、UDP收发送示例
+### 5.4. TCP、UDP收发示例
 * TCP Client使用示例
 ```C
 #include "TcpIp.h"
