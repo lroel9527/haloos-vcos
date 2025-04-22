@@ -71,7 +71,7 @@
 |描述|Each BswSchedulableEntity activation mapped to an OsTask has a specific position within the task execution.|
 |描述|概述：RteBswPositionInTask 配置项用于指定基础软件模块（BswModule）中的可调度实体（SchedulableEntity）在其所属任务中的执行顺序。|
 |描述|注意：在配置时需确保每个任务中的RteBswPositionInTask值是唯一的，以防止执行顺序的冲突；此配置项对于系统的实时性和调度逻辑至关重要，因此应谨慎设置；在AUTOSAR CP 4.4标准中，如果该属性的使用与标准定义不一致，需要检查并调整以符合标准要求。|
-|说明|For periodic activation this is the order of execution. For event driver activation this is the order of evaluation which actual BswSchedulableEntity has to be executed. In case of direct function calls this parameter is necessary to provide an ordering of events when several ExecutableEntities are invoked by the same RTE API.|
+|说明|该配置项指定了BswSchedulableEntity在所属任务中的执行顺序。|
 |多实例个数|0 - 1|
 |取值范围|0 - 65535|
 
@@ -90,7 +90,7 @@
 |描述|Reference to the OsTask the BswSchedulableEntity activated by the RteBswEventRef is mapped to.|
 |描述|概述：RteBswMappedToTaskRef 配置项用于将基础软件模块（BswModule）的调度实体映射到操作系统任务，确保基础软件组件的调度实体能够被正确调度执行。|
 |描述|注意：在配置时需确保映射关系的正确性，避免将一个调度实体错误地映射到多个任务；此配置项对于系统的调度策略和资源管理至关重要，应谨慎处理；在AUTOSAR CP 4.4标准中，应遵循标准定义的映射规则和约束，以保证系统的兼容性和可靠性。|
-|说明|If no reference to the OsTask is specified the BswSchedulableEntity activated by this BswEvent is executed in the context of the caller.|
+|说明|如果没有指定OsTask，则该实体是调用方直接函数调用的方式执行的。|
 |多实例个数|0 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsTask|
 
@@ -117,7 +117,6 @@
 |名称|RteRipsFillRoutineRef|
 |描述|Reference to a Buffer-Fill Routine implemented by an RTE Implementation Plug-In.|
 |描述|Tags: atp.Status=draft|
-|说明|This routine gets invoked directly before the ExecutableEntity is started.|
 |多实例个数|0 - inf|
 |DESTINATION-URI-REF|/AUTOSAR/EcucDestinationUriDefSets/RteRipsPluginFillFlushRoutine|
 
@@ -126,7 +125,6 @@
 |名称|RteRipsFlushRoutineRef|
 |描述|Reference to a Buffer-Flush Routine implemented by an RTE Implementation Plug-In.|
 |描述|Tags: atp.Status=draft|
-|说明|This routine gets invoked directly after the ExecutableEntity has terminated.|
 |多实例个数|0 - inf|
 |DESTINATION-URI-REF|/AUTOSAR/EcucDestinationUriDefSets/RteRipsPluginFillFlushRoutine|
 
@@ -189,7 +187,7 @@
 |描述|Generate System Signal Compute Methods by RTE.|
 |描述|概述：RteSystemSignalCompuMethodEnabled配置项用于启用或禁用系统信号的计算方法，这影响信号的解释和处理方式，确保数据的正确转换和表达。|
 |描述|注意：在AUTOSAR CP 4.4标准中，对于系统信号的计算方法的启用或禁用应当谨慎处理，以保证系统的兼容性和数据的准确性；此配置项的使用应结合具体的应用场景和系统需求来决定；不正确的配置可能导致数据解释错误，影响系统功能的实现。|
-|说明|* true: CompuMethodGen is enable. * false: CompuMethodGen is disabled.|
+|说明|true代表功能启用。false代表功能禁用。|
 |多实例个数|1 - 1|
 |默认值|false|
 
@@ -199,7 +197,7 @@
 |描述|Simplification on ISR API used by RTE.|
 |描述|概述：RteIsrSimplification配置项用于RTE使用简化后的中断服务例程（ISR），通过调用简化后的ISR来提高系统的响应速度和效率。|
 |描述|注意：在使用RteIsrSimplification时，需要确保系统的实时性需求得到满足；只有特权OsApplication的SWC实例才可以使用简化的ISR。|
-|说明|* true: simplification is enabled. * false: no simplification.|
+|说明|true代表功能启用。false代表功能禁用。|
 |多实例个数|1 - 1|
 |默认值|false|
 
@@ -209,7 +207,7 @@
 |描述|Optimization on ExclusiveArea for RTE communications.WARNING: if optimization is enabled, do NOT invoke any RTE APIs inside an ISR (e.g. CDD)!|
 |描述|概述：RteEaOptimization配置项用于优化RTE数据交换过程中使用的临界区保护措施。优化主要应用在SenderReceiver通信，在部分场景下能实现无锁读写，显著提升SR通信的运行效率|
 |描述|注意：在使用RteEaOptimization时，需要确保优化策略不会违反数据一致性和原子性要求；优化应当在系统的整体性能评估后启用，以避免潜在的副作用。如果开启该优化，不建议用户自行在用户代码中（尤其是CDD）直接读、写任何RTE生成的内部变量，而应该全部正确地通过RTE提供的API来操作，否则会有数据一致性的风险。|
-|说明|* true: optimization is enabled. * false: no optimization.|
+|说明|true代表功能启用。false代表功能禁用。|
 |多实例个数|1 - 1|
 |默认值|false|
 
@@ -219,7 +217,7 @@
 |描述|Switches the development error detection and notification on or off.|
 |描述|概述：RteDevErrorDetect 是一个配置参数，用于启用或禁用运行时环境（RTE）的开发错误检测功能，这有助于在开发阶段识别潜在的错误和异常。|
 |描述|注意：在生产代码中通常禁用此功能以优化性能；开发阶段启用此功能可以帮助检测API使用错误；根据AUTOSAR CP 4.4标准，应确保此配置与系统的诊断策略一致。|
-|说明|* true: detection and notification is enabled. * false: detection and notification is disabled.|
+|说明|true代表功能启用。false代表功能禁用。|
 |多实例个数|1 - 1|
 |默认值|false|
 
@@ -265,7 +263,7 @@
 |描述|The RTE generator shall enable VFB tracing for a given hook function when there is a #define in the RTE configuration header file for the hook function name and tracing is globally enabled.|
 |描述|概述：RteVfbTraceFunction 是一个配置项，用于启用或禁用虚拟功能总线（VFB）跟踪功能，这有助于在软件开发和调试阶段监控和记录组件间的通信。|
 |描述|注意：在最终产品中通常应禁用此功能以避免不必要的性能开销；确保在开发和测试环境中正确配置以收集必要的调试信息；在AUTOSAR CP 4.4标准中，应检查此配置项是否与标准中定义的跟踪机制兼容。|
-|说明|Example: #define Rte_WriteHook_i1_p1_a_Start This also applies to VFB trace functions with a RteVfbTraceClientPrefix, e.g. Rte_Dbg_WriteHook_I1_P1_a_Start.|
+|说明|该参数服务于halo trace工具，通过RteVFB trace hook function可以为每个 Runable 生成打点函数(Rte_Runnable_(runnable_name)_Start 与 Rte_Runnable_(runnable_name)_Return)，用以确定runnable的执行时间|
 |多实例个数|0 - inf|
 
 ## 4. RteSwComponentInstance
@@ -276,7 +274,7 @@
 |描述|Representation of one SwComponentPrototype located on the to be configured ECU. All subcontainer configuration aspects are in relation to this SwComponentPrototype.|
 |描述|概述：RteSwComponentInstance配置项定义了软件组件实例在系统中的存在，包括其实例化的组件类型和分配给该实例的资源。|
 |描述|注意：在配置RteSwComponentInstance时，确保每个实例的标识符唯一，以避免在系统中的冲突；组件实例化应遵循AUTOSAR CP 4.4中定义的软件组件模型，确保兼容性和一致性；分配资源时考虑实际硬件限制和性能需求，以保证系统的高效运行。|
-|说明|The RteSwComponentInstance can be associated with either a AtomicSwComponentType or ParameterSwComponentType.|
+|说明|该配置项可以归属于AtomicSwComponentType或ParameterSwComponentType两种类型。|
 |多实例个数|0 - inf|
 
 | 配置项属性 | 值（外部引用配置项） |
@@ -296,7 +294,7 @@
 |描述|Maps an instance of a RunnableEntity onto one OsTask based on the activating RTEEvent.|
 |描述|概述：RteEventToTaskMapping 配置项用于将特定的事件映射到操作系统任务，这样当事件发生时，相应的任务可以被激活以执行相关的运行实体（Runnable）。|
 |描述|注意：在配置时需确保事件与任务之间的映射关系正确无误，以免影响系统的响应性和实时性；此外，应避免一个事件映射到多个任务，以防止资源竞争和调度问题；在多核环境下，还需考虑事件与任务在不同核心间的映射关系，确保系统的并行处理能力。|
-|说明|In the case of a RunnableEntity executed via a direct function call this RteEventToTaskMapping is still specified but no RteMappedToTask element is included. The RtePositionInTask parameter is necessary to provide an ordering of events invoked by the same RTE API.|
+|说明|如果RunnableEntity是通过直接的函数调用的，则该配置项仍存在，但是没有RteMappedToTask元素。|
 |多实例个数|0 - inf|
 
 | 配置项属性 | 值（浮点型参数配置项） |
@@ -314,7 +312,7 @@
 |描述|Each RunnableEntity mapped to an OsTask has a specific position within the task execution.|
 |描述|概述：RtePositionInTask 用于定义某个运行实体（Runnable）在特定任务中的执行顺序位置，确保各Runnables按照预定顺序执行，从而满足系统的功能和时间要求。|
 |描述|注意：确保每个任务内的RtePositionInTask唯一，避免冲突；合理设计顺序以满足实时性要求；在多核系统中注意跨核调度和执行一致性。|
-|说明|For periodic activation this is the order of execution. For event driver activation this is the order of evaluation which actual RunnableEntity has to be executed. In case of direct function calls this parameter is necessary to provide an ordering of events when several ExecutableEntities are invoked by the same RTE API.|
+|说明|该配置项指定了RunnableEntity在所属任务中的执行顺序。|
 |多实例个数|0 - 1|
 |取值范围|0 - 65535|
 
@@ -333,7 +331,7 @@
 |描述|Reference to the OsTask the RunnableEntity activated by the RteEventRef is mapped to.|
 |描述|概述：RteMappedToTaskRef配置项用于将一个Runnable Entity映射到一个OS任务，这样可以指定Runnable应当在哪个OS任务的上下文中执行。|
 |描述|注意：在配置RteMappedToTaskRef时，需要确保Runnable与任务的映射关系符合系统设计要求，并且不违反OS的调度策略；此外，应当避免将多个高运算负载的Runnable映射到同一个任务，以防止潜在的性能瓶颈；AUTOSAR CP 4.4标准中对于Runnable到任务的映射有明确的规范，需要确保配置项的使用与标准保持一致。|
-|说明|If no reference to the OsTask is specified the RunnableEntity shall be executed via a direct function call. The fact that no reference to an OsTask is specified for a RunnableEntity does not necessarily imply that every RTE generator has to support the implementation of this RunnableEntity as a direct function call. The standard set of use cases for direct function calls that has to be supported by every RTE generator is explicitly stated as requirements in this document. For further optimization RTE vendors are free to support additional scenarios of direct function call implementations that are not explicitly required in this document.|
+|说明|如果没有指定OsTask，则该实体是调用方直接函数调用的方式执行的。|
 |多实例个数|0 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsTask|
 

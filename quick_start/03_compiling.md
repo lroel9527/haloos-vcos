@@ -28,6 +28,8 @@ python ./vcos/build/compiling_env.py
 
 ### 2.1. 一键编译
 
+> Windows系统需要以【管理员权限】打开powershell，并切换到`haloosspace`目录
+
 - 切换到`haloosspace/vcos/build`目录：
 
   ```bash
@@ -37,19 +39,22 @@ python ./vcos/build/compiling_env.py
 - 编译memory_demo应用：配置使用A2G_TC397_5V_TFT板级配置，使用gcc编译器，使用ninja作为make工具，使用实际开发板运行
 
   ```bash
-  python3 vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -compiler gcc -maketool ninja -sim 0 -all
+  python vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -compiler gcc -maketool ninja -sim 0 -all
   ```
-  该命令会依次执行memory_demo应用对应的A2G_TC397_5V_TFT板子配置生成动态代码，cmake执行ninja编译脚本生成，并执行编译生成镜像。
-  编译产物生成在`haloosspace/vcos/output/memory_demo_A2G_TC397_5V_TFT_gcc`目录下。
+  该命令会依次执行以下操作：
+  - 根据memory_demo应用的A2G_TC397_5V_TFT板级配置生成动态代码
+  - 通过CMake调用Ninja工具自动化构建
+  - 最终编译生成镜像文件
+  - 编译产物默认保存在`haloosspace/output/memory_demo_A2G_TC397_5V_TFT_gcc`目录下
 
 ### 2.2. 编译命令说明
 - 添加应用子目录，重新生成cmake：
   ```bash
-  python3 vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -clean  # 清除编译产物
-  python3 vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -gcmake  # 生成cmake
-  python3 vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -fc  # 执行全量编译
+  python vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -clean  # 清除编译产物
+  python vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -gcmake  # 生成cmake
+  python vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -fc  # 执行全量编译
   ```
 - 修改应用代码后增量编译：
   ```bash
-  python3 vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -ic
+  python vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -ic
   ```

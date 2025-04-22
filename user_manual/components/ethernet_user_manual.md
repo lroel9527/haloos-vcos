@@ -114,78 +114,141 @@ communication
 * 参考4.2.3节，添加socket
 
 ### 5.4. TCP、UDP收发送示例
-* TCP使用示例
+* TCP Client使用示例
 ```C
-#include "tpip_types.h"
-#include "tcpip_cfg.h"
-// 1. 获取socket
-// TcpIp_DDSGetSocket是为上节配置的TcpIpSocketOwner生成的API
+#include "TcpIp.h"
+
+boolean tcp_transmit_start = false;
 tcpip_socket_id_type socket_id;
-TcpIp_DDSGetSocket(AF_INET, TCPIP_IPPROTO_TCP, &socket_id);
 
-// 2. Bind socket
-// TcpIpConf_TcpIpLocalAddr_TcpIpLocalAddr_Vlan_Unicast是为配置IP地址一节生成的对应宏
-uint16 bind_port = 23;
-tcpip_bind(socket_id, TcpIpConf_TcpIpLocalAddr_TcpIpLocalAddr_Vlan_Unicast, &bind_port);
+/*建立TCP连接接口*/
+void client_tcp_connect(void) 
+{
+    /* 1. 获取socket// TcpIp_ClientGetSocket是为上节配置的TcpIpSocketOwner生成的API */
+    TcpIp_ClientGetSocket(AF_INET, TCPIP_IPPROTO_TCP, &socket_id);
+    
+    /*  2. Bind socket TcpIpConf_TcpIpLocalAddr_TcpIpLocalAddr_Vlan_Unicast是为配置IP地址一节生成的对应宏 */
+    uint16 bind_port = 23;
+    tcpip_bind(socket_id, TcpIpConf_TcpIpLocalAddr_TcpIpLocalAddr_Vlan_Unicast, &bind_port);
+    
+    /*  3. Client端连接Server  */
+    tcpip_sock_addr_type remote_addr;
+    char server_ip[] = "192.168.3.71";   // 此处为目标IP地址
+    uint16 server_port = 33;    // 此处为目标端口
+    remote_addr.domain = TCPIP_AF_INET;
+    remote_addr.port = lwip_htons(server_port);
+    ip_addr.addr = inet_addr(server_ip);
+    tcpip_ip_addr_32_to_8(ip_addr.addr, remote_addr.addr);
+    tcpip_tcp_connect(socket_id, &remote_addr);
+}
 
-// 3. Server端监听Client连接
-uint16 max_channel = 1; // 最大连接数
-tcpip_tcp_listen(socket_id, max_channel);
+/*TCP连接建立回调接口*/
+void client_tcp_connected( TcpIp_SocketIdType SocketId ){
+   /* 4. 等待连接远程tcp server成功，connected回调函数被调用*/
+    tcp_transmit_start = true;
+}
 
-// 4. Client端连接Server
-tcpip_sock_addr_type remote_addr;
-char server_ip[] = "172.31.3.71";   // 此处为目标IP地址
-uint16 server_port = 33;    // 此处为目标端口
-remote_addr.domain = TCPIP_AF_INET;
-remote_addr.port = lwip_htons(server_port);
-ip_addr.addr = inet_addr(server_ip);
-tcpip_ip_addr_32_to_8(ip_addr.addr, remote_addr.addr);
-tcpip_tcp_connect(socket_id, &remote_addr);
+/*TCP client发送接口*/
+void client_tcp_transmit(void) 
+{
+    if(tcp_transmit_start == true) {
+        /* 5. 发送数据 */
+        uint8 data[10] = {"H", "e", "l", "l", "o", ",", "H", "a", "l", "o"};
+        tcpip_tcp_transmit(socket_id, data, sizeof(data), TRUE);
+        
+        /*6. 发送完成，关闭socket */
+        tcpip_close(socket_id, TRUE);
+    }
+}
+```
+ * TCP Server使用示例
+```C
+#include "TcpIp.h"
 
-// 5. 发送数据
-uint8 data[10] = {"H", "e", "l", "l", "o", ",", "H", "a", "l", "o"};
-tcpip_tcp_transmit(socket_id, data, 10, TRUE);
+boolean tcp_rec_start = false;
+tcpip_socket_id_type socket_id;
+/*TCP server监听接口*/
+void server_tcp_listen(void)
+{
+    /* 1. 获取socket TcpIp_ServerGetSocket是为上节配置的TcpIpSocketOwner生成的API */
+    tcpip_socket_id_type socket_id;
+    TcpIp_ServerGetSocket(AF_INET, TCPIP_IPPROTO_TCP, &socket_id);
+    
+    /* 2. Bind socket  TcpIpConf_TcpIpLocalAddr_TcpIpLocalAddr_Vlan_Unicast是为配置IP地址一节生成的对应宏*/
+    uint16 bind_port = 23;
+    tcpip_bind(socket_id, TcpIpConf_TcpIpLocalAddr_TcpIpLocalAddr_Vlan_Unicast, &bind_port);
+    
+    /* 3. Server端监听Client连接 */
+    uint16 max_channel = 3; // 最大连接数
+    tcpip_tcp_listen(socket_id, max_channel);
+}
 
-// 6. 接收数据，4.3.3节配置socket时将接收函数配置为RxIndication
+/*TCP server新连接回调接口*/
+/* 4. 等待远程Tcp client连接成功 ，accepted回调函数被调用 */
+void server_tcp_accepted( TcpIp_SocketIdType SocketId, TcpIp_SocketIdType SocketIdConnected, const TcpIp_SockAddrType* RemoteAddrPtr ){
+    (void) SocketId;  //监听套接字ID
+    (void) SocketIdConnected； //连接套接字ID
+    (void) RemoteAddrPtr；//远端地址端口信息
+    tcp_rec_start = true;
+}
 
-// 7. 关闭socket
-tcpip_close(socket_id, TRUE);
+/*TCP server数据回调接口*/
+/* 5. 在接收回调中等待数据接受 */
+void server_rx_indication( TcpIp_SocketIdType SocketId, const TcpIp_SockAddrType* RemoteAddrPtr, uint8* BufPtr, uint16 Length )
+{
+    (void) SocketId   //连接套接字ID
+    (void) RemoteAddrPtr；//远端地址端口信息
+    (void) BufPtr；//接收数据指针
+    (void) Length； //接收数据长度
+
+    /*6. 接收完成关闭套接字 */
+    tcpip_close(socket_id, TRUE);
+}
 ```
 
 * UDP示例
 ```C
-#include "tpip_types.h"
-#include "tcpip_cfg.h"
+#include "TcpIp.h"
 
-// 1. 获取socket
-// TcpIp_DDSGetSocket是为上节配置的TcpIpSocketOwner生成的API
 tcpip_socket_id_type socket_id;
-TcpIp_DDSGetSocket(AF_INET, TCPIP_IPPROTO_UDP, &socket_id);
 
-// 2. Bind socket
-// TcpIpConf_TcpIpLocalAddr_TcpIpLocalAddr_Vlan_Unicast是为配置IP地址一节生成的对应宏
-uint16 bind_port = 23;
-tcpip_bind(socket_id, TcpIpConf_TcpIpLocalAddr_TcpIpLocalAddr_Vlan_Unicast, &bind_port);
+/*udp发送接口*/
+void app_udp_transmit(void)
+{
+    /* 1. 获取socket TcpIp_APPGetSocket是为上节配置的TcpIpSocketOwner生成的API */
+    TcpIp_APPGetSocket(AF_INET, TCPIP_IPPROTO_UDP, &socket_id);
+    
+    /* 2. Bind socket// TcpIpConf_TcpIpLocalAddr_TcpIpLocalAddr_Vlan_Unicast是为配置IP地址一节生成的对应宏 */
+    uint16 bind_port = 23;
+    tcpip_bind(socket_id, TcpIpConf_TcpIpLocalAddr_TcpIpLocalAddr_Vlan_Unicast, &bind_port);
+    
+    /* 3. 发送数据 */
+    uint8 data[10] = {"H", "e", "l", "l", "o", ",", "H", "a", "l", "o"};
+    tcpip_sock_addr_type local_addr = {
+            .addr = {0xC0u, 0xA8u, 0x01u, 0x64u},   // 示例：192.168.1.100；此处应为目标IP地址
+            .port = 5001u,  // 端口号
+            .domain = TCPIP_AF_INET};
+    tcpip_udp_transmit(socket_id, data, &local_addr, 10);
+}
 
-// 3. 发送数据
-uint8 data[10] = {"H", "e", "l", "l", "o", ",", "H", "a", "l", "o"};
-tcpip_sock_addr_type local_addr = {
-        .addr = {0xACu, 0x1Fu, 0x01u, 0x64u},   // 示例：172.31.1.100；此处应为目标IP地址
-        .port = 0x00u,  // 端口号
-        .domain = TCPIP_AF_INET};
-tcpip_udp_transmit(socket_id, data, &local_addr, 10);
-
-// 4. 接收数据，4.3.3节配置socket时将接收函数配置为RxIndication
-
-// 5. 关闭socket
-tcpip_close(socket_id, TRUE);
+/*udp接收接口*/
+/* 4. 在接收回调中等待数据接受 */
+void app_rx_indication( TcpIp_SocketIdType SocketId, const TcpIp_SockAddrType* RemoteAddrPtr, uint8* BufPtr, uint16 Length )
+{
+    (void) SocketId   //连接套接字ID
+    (void) RemoteAddrPtr；//远端地址端口信息
+    (void) BufPtr；//接收数据指针
+    (void) Length； //接收数据长度
+    // 5.关闭socket
+    tcpip_close(socket_id, TRUE);
+}
 ```
 
 ## 6. 配置项参考规范
+[TcpIp 配置项参考规范](../../configuration_reference/tcpip_cfg.md)
 
 [EthIf 配置项参考规范](../../configuration_reference/ethif_cfg.md)
 
-[TcpIp 配置项参考规范](../../configuration_reference/tcpip_cfg.md)
 
 ## 7. 应用接口参考规范
 

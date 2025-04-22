@@ -15,7 +15,7 @@
 |描述|OsAppMode is the object used to define ISO 17356-3 properties for an ISO 17356-3 application mode.|
 |描述|概述：OsAppMode 是一个操作系统配置参数，用于定义系统启动时的应用模式，这些模式可以在系统运行时被选择以启动不同的操作系统行为或应用程序功能。|
 |描述|注意：在配置OsAppMode时，需要确保定义的模式与系统设计和需求相匹配；每个模式应有明确的行为和目的；在系统启动时，只能选择一个应用模式。|
-|说明|No standard attributes are defined for AppMode. In a CPU, at least one AppMode object has to be defined. [source: ISO 17356-6] An OsAppMode called OSDEFAULTAPPMODE must always be there for ISO 17356 compatibility.|
+|说明|对于应用模式（AppMode）而言，并未定义任何标准属性。在CPU中，至少需要定义一个应用模式对象。[来源：ISO 17356-6] 为确保符合ISO 17356的兼容性要求，必须始终存在一个名为​​OSDEFAULTAPPMODE​​的操作系统应用模式（OsAppMode）|
 |多实例个数|1 - inf|
 
 ## 2. OsApplication
@@ -26,7 +26,7 @@
 |描述|An AUTOSAR OS must be capable of supporting a collection of OS objects (tasks, interrupts, alarms, hooks etc.) that form a cohesive functional unit. This collection of objects is termed an OS-Application.|
 |描述|概述：OsApplication配置项用于定义操作系统应用程序的属性，它是AUTOSAR OS模块中的一个基本构建块，用于实现应用程序的隔离和保护。|
 |描述|注意：在配置OsApplication时，需要确保其属性与系统的内存保护和隔离需求相符合；每个OsApplication应有唯一的标识符，并且应正确配置其访问权限和资源；在多核系统中，还需注意OsApplication与特定核心的绑定关系。|
-|说明|All objects which belong to the same OS-Application have access to each other. Access means to allow to use these objects within API services. Access by other applications can be granted separately.|
+|说明|属于同一​​OS-Application​​的所有对象均可相互访问。此处的“访问”指允许在API服务中使用这些对象。其他应用程序的访问权限可单独授予。|
 |多实例个数|1 - 32|
 
 | 配置项属性 | 值（布尔参数配置项） |
@@ -35,7 +35,8 @@
 |描述|Parameter to specify if an OS-Application is trusted or not.|
 |描述|概述：OsTrusted配置项用于定义操作系统(OS)对象（如任务或中断服务例程）的信任级别，指示该对象是否有权访问受保护的OS资源或执行特定的OS操作。|
 |描述|注意：在AUTOSAR CP 4.4标准中，确保只有那些需要访问敏感或受保护资源的OS对象被配置为OsTrusted；非信任对象应受到严格限制，以防止潜在的安全风险；正确配置信任级别对于系统的安全性至关重要。|
-|说明|true: OS-Application is trusted false: OS-Application is not trusted (default)|
+|说明|​true​​：OS-Application 为可信状态
+​​false​​：OS-Application 为不可信状态（默认值）|
 |多实例个数|1 - 1|
 |默认值|false|
 
@@ -108,7 +109,6 @@
 |-|-|
 |名称|OsCore|
 |描述|The OsCore is used for containing configuration within core scope.|
-|说明|The OsCore is used for containing configuration within core scope.|
 |多实例个数|0 - inf|
 
 | 配置项属性 | 值（关联引用配置项） |
@@ -193,7 +193,7 @@
 |描述|This Container contains the information who will drive the counter.|
 |描述|概述：OsDriver配置项用于定义操作系统(OS)层的驱动组件，这些组件直接与底层的硬件或操作系统服务交互，以提供硬件抽象层(HAL)或操作系统服务给上层软件组件。|
 |描述|注意：在AUTOSAR CP 4.4中，需要确保OsDriver配置与操作系统的支持和硬件抽象层的要求相匹配；OsDriver配置应遵循AUTOSAR OS模块的规范和接口标准；在多核或多分区系统中，还需考虑OsDriver的分配和隔离策略以保证系统的安全性和稳定性。|
-|说明|This configuration is only valid if the counter has OsCounterType set to HARDWARE. If the container does not exist (multiplicity=0) the timer is managed by the OS internally (OSINTERNAL). If the container exists the OS can use the GPT interface to manage the timer. The user have to supply the GPT channel. If the counter is driven by some other (external to the OS) source (like a TPU for example) this must be described as a vendor specific extension.|
+|说明|该配置仅在计数器类型设置为HARDWARE时有效。若容器不存在（即多重性=0），则定时器由操作系统内部管理（OSINTERNAL）。若容器存在，操作系统可通过GPT接口管理定时器，此时用户必须提供GPT通道。若计数器由操作系统外部其他源驱动（例如TPU模块），则必须通过供应商特定扩展进行描述。|
 |多实例个数|0 - 1|
 
 | 配置项属性 | 值（关联引用配置项） |
@@ -231,7 +231,7 @@
 |描述|Allows the user to define constants which can be e.g. used to compare time values with timer tick values.|
 |描述|概述：OsTimeConstant 用于定义操作系统中的时间常量，如系统时钟的周期或任务的时间间隔。|
 |描述|注意：确保OsTimeConstant与硬件时钟能力相匹配；在多任务系统中，合理配置时间常量以避免任务冲突和资源竞争；时间常量的配置应符合AUTOSAR CP 4.4标准的时间管理要求。|
-|说明|A time value will be converted to a timer tick value during generation and can later on accessed via the OsConstName. The conversation is done by rounding time values to the nearest fitting tick value.|
+|说明|在代码生成阶段，时间值将被转换为定时器节拍值，后续可通过OsConstName常量进行访问。该转换过程采用四舍五入原则，将时间值就近匹配为最接近的节拍值。|
 |多实例个数|0 - inf|
 
 | 配置项属性 | 值（浮点型参数配置项） |
@@ -332,7 +332,7 @@
 |描述|true: first expiry point on the schedule table shall be processed at final expiry point delay ticks after the final expiry point is processed.|
 |描述|概述：OsScheduleTableRepeating配置项用于指定操作系统调度表（Schedule Table）是否应该在完成其时间轴上的所有事件后重复执行。|
 |描述|注意：在AUTOSAR CP 4.4标准中，调度表可以配置为单次或重复执行；重复执行的调度表在达到其终点时会自动重新开始；确保调度表的设计考虑到系统的实时性要求和任务的周期性约束。|
-|说明|false: the schedule table processing stops when the final expiry point is processed.|
+|说明|错误：调度表处理会在最终到期点被处理时停止。|
 |多实例个数|1 - 1|
 
 | 配置项属性 | 值（整型参数配置项） |
@@ -387,7 +387,7 @@
 |描述|Absolute autostart tick value when the schedule table starts. Only used if the OsScheduleTableAutostartType is ABSOLUTE.|
 |描述|概述：OsScheduleTableStartValue配置项用于定义操作系统调度表的起始时间点，这是一个相对于调度表周期开始的偏移时间，用于确定何时启动调度表中的第一个任务或事件。|
 |描述|注意：该配置项的值必须小于或等于调度表的周期长度；在配置时需要确保调度表的起始时间点不会导致任务或事件的执行时间与其他调度活动冲突；调度表的起始时间点应考虑系统启动时的初始化时间，避免过早调度导致的任务执行失败。|
-|说明|Relative offset in ticks when the schedule table starts. Only used if the OsScheduleTableAutostartType is RELATIVE.|
+|说明|​​调度表启动的相对节拍偏移量（仅当OsScheduleTableAutostartType为RELATIVE时使用）|
 |多实例个数|0 - 1|
 |取值范围|0 - 4294967295|
 
@@ -563,7 +563,7 @@
 |描述|Reference to OsApplications that have an access to this object.|
 |描述|概述：OsSpinlockSuccessor 配置项用于定义在释放自旋锁后，哪个任务或中断服务例程（ISR）将获得该自旋锁的控制权，这有助于管理操作系统的并发访问和锁的优先级继承。|
 |描述|注意：在配置OsSpinlockSuccessor时，需要确保它与系统中的任务和ISR优先级设置相匹配，以避免优先级反转问题；此外，应当考虑自旋锁的使用对系统性能的影响，因为它们可能导致CPU占用和延迟增加；在多核系统中，还需注意自旋锁在不同核之间的行为和一致性。|
-|说明|To check whether a spinlock can be occupied (in a nested way) without any danger of deadlock, a linked list of spinlocks can be defined. A spinlock can only be occupied in the order of the linked list. It is allowed to skip a spinlock. If no linked list is specified, spinlocks cannot be nested.|
+|说明|要安全检测自旋锁是否可被嵌套占用（避免死锁风险），可定义自旋锁的链表结构。自旋锁必须严格按照链表顺序进行占用，但允许跳过某些锁。若未指定链表，则禁止自旋锁嵌套|
 |多实例个数|0 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsSpinlock|
 
@@ -583,7 +583,7 @@
 |描述|true: open floating-point arithmetic.|
 |描述|概述：OsTaskUsesFpu配置项用于指定操作系统任务是否使用浮点单元(FPU)，以确保任务在使用FPU时能够正确保存和恢复浮点寄存器的状态。|
 |描述|注意：在配置时需确保仅对实际使用FPU的任务启用此选项，以避免不必要的性能开销；AUTOSAR CP 4.4标准要求操作系统管理FPU上下文切换，因此正确配置此项对于系统稳定性和性能至关重要；在多任务环境中，未正确配置使用FPU的任务可能导致数据不一致和计算错误。|
-|说明|false: close floating-point arithmetic..|
+|说明|错误：禁用浮点运算...​|
 |多实例个数|1 - 1|
 |默认值|false|
 
@@ -593,7 +593,7 @@
 |描述|The OsTaskSchedule attribute defines the preemptability of the task.|
 |描述|概述：OsTaskSchedule配置项用于定义操作系统任务的调度策略，如全抢占式、非抢占式或混合调度策略，影响任务的运行和调度行为。|
 |描述|注意：AUTOSAR CP 4.4标准中，任务调度策略的选择对系统响应时间和资源利用率有重要影响；选择非抢占式调度时，需特别注意任务执行时间，避免长时间占用CPU导致系统响应延迟；在配置OsTaskSchedule时，应确保与系统设计的实时性要求相匹配。|
-|说明|If this attribute is set to NON, no internal resources may be assigned to this task.|
+|说明|若该属性设置为NON，则不得为此任务分配任何内部资源。|
 |多实例个数|1 - 1|
 |默认值|FULL|
 
@@ -622,7 +622,7 @@
 |描述|The priority of a task is defined by the value of this attribute. This value has to be understood as a relative value, i.e. the values show only the relative ordering of the tasks.|
 |描述|概述：OsTaskPriority定义了操作系统任务的优先级，这是一个决定任务调度顺序的关键属性，高优先级的任务会先于低优先级的任务执行。|
 |描述|注意：优先级设置应避免优先级反转问题；在多任务系统中，合理分配优先级以确保实时性要求得到满足；AUTOSAR标准中，优先级的具体数值范围可能受到底层操作系统的限制。|
-|说明|ISO 17356-3 defines the lowest priority as zero (0); larger values correspond to higher priorities.|
+|说明|ISO 17356-3 标准将最低优先级定义为零（0），数值越大表示优先级越高。|
 |多实例个数|1 - 1|
 |取值范围|0 - 65534|
 
@@ -672,7 +672,7 @@
 |描述|This container determines whether the task is activated during the system start-up procedure or not for some specific application modes.|
 |描述|概述：OsTaskAutostart配置项用于定义操作系统任务（OsTask）的自启动属性，指定系统启动时当前任务应该被自动启动。|
 |描述|注意：在配置OsTaskAutostart时，需要确保任务的启动模式与系统设计和启动需求一致；对于不需要立即执行的任务，应避免配置为自启动，以减少系统启动时的负载；AUTOSAR CP 4.4标准中，任务的自启动属性应与任务的优先级和调度策略相协调，确保系统的实时性和稳定性。|
-|说明|If the task shall be activated during the system start-up, this container is present and holds the references to the application modes in which the task is auto-started.|
+|说明|如果任务需要在系统启动时被激活，则存在此容器，其中包含对任务自动启动所适用的应用模式的引用。|
 |多实例个数|0 - 1|
 
 | 配置项属性 | 值（关联引用配置项） |

@@ -11,7 +11,7 @@
 |芯片移植指南|详细介绍了如何把智能车控OS移植到不同芯片平台|[芯片移植指南](./porting/porting_guide.md)|
 |关键技术讲解|深入解析智能车控OS的关键技术设计理念及重要技术实现，为开发者提供理论与实践支持|[关键技术讲解](./key_technical/)|
 |开发者手册|提供功能组件、内核、开发工具等功能的详细说明，便于用户深入了解功能定义与开发流程|[开发者手册](./user_manual/)|
-|API参考手册集|系统API的全量详细说明，帮助开发者快速查找接口定义，保障高效开发与集成|[API参考手册集](./API_reference/)|
+|API参考手册集|系统API的全量详细说明，帮助开发者快速查找接口定义，保障高效开发与集成|[API参考手册集](./api_reference/)|
 |配置项参考手册集|系统的全量配置参数说明，便于用户进行系统的自定义设置和优化调整|[配置项参考手册集](./configuration_reference/)|
 
 该仓库内容持续更新，致力于构建完整、准确、易用的工程文档体系，助力项目开发与产品落地
@@ -21,14 +21,14 @@
 VCOS文档在haloosspace/vcos/docs目录下，目录结构如下图所示：
 
 ```plaintext
-docs                        # 项目文档主目录
-├── API_reference           # API参考文档
+docs
 ├── OVERVIEW.md             # 项目概述
 ├── README.md               # 文档结构简介（即本文）
 ├── _static/image           # 文档中用到的图片资源
-├── porting                 # 芯片移植文档
+├── api_reference           # API参考文档
 ├── configuration_reference # 配置项参考文档
 ├── key_technical           # 关键技术说明
+├── porting                 # 芯片移植文档
 ├── quick_start             # 快速入门指南
 └── user_manual             # 开发者手册与详细说明
     ├── components          # 功能组件使用说明

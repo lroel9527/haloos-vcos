@@ -1,7 +1,7 @@
-# 代码下载
+# 源码下载流程
 如果您仅需要下载VCOS相关代码，请按本文操作；如果需要下载全量的HaloOS代码，请跳转至[HaloOS代码下载](https://gitee.com/haloos/docs/blob/master/quick_start/01_downloading.md)
 
-## 1. Windows
+## 1. Windows系统
 >
 > 注意，本系统所有涉及powershell的指令，请通过【管理员权限】打开，否则安装可能失败
 >
@@ -16,7 +16,8 @@
 
 ### 1.2. 安装git repo工具
 
-代码下载同时依赖git和git repo，如果没有安装git请 [下载并安装](https://git-scm.com/downloads/win)
+代码下载同时依赖git和git repo，如果没有安装git请 [下载并安装](https://git-scm.com/downloads/win)  
+
 git的安装流程此处略过，编译过程还需要使用git的patch工具，Windows系统需要将patch工具路径添加到PATH环境变量：
 1. 找到git所在的安装路径，添加\usr\bin后就是patch.exe所在路径（例如：C:\Program Files\Git\usr\bin）
 2. 按 Win + S 搜索 “环境变量” → 选择 “编辑系统环境变量”
@@ -52,14 +53,37 @@ git repo的安装流程如下：
     ```bash
     mkdir haloosspace
     cd haloosspace
-    rm -r ./.repo/
+    rm -r ./.repo/  # 如此前有同步失败，需要先删除原有.repo目录；如果没有.repo目录，可以忽略此步骤
     git-repo init -u git@gitee.com:haloos/manifests.git -b master -m vcos.xml
     git-repo sync
     ```
 
 > 关于git repo的更多使用，可以输入`git-repo -h`查看
 
-## 2. Linux（Ubuntu）
+### 1.4. 获取Infineon iLLD驱动库代码
+
+1. 在 [Infineon Development Center](https://softwaretools.infineon.com/tools?q=aurix&_ga=2.231735327.1826604757.1632363919-1127341224.1631758839) 下载安装 aurix development studio  
+![下载安装](../_static/image/quick_start/downloading_01.png)
+
+2. 打开studio选择目录，选择目录后点击launch  
+![选择目录](../_static/image/quick_start/downloading_02.png)
+
+3. 创建新的aurix 工程，点击下图按钮  
+![创建工程](../_static/image/quick_start/downloading_03.png)
+
+4. 定义工程名称为tc397，勾选"Use default location"后点击next  
+![选择工程](../_static/image/quick_start/downloading_04.png)
+
+5. 选择A2G_TC397_5V_TFT demo 工程，选择后点击finish，然后等待代码生成  
+![代码生成](../_static/image/quick_start/downloading_05.png)
+
+6. 在工程目录中找到生成的illd驱动库代码  
+![找到生成代码](../_static/image/quick_start/downloading_06.png)
+
+7. 将illd驱动库代码拷贝到工程，目标仓库目录：vendor/infineon/drivers/tc397  
+![驱动库代码拷贝](../_static/image/quick_start/downloading_07.png)
+
+## 2. Linux系统（Ubuntu）
 
 ### 2.1. 安装Python 3.8.10
 >
@@ -114,9 +138,12 @@ git repo的安装流程如下：
     ```bash
     mkdir haloosspace
     cd haloosspace
-    rm -rf ./.repo/
+    rm -rf ./.repo/  # 如此前有同步失败，需要先删除原有.repo目录；如果没有.repo目录，可以忽略此步骤
     repo init -u git@gitee.com:haloos/manifests.git -b master -m vcos.xml
     repo sync
     ```
 
     > 关于repo的更多使用，可以输入`repo -h`查看
+
+### 2.4. 获取Infineon iLLD驱动代码
+因为没有Linux版本的Aurix Development Studio，因此需要在Window平台上生成Infineon iLLD驱动代码，获取Infineon iLLD驱动代码流程请参照1.4.章节。
