@@ -279,8 +279,8 @@ SECTIONS
 |`int board_app_initialize(uintptr_t arg)`|e3650_appinit.c||描述：app通过boardctl的BOARDIOC_INIT命令字控制板子初始化，调用board_bringup。|在app的线程上下文中执行，注意栈的使用和并发问题。 app控制其调用的时机。|CONFIG_BOARDCTL|可选，board_late_initialize, board_app_initialize 二选一|
 |`int e3650_bringup(void)`|e3650_bringup.c|描述：板子后期初始化，板级驱动等.||当CONFIG_BOARD_LATE_INITIALIZE开启，其执行在board_late_initialize（AppBringUP线程上下文）否则其执行在board_app_initialize（app线程上下文）|无|必选|
 
-## 2.2 基础驱动移植
-### 2.2.1 HRTIMER 
+### 2.2 基础驱动移植
+#### 2.2.1 HRTIMER 
 
 E3650 集成的 ARM Cortex-R52 Plus 内核集成了 Generic Timer，Cortex-R52+ 的 Generic Timer 是一个系统级定时器框架，提供统一的时间基准和定时功能。它包括一个全局的系统计数器（System Counter），以固定频率递增。每个核心还配备了一组定时器，包括 EL1 物理定时器、EL2 物理定时器和虚拟定时器，用于操作系统和虚拟化环境中的时间管理。定时器通过控制寄存器（CTL）、比较值寄存器（CVAL）和定时值寄存器（TVAL）进行配置，支持绝对时间触发和相对时间触发两种方式。定时器的输出信号可以发送到通用中断控制器（GIC），并触发私有外设中断（PPI），用于中断处理。芯片驱动中提供的常用接口如下，详细说明请见 ARM 官方文档《Arm Cortex-R52+ Processor Technical Reference Manual》；
 
@@ -319,7 +319,7 @@ static const struct hrtimer_ops_s g_hrtimer_ops =
 };
 ```
 
-### 2.2.2 UART 移植
+#### 2.2.2 UART 移植
 Uart需要适配的接口定义位于kernel/nuttx/include/nuttx/serial/serial.h 。芯驰提供了如下接口，用户可参考 e3650_serial.c 进行适配。
 
 |接口名称|功能描述|
@@ -338,10 +338,10 @@ Uart需要适配的接口定义位于kernel/nuttx/include/nuttx/serial/serial.h 
 |Uart_GetStatus|获取指定通道的发送或接收状态，包括剩余字节数等信息。|
 |Uart_GetVersionInfo|获取 UART 驱动的版本信息，包括供应商 ID、模块 ID、软件版本号等。|
 
-## 2.3 通信子系统移植
-### 2.3.1 以太网适配流程
+### 2.3 通信子系统移植
+#### 2.3.1 以太网适配流程
 ![图2](../_static/image/porting/E3650_ETH.png)
-### 2.3.1 以太网驱动适配接口
+#### 2.3.2 以太网驱动适配接口
 Eth 驱动对上向EthIf 提供数据收发服务底层实现，AUTOSAR 定义Eth 驱动的相关概念和接口定义。驱动设计旨在满足相关上述需求文档提到的软件需求，且本文不再重复描述 AUTOSAR 针对Eth定义的接口调用序列等信息，具体概念参考AUTOSAR_SWS_EthernetDriver.pdf 。
 
 | 接口名称 | 功能描述 | 备注 | 
@@ -368,11 +368,11 @@ Eth 驱动对上向EthIf 提供数据收发服务底层实现，AUTOSAR 定义Et
 | Eth_TxConfirmation | 处理指定 Ethernet 控制器的发送确认操作。 | 处理发送确认。 | 
 | Eth_GetVersionInfo | 获取 Ethernet 驱动模块的版本信息。 | 查询驱动模块的版本信息。 | 
 
-## 2.4 存储子系统移植
-### 2.4.1 存储适配流程
+### 2.4 存储子系统移植
+#### 2.4.1 存储适配流程
 ![图3](../_static/image/porting/E3650_EA.png)
-### 2.4.2 存储驱动适配接口
-#### 2.4.2.1 EA 接口
+#### 2.4.2 存储驱动适配接口
+##### 2.4.2.1 EA 接口
 | 接口名称 | 功能描述 | 备注 | 
 | --- | --- | --- | 
 | Ea_Init | 初始化 EEPROM Abstraction 模块。 | 初始化 Ea 模块及其内部状态。 | 
