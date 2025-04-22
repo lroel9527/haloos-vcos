@@ -538,4 +538,4 @@ struct uart_ops_s
 以太通信功能移植完成后，验证在VCOS tcpip模块配置的ip地址可以ping通。
 
 ## 6. 最佳实践
-[芯驰E3650移植实践](./porting_semidrive_e3650.md) （由芯驰科技提供）
+[芯驰E3650移植实践](./porting_semidrive_e3650.md)
