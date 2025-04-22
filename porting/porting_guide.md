@@ -1,5 +1,5 @@
 # 芯片移植指南
-vcos通过全方位彻底软硬解耦，建立逻辑清晰的硬件抽象层，使芯片移植变得简单高效。本文档用于指导芯片公司或个人开发者移植vcos到新的芯片平台。
+VCOS通过全方位彻底软硬解耦，建立逻辑清晰的硬件抽象层，使芯片移植变得简单高效。本文档用于指导芯片公司或个人开发者移植VCOS到新的芯片平台。
 
 ## 1. 移植流程
 芯片移植的总体流程如下图所示：
@@ -29,7 +29,7 @@ vcos
 ```plain text
 ├── arch
    ├── <arch name>                       # 当前指令集架构的名称，如 arm/tricore/riscv
-      ├── CMakeLists.txt                 # 用于构建当前目录和子目录的camke脚本
+      ├── CMakeLists.txt                 # 用于构建当前目录和子目录的CMake脚本
       ├── include                        # 指令集架构相关适配内容的头文件目录
       │   ├── <arch variant name>        # 指令集架构相关的变量类型或者宏定义头文件
       │   ├── arch.h                     # 指令集架构相关的变量类型或者宏定义头文件
@@ -42,13 +42,13 @@ vcos
       ├── Kconfig                        # 当前指令集架构相关内容的配置
       └── src                            # 指令集架构相关适配内容的源文件目录
           ├── cmake                      # 编译器适配相关的cmake脚本
-          ├── CMakeLists.txt             # 用于构建当前目录和子目录的camke脚本
+          ├── CMakeLists.txt             # 用于构建当前目录和子目录的CMake脚本
           ├── common                     # 当前指令集架构内核运行相关的公共代码
           ├── <arch variant name>        # 当前指令集架构的变体，如armv8-r
 ```
 
 ### 2.3. 芯片相关配置
-vcos采用Kconfig配置，遵循标准的Kconfig语法和使用方式，这里只介绍和芯片移植相关的内容。内核采用多层抽象封装，当定义一个新SoC芯片的时候，很多通用功能往往已经被内核通用化支持，只需要简单的使能即可。
+VCOS采用Kconfig配置，遵循标准的Kconfig语法和使用方式，这里只介绍和芯片移植相关的内容。内核采用多层抽象封装，当定义一个新SoC芯片的时候，很多通用功能往往已经被内核通用化支持，只需要简单的使能即可。
 
 例如：当适配一个基于arm cortex-r52 cpu的SoC时，只需简单的`select`即可支持对应的许多功能，如R52能力、FPU/NEON、多核、GICv3、FIQ等。
 ```plain text
@@ -100,9 +100,9 @@ CONFIG_ARM_THUMB=y
 Kconfig配置项最终会生成config.h，在`out/**/include/nuttx/config.h`，编译脚本会把`out/**/include`设为头文件标准搜索路径，所以使用时 `#include <nuttx/config.h>`。 相似的可以查看`out/**/include` 路径下的头文件均可对外使用。
 
 ### 2.4. 芯片相关编译
-vcos支持CMake编译，兼容通用的CMake语法，也有一些预封装的CMake函数和变量。这里只介绍和芯片移植相关的内容。
+VCOS支持CMake编译，兼容通用的CMake语法，也有一些预封装的CMake函数和变量。这里只介绍和芯片移植相关的内容。
 
-内核编译时Chip和Board默认路径在`kernel/nuttx/arch`, `kernel/nuttx/boards`下，但也可以通过上面配置项，`CONFIG_ARCH_BOARD_CUSTOM_DIR, CONFIG_ARCH_CHIP_CUSTOM_DIR`修改到定制化的路径下，如vcos要求的`vendor/<vendor_name>/chips/, vendor/<vendor_name>/boards/`。编译时会把`vendor/<vendor_name>/chips/`和`kernel/nuttx/arch`编译打包到同一个libarch.a，`vendor/<vendor_name>/boards/`默认编译为libboard.a。具体实现为在编译输出目录`out/arch/<isa>/src/`新建一个chip软连接到vendor对应chip目录下，对应的也会新建`board/board`软连接到对应的vendor目录下。 例如：
+内核编译时Chip和Board默认路径在`kernel/nuttx/arch`, `kernel/nuttx/boards`下，但也可以通过上面配置项，`CONFIG_ARCH_BOARD_CUSTOM_DIR, CONFIG_ARCH_CHIP_CUSTOM_DIR`修改到定制化的路径下，如VCOS要求的`vendor/<vendor_name>/chips/, vendor/<vendor_name>/boards/`。编译时会把`vendor/<vendor_name>/chips/`和`kernel/nuttx/arch`编译打包到同一个libarch.a，`vendor/<vendor_name>/boards/`默认编译为libboard.a。具体实现为在编译输出目录`out/arch/<isa>/src/`新建一个chip软连接到vendor对应chip目录下，对应的也会新建`board/board`软连接到对应的vendor目录下。 例如：
 ```plain text
 out/**/arch/arm/src/
     chip -> vendor/<vendor_name>/chips/<chip_name>
@@ -122,7 +122,7 @@ out/**/arch/arm/src/
 
 ## 3. 内核移植
 ### 3.1. ARCH移植
-vcos内核已经支持了主流的 arch，包括arm32/arm64, risc-v 32/64, tricore, rh850等，如下表所示。
+VCOS内核已经支持了主流的 arch，包括arm32/arm64, risc-v 32/64, tricore, rh850等，如下表所示。
 >
 > 注意：下面表格只列出了主要的arch，没有列全。如果您想要的arch没有在此列出，请检查vcos/kernel/nuttx/arch代码目录。
 >
@@ -233,7 +233,7 @@ SoC适配代码放到`vendor/<vendor_name>`目录，目录中文件按需可选�
 | `vendor/<vendor_name>/boards/<aaa>/include/` | `arch/board` |
 
 #### 3.3.3. 链接脚本
-这里只说明vcos对链接脚本的特殊要求。
+这里只说明VCOS对链接脚本的特殊要求。
 BMP多核 percpu定义
 ```plain text
   .percpu_data : ALIGN(64) {
@@ -272,7 +272,7 @@ SoC适配ARCH的接口需要查看不同ARCH代码对SoC要求的Hook接口，�
 
 ### 3.4. 基础驱动移植
 #### 3.4.1. TIMER
-内核中普通TIMER为Oneshottimer, 用于支持内核tick和非高精度的rt framework counter。OneshortTimer 需要适配的接口定义位于`kernel/nuttx/include/timers/oneshot.h`:
+内核中普通TIMER为OneshotTimer, 用于支持内核tick和非高精度的rt framework counter。OneshotTimer 需要适配的接口定义位于`kernel/nuttx/include/timers/oneshot.h`:
 ```c
 struct oneshot_operations_s
 {
@@ -480,7 +480,7 @@ struct uart_ops_s
 ![](../_static/image/porting/eth_porting_process.png)
 
 #### 4.1.3. 以太驱动适配接口
-#### 4.2.3.1. ETH
+#### 4.1.3.1. ETH
 |  **接口类型**  |  **接口名称**  |  **接口描述**  |   **注意事项**  |  **调用方向**  |  **是否必选**  |
 | :-------------| :------------| :-------------|  :-------------|  :-----------|  :------------|
 | ETH数据面 | BufReq_ReturnType ethif_provide_tx_buffer<br>(<br>uint8 ctrl_idx,<br> eth_frame_type frame_type,<br> uint8 priority,<br> eth_buf_idx_type *bufidx_ptr,<br> eth_data_type **buf_ptr,<br> uint16 *lenbyte_ptr<br>)|  **描述**：ethif获取发送缓存。<br> **入参**：<br>1. ctrl_idx：控制器索引<br> 2. frame_type：以太帧类型（例如VLAN帧）<br>3. priority：帧优先级（0-7）<br>4. bufidx_ptr：指向申请到的缓存索引<br> 5. buf_ptr：指向申请到的缓存<br> 6. lenbyte_ptr：申请到的缓存长度<br> **返回值**：<br> 1. BUFREQ_OK:  获取发送缓存成功<br> 2. BUFREQ_E_NOT_OK:  获取发送缓存失败<br> 3. BUFREQ_E_BUSY:  所有发送缓存都被占用<br> 4. BUFREQ_E_OVFL:  获取的发送缓存过长<br>| 1. 不可跨核裸调<br> 2. 建议由UpLayer发起调用<br>| 向下调用  | **必选** |
@@ -499,12 +499,11 @@ struct uart_ops_s
 #### 4.2.1. 存储移植框架
 ![](../_static/image/porting/storage_porting_arch.png)
 
-### 4.2.2. 存储适配流程
+#### 4.2.2. 存储适配流程
 ![](../_static/image/porting/storage_porting_process.png)
 
-### 4.2.3. 存储驱动适配接口
-![](../_static/image/porting/storage_porting_arch.png)
-#### 4.2.3.1. Ea
+#### 4.2.3. 存储驱动适配接口
+##### 4.2.3.1. Ea
 |  **接口名称**  |  **接口描述**  |  **调用方向**  |  **是否必选**  |
 | :------------| :-------------|  :-----------|  :------------|
 |uint8 ea_read_block<br>(<br>uint16 block_number,<br> uint16 block_offset,<br> uint8 *buffer_ptr,<br> uint16 length<br>)|**描述**：读取存储器中的一个数据块。<br>**参数**：<br> 1. block_number：逻辑数据块编号；<br> 2. block_offset：数据块内偏移量；<br> 3. buffer_ptr：读取的数据存储地址；<br> 4. length：读取的数据长度。<br> **返回值**:<br> E_OK：读操作成功；<br> E_NOT_OK：读操作失败<br>| 向下调用 | **必选** |
@@ -516,7 +515,7 @@ struct uart_ops_s
 |uint8 ea_get_job_result(void)|**描述**：获取读/写/擦操作的结果。<br> **参数**： 无 <br> **返回值**:<br>0：任务成功；<br> 1：任务失败；<br> 2：任务执行中；<br> 3：任务已取消；<br> 4：块数据不连续；<br>5：块数据无效。 | 向下调用 | **必选** |
 |void ea_set_mode(uint8 mode)|**描述**：切换底层EEPROM驱动程序模式的函数。<br> **参数**：<br> 1. mode：需要切换到的模式 <br> **返回值**: 无 | 向下调用 | **必选** |
 
-#### 4.2.3.2. Fee
+##### 4.2.3.2. Fee
 |  **接口名称**  |  **接口描述**  |  **调用方向**  |  **是否必选**  |
 | :------------| :-------------|  :-----------|  :------------|
 |uint8 fee_read_block<br>(<br>uint16 block_number,<br> uint16 block_offset,<br> uint8 *buffer_ptr,<br> uint16 length<br>)|**描述**：读取存储器中的一个数据块。<br>**参数**：<br> 1. block_number：逻辑数据块编号；<br> 2. block_offset：数据块内偏移量；<br> 3. buffer_ptr：读取的数据存储地址；<br> 4. length：读取的数据长度。<br> **返回值**:<br> E_OK：读操作成功；<br> E_NOT_OK：读操作失败<br>| 向下调用 | **必选** |
@@ -536,5 +535,5 @@ struct uart_ops_s
 
 ### 5.2. 子系统验证
 #### 5.2.1. 通信子系统验证
-以太通信功能移植完成后，验证在vcos tcpip模块配置的ip地址可以ping通。
+以太通信功能移植完成后，验证在VCOS tcpip模块配置的ip地址可以ping通。
 

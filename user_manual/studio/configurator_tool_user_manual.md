@@ -36,10 +36,10 @@ vcos_studio
     │  ├─ module_management    # 模块管理模块
     │  └─ project_management   # 工程管理模块
     ├─ third_party             # 依赖的第三方库
-    ├─ configurator.bat        # Windows 环境下 configurator 工具启动脚本（启动时会显示控制台窗口）
-    ├─ configurator.ps1        # Windows 环境下 configurator 工具启动脚本（无控制台版本）
-    ├─ configurator.sh         # Linux 环境下 configurator 工具启动脚本
-    ├─ init_env.py             # configurator 工具环境配置脚本
+    ├─ configurator.bat        # Windows 环境下 Configurator 工具启动脚本（启动时会显示控制台窗口）
+    ├─ configurator.ps1        # Windows 环境下 Configurator 工具启动脚本（无控制台版本）
+    ├─ configurator.sh         # Linux 环境下 Configurator 工具启动脚本
+    ├─ init_env.py             # Configurator 工具环境配置脚本
     └─ ...
 ```
 
@@ -56,7 +56,7 @@ vcos_studio
 - 二级菜单
   - 主要实现 BswM 状态管理。详细介绍见 3.4 章节
 - Log 输出
-  - 主要实现 configurator 运行状态信息打印、校验结果展示、配置项查找等功能。详细介绍见 3.5 章节
+  - 主要实现 Configurator 运行状态信息打印、校验结果展示、配置项查找等功能。详细介绍见 3.5 章节
 
 ### 3.2. 菜单栏
 
@@ -124,7 +124,7 @@ File 菜单主要包含：新建工程、打开工程、工程保存、导入 AR
 
    对于 ASW ARXML 工具还提供一种选择目录后，递归地将当前目录下所有 ARXML 文件进行导入的方式，见下图 Import Asw 按钮。
 
-   鼠标点击 configurator 工具 VCOS BSW 界面的 Import ARXML 按钮或者在菜单栏 File 中点击 Import ARXML，在弹出的窗口中可以对导入的文件进行管理。
+   鼠标点击 Configurator 工具 VCOS BSW 界面的 Import ARXML 按钮或者在菜单栏 File 中点击 Import ARXML，在弹出的窗口中可以对导入的文件进行管理。
 
    ![Import ARXML Button](../../_static/image/tool_chain/configuration/import_arxml_001.png)
 
@@ -162,7 +162,7 @@ File 菜单主要包含：新建工程、打开工程、工程保存、导入 AR
 
    ARXML 导出功能是将当前工程中模块配置数据导出，并保存为 ARXML 文件。
 
-   鼠标点击 configurator 工具 VCOS BSW 界面的 Export ARXML 按钮，在弹出的窗口中选择需要导出的模块。
+   鼠标点击 Configurator 工具 VCOS BSW 界面的 Export ARXML 按钮，在弹出的窗口中选择需要导出的模块。
 
    ![Export ARXML Button](../../_static/image/tool_chain/configuration/export_arxml_001.png)
 
@@ -174,14 +174,14 @@ File 菜单主要包含：新建工程、打开工程、工程保存、导入 AR
 
 ##### 3.2.1.6. Os 配置导入/导出
 
-本功能支持通过 configurator 对工程中的 Os 模块配置信息进行导入和导出：
+本功能支持通过 Configurator 对工程中的 Os 模块配置信息进行导入和导出：
 
-- 用户可以通过 configurator 导出工程的 Os 模块配置信息，输出到指定 excel 文件中。
-- 用户可以通过 configurator 导入指定 excel 文件来对工程的 Os 模块做自动配置。
+- 用户可以通过 Configurator 导出工程的 Os 模块配置信息，输出到指定 Excel 文件中。
+- 用户可以通过 Configurator 导入指定 Excel 文件来对工程的 Os 模块做自动配置。
 
 1. 导出 Os 配置
 
-   点击 File->Os Configuration->Export，选择文件路径，即可导出 excel 文件，文件内包含当前工程中的 Os 配置信息。
+   点击 File->Os Configuration->Export，选择文件路径，即可导出 Excel 文件，文件内包含当前工程中的 Os 配置信息。
 
    ![Os Configuration Export](../../_static/image/tool_chain/configuration/os_cfg_export_001.png)
 
@@ -189,13 +189,13 @@ File 菜单主要包含：新建工程、打开工程、工程保存、导入 AR
 
    ![Os Configuration Import](../../_static/image/tool_chain/configuration/os_cfg_import_001.png)
 
-   点击 File->Os Configuration->Import，选择 excel 文件，即可自动配置当前 Os 模块。
+   点击 File->Os Configuration->Import，选择 Excel 文件，即可自动配置当前 Os 模块。
 
-3. excel 文件使用建议
+3. Excel 文件使用建议
 
-   在使用 Os 自动配置功能时，建议先把当前配置导出成 excel，然后再基于 excel 修改，最后导入修改后的 excel 做自动配置。
+   在使用 Os 自动配置功能时，建议先把当前配置导出成 Excel，然后再基于 Excel 修改，最后导入修改后的 Excel 做自动配置。
 
-   这样可以在原始工程的 excel 文件中进行增量修改，不需要重新新建 excel 文件，相对方便一些。
+   这样可以在原始工程的 Excel 文件中进行增量修改，不需要重新新建 Excel 文件，相对方便一些。
 
 #### 3.2.2. CodeGen 菜单
 
@@ -259,7 +259,7 @@ File 菜单主要包含：新建工程、打开工程、工程保存、导入 AR
 
 #### 3.2.4. User_Module_Plugin 菜单
 
-configurator 支持用户导入自定义模块，用户可以通过 configurator 使用插件提供的功能，例如模块配置编辑、模块代码生成、模块校验等
+Configurator 支持用户导入自定义模块，用户可以通过 Configurator 使用插件提供的功能，例如模块配置编辑、模块代码生成、模块校验等
 
 ##### 3.2.4.1. 导入用户模块
 
@@ -486,7 +486,7 @@ class MemAcc1Rule():
    - Service Components
    - Schedulable Entities
 
-   右侧表格中主要分两部分，第一行的表头，和其他行的映射表格；（ps：若表头提示\<OsApp unassigned\>，则说明 Task 未被 Application 引用，需要用户在 Os 模块中进行绑定操作；）
+   右侧表格中主要分两部分，第一行的表头，和其他行的映射表格；（注：若表头提示\<OsApp unassigned\>，则说明 Task 未被 Application 引用，需要用户在 Os 模块中进行绑定操作；）
 
    ![TaskMapping Table View](../../_static/image/tool_chain/configuration/taskmapping_table.png)
 
@@ -614,7 +614,7 @@ Properties 输出用于输出配置项的特性
 
 ### 4.1. API 使用说明
 
-#### 4.5.1. API 接口
+#### 4.1.1. API 接口
 
 1. load_project
 
@@ -672,7 +672,7 @@ Properties 输出用于输出配置项的特性
    | 输出参数   | 无                                                                                                                                                                              |
    | 返回值     | 包含关注模块的的生成代码结果的字典，key 为模块名，value 为生成代码结果 True/False                                                                                               |
 
-#### 4.5.2. API 使用示例
+#### 4.1.2. API 使用示例
 
 通过使用 API 实现同 ui 操作等效的自动化流程，提升用户使用效率
 
