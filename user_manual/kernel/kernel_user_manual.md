@@ -16,7 +16,7 @@ VCOS内核是面向车辆控制的操作系统，支持任务调度、事件驱�
 
 
 ## 2. 代码目录
-源代码在haloosspace/components/rt_framework目录下，目录结构如下图所示：
+源代码在haloosspace/vcos/components/rt_framework目录下，目录结构如下图所示：
 ```plaintext
 components # 
 └── rt_framework                # 实时框架
@@ -471,8 +471,8 @@ OsEvent支持RTE自动推导刷新和手动添加，用户无需感知自动推�
 
 #### 4.1.9. 配置OsPublishedInformation
 该选项跟随系统释放版本号以及硬件芯片型号，在新建工程时根据参考配置工程添加，不支持用户自定义配置。
- - Infineon A2G_TC397_5V_TFT开发板工程参考配置代码目录在haloosspace/examples/rt_demo/tc397_cfg
- - SemiDrive E3650_DEV_KIT开发板工程参考配置代码目录在haloosspace/examples/rt_demo/e3650_cfg
+ - Infineon A2G_TC397_5V_TFT开发板工程参考配置代码目录在haloosspace/vcos/examples/rt_demo/tc397_cfg
+ - SemiDrive E3650_DEV_KIT开发板工程参考配置代码目录在haloosspace/vcos/examples/rt_demo/e3650_cfg
 
 ![配置OsPubInfor ](../../_static/image/kernel/user_manual/os_pub_infor_01.png)
 
@@ -509,9 +509,13 @@ ps 命令是一个内置的 shell 命令，用于查看当前系统中运行的�
 
 ### 5.4. 内核部分测试(ostest)
 
-ostest 命令用于测试内核部分各个模块的功能。
+ostest 命令用于测试内核各个模块的功能。
 
-![内核维测命令](../../_static/image/kernel/user_manual/os_command_ostest.png)
+![内核维测命令](../../_static/image/kernel/user_manual/os_command_ostest_01.png)
+
+命令执行完毕后，打印"ostest_main: Exiting with status 0"则表示内核各个模块自检成功。
+
+![内核维测命令](../../_static/image/kernel/user_manual/os_command_ostest_02.png)
 
 ## 6. 配置项参考规范
 [OS 配置项参考规范](../../configuration_reference/os_cfg.md)

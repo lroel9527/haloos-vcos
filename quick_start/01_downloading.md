@@ -117,7 +117,9 @@ git repo的安装流程如下：
 1. 运行以下命令安装repo工具
 
     ```bash
-    sudo apt install repo
+    curl https://storage.googleapis.com/git-repo-downloads/repo > repo
+    sudo chmod +x repo
+    sudo mv repo /usr/bin  # 将repo移动到/usr/bin目录下
     ```
 
 2. 运行`repo --version`，显示版本号即安装成功
