@@ -18,7 +18,7 @@ python ./vcos/build/compiling_env.py
 
 - 安装CMake工具，并将安装路径添加到PATH环境变量
 - 安装kconfiglib工具
-- 安装make工具，并设置`NINJA_TOOL_PATH`环境变量
+- 安装make工具，并设置`MAKE_TOOL_PATH`环境变量
 - 安装ninja工具，并设置`NINJA_TOOL_PATH`环境变量
 - 安装tricore-gcc编译工具链，并将安装路径添加到PATH环境变量
 - 安装arm-gcc编译工具链，并将安装路径添加到PATH环境变量
