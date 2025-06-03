@@ -1,4 +1,4 @@
-#  EthIf 配置项参考文档
+# EthIf 配置项参考文档
 
 | 容器属性 | 值（容器） |
 |-|-|
@@ -73,7 +73,6 @@
 |描述|注意：在配置此参数时，需确保阈值设置符合网络的带宽和流量需求；不正确的阈值可能导致网络性能下降或不稳定。|
 |多实例个数|1 - 1|
 |取值范围|1 - 255|
-
 
 | 配置项属性 | 值（关联引用配置项） |
 |-|-|
@@ -297,7 +296,7 @@
 |描述|Switches the development error detection and notification on or off.|
 |描述|概述：EthIfDevErrorDetect 是一个配置参数，用于启用或禁用以太网接口模块（EthIf）的开发错误检测功能，以便在运行时监测和报告内部错误。|
 |描述|注意：在生产环境中通常禁用此功能以优化性能；开发和测试阶段建议启用以便于问题诊断；确保此配置与系统的诊断策略和性能要求相一致。|
-|说明|* true: detection and notification is enabled. * false: detection and notification is disabled.|
+|说明|*true: detection and notification is enabled.* false: detection and notification is disabled.|
 |多实例个数|1 - 1|
 |默认值|false|
 
@@ -368,7 +367,6 @@
 |多实例个数|1 - 1|
 |默认值|false|
 
-
 | 配置项属性 | 值（布尔参数配置项） |
 |-|-|
 |名称|EthIfGetVlanIdSupport|
@@ -378,7 +376,6 @@
 |多实例个数|1 - 1|
 |默认值|false|
 
-
 | 配置项属性 | 值（布尔参数配置项） |
 |-|-|
 |名称|EthIfSetForwardingModeApi|
@@ -387,7 +384,6 @@
 |描述|注意：确保该API与网络管理和诊断需求兼容；如果不需要动态改变转发模式，可以不启用此API以节省资源；在配置时应考虑系统安全性，防止未授权的访问或修改网络行为。|
 |多实例个数|1 - 1|
 |默认值|false|
-
 
 | 配置项属性 | 值（浮点型参数配置项） |
 |-|-|
@@ -417,7 +413,6 @@
 |多实例个数|0 - 1|
 |取值范围|0.001 - 65.535|
 
-
 | 配置项属性 | 值（整型参数配置项） |
 |-|-|
 |名称|EthIfMaxTrcvsTotal|
@@ -445,4 +440,3 @@
 |说明|period of main function EthIf_MainFunctionTx.|
 |多实例个数|1 - 1|
 |取值范围|1 - 255|
-

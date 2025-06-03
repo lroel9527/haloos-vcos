@@ -6,7 +6,7 @@
 
 ## 2. 代码目录
 
-```plaintext
+```text
 communication
 ├── CMakeLists.txt          # communication仓库的编译脚本，用于控制编译相关资源
 ├── DISCLAIMER.md           # 免责声明文档
@@ -38,6 +38,9 @@ communication
 * 协议层实现各种网络通信协议，为上层应用提供服务
 
 ## 4. 功能配置方法
+
+EthIf是设备抽象层的关键组件，为以太协议栈提供硬件操作接口。TcpIp是协议层的关键组件，为上层应用提供协议传输功能
+
 ### 4.1. EthIf配置项介绍
 
 #### 4.1.1. EthIfPhysController
@@ -95,12 +98,15 @@ communication
 * 添加socket，可配置socket owner的相关的各种函数
 
 ## 5. 使用示例
+
 ### 5.1. 配置增加网卡
+
 ![EthIfController Diagram](../../_static/image/eth/ethif/controller.png)
 
 * 参考4.1.2节，新建EthIfController
 
 ### 5.2. 配置IP地址
+
 ![TcpIpCtrl Diagram](../../_static/image/eth/tcpip/ctrl.png)
 
 * 参考4.2.1节，新建TcpIpCtrl，引用上一步添加的EthIfController
@@ -110,12 +116,15 @@ communication
 * 参考4.2.2节，新建TcpIpLocalAddr，引用上一步添加的TcpIpCtrl
 
 ### 5.3. 配置socket
+
 ![TcpIp Socket Owner Configuration](../../_static/image/eth/tcpip/socket_owner_config.png)
 
 * 参考4.2.3节，添加socket
 
 ### 5.4. TCP、UDP收发示例
+
 * TCP Client使用示例
+
 ```C
 #include "TcpIp.h"
 
@@ -162,7 +171,9 @@ void client_tcp_transmit(void)
     }
 }
 ```
- * TCP Server使用示例
+
+* TCP Server使用示例
+
 ```C
 #include "TcpIp.h"
 
@@ -186,21 +197,21 @@ void server_tcp_listen(void)
 
 /*TCP server新连接回调接口*/
 /* 4. 等待远程Tcp client连接成功 ，accepted回调函数被调用 */
-void server_tcp_accepted( TcpIp_SocketIdType SocketId, TcpIp_SocketIdType SocketIdConnected, const TcpIp_SockAddrType* RemoteAddrPtr ){
-    (void) SocketId;  //监听套接字ID
-    (void) SocketIdConnected； //连接套接字ID
-    (void) RemoteAddrPtr；//远端地址端口信息
+void server_tcp_accepted(tcpip_socket_id_type socket_id, tcpip_socket_id_type socket_id_connected, const tcpip_sock_addr_type* remote_addr_ptr){
+    (void) socket_id;  //监听套接字ID
+    (void) socket_id_connected; //连接套接字ID
+    (void) remote_addr_ptr;  //远端地址端口信息
     tcp_rec_start = true;
 }
 
 /*TCP server数据回调接口*/
 /* 5. 在接收回调中等待数据接受 */
-void server_rx_indication( TcpIp_SocketIdType SocketId, const TcpIp_SockAddrType* RemoteAddrPtr, uint8* BufPtr, uint16 Length )
+void server_rx_indication(tcpip_socket_id_type socket_id, const tcpip_sock_addr_type* remote_addr_ptr, uint8* buf_ptr, uint16 length)
 {
-    (void) SocketId   //连接套接字ID
-    (void) RemoteAddrPtr；//远端地址端口信息
-    (void) BufPtr；//接收数据指针
-    (void) Length； //接收数据长度
+    (void) socket_id;   //连接套接字ID
+    (void) remote_addr_ptr;//远端地址端口信息
+    (void) buf_ptr;//接收数据指针
+    (void) length; //接收数据长度
 
     /*6. 接收完成关闭套接字 */
     tcpip_close(socket_id, TRUE);
@@ -208,6 +219,7 @@ void server_rx_indication( TcpIp_SocketIdType SocketId, const TcpIp_SockAddrType
 ```
 
 * UDP示例
+
 ```C
 #include "TcpIp.h"
 
@@ -234,22 +246,22 @@ void app_udp_transmit(void)
 
 /*udp接收接口*/
 /* 4. 在接收回调中等待数据接受 */
-void app_rx_indication( TcpIp_SocketIdType SocketId, const TcpIp_SockAddrType* RemoteAddrPtr, uint8* BufPtr, uint16 Length )
+void app_rx_indication(tcpip_socket_id_type socket_id, const tcpip_sock_addr_type* remote_addr_ptr, uint8* buf_ptr, uint16 length)
 {
-    (void) SocketId   //连接套接字ID
-    (void) RemoteAddrPtr；//远端地址端口信息
-    (void) BufPtr；//接收数据指针
-    (void) Length； //接收数据长度
+    (void) socket_id;  //连接套接字ID
+    (void) remote_addr_ptr;//远端地址端口信息
+    (void) buf_ptr; //接收数据指针
+    (void) length; //接收数据长度
     // 5.关闭socket
     tcpip_close(socket_id, TRUE);
 }
 ```
 
 ## 6. 配置项参考规范
+
 [TcpIp 配置项参考规范](../../configuration_reference/tcpip_cfg.md)
 
 [EthIf 配置项参考规范](../../configuration_reference/ethif_cfg.md)
-
 
 ## 7. 应用接口参考规范
 

@@ -1,19 +1,25 @@
 # 芯片移植指南
+
 VCOS通过全方位彻底软硬解耦，建立逻辑清晰的硬件抽象层，使芯片移植变得简单高效。本文档用于指导芯片公司或个人开发者移植VCOS到新的芯片平台。
 
 ## 1. 移植流程
+
 芯片移植的总体流程如下图所示：
 
-![](../_static/image/porting/overall_process.png)
+![芯片移植的总体流程](../_static/image/porting/overall_process.png)
 
 ## 2. 移植准备
+
 ### 2.1. 芯片解耦设计
+
 芯片支持在结构上分为三层：1. 架构层， 2. SoC层， 3. 单板层，如下图所示：
 
-![](../_static/image/porting/chip_arch.png)
+![解耦设计](../_static/image/porting/chip_arch.png)
 
 ### 2.2. 芯片目录结构
+
 架构层放在`kernel/nuttx/arch`目录，SoC和单板层放在`vendor`目录，如下所示：
+
 ```plain text
 vcos
 ├── kernel
@@ -24,6 +30,7 @@ vcos
         ├── boards   # 芯片移植的板级代码
         └── chips    # 芯片移植的SoC级代码
 ```
+
 架构层放在`kernel/nuttx/arch`目录，结构如下所示：
 
 ```plain text
@@ -48,9 +55,11 @@ vcos
 ```
 
 ### 2.3. 芯片相关配置
+
 VCOS采用Kconfig配置，遵循标准的Kconfig语法和使用方式，这里只介绍和芯片移植相关的内容。内核采用多层抽象封装，当定义一个新SoC芯片的时候，很多通用功能往往已经被内核通用化支持，只需要简单的使能即可。
 
 例如：当适配一个基于arm cortex-r52 cpu的SoC时，只需简单的`select`即可支持对应的许多功能，如R52能力、FPU/NEON、多核、GICv3、FIQ等。
+
 ```plain text
 config ARCH_CHIP_XXX
     bool "XXX CHIP (Cortex-r52)"
@@ -73,11 +82,12 @@ config ARCH_CHIP_XXX
 ```
 
 defconfig 为板级默认配置，和芯片相关的配置举例如下：
+
 ```plain text
 CONFIG_ARCH="arm"
 CONFIG_ARCH_ARM=y
 CONFIG_ARCH_BOARD_CUSTOM=y
-CONFIG_ARCH_BOARD_CUSTOM_DIR="../../vendor/semidrive/boards/E3650_DEV_KIT"
+CONFIG_ARCH_BOARD_CUSTOM_DIR="../../vendor/semidrive/boards/e3650_dev_kit"
 CONFIG_ARCH_BOARD_CUSTOM_DIR_RELPATH=y
 CONFIG_ARCH_BOARD_CUSTOM_NAME="e3650_dev_kit"
 CONFIG_ARCH_CHIP_ARM_CUSTOM=y
@@ -95,33 +105,39 @@ CONFIG_ARCH_INTERRUPTSTACK=4096
 CONFIG_ARCH_SETJMP_H=y
 CONFIG_ARM_THUMB=y
 ```
+
 把chip和board目录放到定制化的vendor目录下，需要通过配置项告诉编译系统，以便编译时特殊处理。
 
 Kconfig配置项最终会生成config.h，在`out/**/include/nuttx/config.h`，编译脚本会把`out/**/include`设为头文件标准搜索路径，所以使用时 `#include <nuttx/config.h>`。 相似的可以查看`out/**/include` 路径下的头文件均可对外使用。
 
 ### 2.4. 芯片相关编译
+
 VCOS支持CMake编译，兼容通用的CMake语法，也有一些预封装的CMake函数和变量。这里只介绍和芯片移植相关的内容。
 
 内核编译时Chip和Board默认路径在`kernel/nuttx/arch`, `kernel/nuttx/boards`下，但也可以通过上面配置项，`CONFIG_ARCH_BOARD_CUSTOM_DIR, CONFIG_ARCH_CHIP_CUSTOM_DIR`修改到定制化的路径下，如VCOS要求的`vendor/<vendor_name>/chips/, vendor/<vendor_name>/boards/`。编译时会把`vendor/<vendor_name>/chips/`和`kernel/nuttx/arch`编译打包到同一个libarch.a，`vendor/<vendor_name>/boards/`默认编译为libboard.a。具体实现为在编译输出目录`out/arch/<isa>/src/`新建一个chip软连接到vendor对应chip目录下，对应的也会新建`board/board`软连接到对应的vendor目录下。 例如：
+
 ```plain text
 out/**/arch/arm/src/
     chip -> vendor/<vendor_name>/chips/<chip_name>
     board/board -> vendor/<vendor_name>/boards/<board_name>
 ```
 
-**CMake变量**
+#### CMake变量
+
 | **变量名** |  **含义** |
 | :---------- | :------------- |
 | NUTTX_BOARD_DIR | 指代board目录 |
 | NUTTX_APPS_DIR | 指代apps目录 |
 | NUTTX_DIR | 指代kernel/nuttx目录 |
 
-**CMake函数**
+#### CMake函数
 
 内核默认封装了一些常用的CMake函数，详细可查看`kernel/nuttx/cmake/**.cmake`
 
 ## 3. 内核移植
+
 ### 3.1. ARCH移植
+
 VCOS内核已经支持了主流的 arch，包括arm32/arm64, risc-v 32/64, tricore, rh850等，如下表所示。
 >
 > 注意：下面表格只列出了主要的arch，没有列全。如果您想要的arch没有在此列出，请检查vcos/kernel/nuttx/arch代码目录。
@@ -139,6 +155,7 @@ VCOS内核已经支持了主流的 arch，包括arm32/arm64, risc-v 32/64, trico
 
 **头文件引用**
 arch提供的能力，通过对外头文件提供给其他功能使用。
+
 |  **原始头文件路径**  |  **对外引用路径**  |
 | :---------- | :------------- |
 | `nuttx/arch/<isa>/include` | `arch/` |
@@ -146,8 +163,11 @@ arch提供的能力，通过对外头文件提供给其他功能使用。
 编译过程中会在编译输出目录的`<out>/<board_name>/<project_name>/include/arch/` 生成软连接到 `vcos/nuttx/arch/<isa>/include`。
 
 ### 3.2. 启动流程
+
 启动流程一般从板子上电后，启动Bootloader，Bootloader加载系统固件，开始系统固件的启动。Bootloader阶段，不同芯片平台各自不同，这里主要介绍系统固件的启动。
+
 #### 3.2.1 ARCH启动
+
 系统固件的启动， 从arch的汇编代码执行，一般为`__start`函数。
 
 不同arch的启动，具体实现不同，但完成的功能相似，都是完成cpu的初始化，包括设置异常向量表、配置CPU的系统控制寄存器、初始化BSS、设置初始栈和中断栈等、初始化CPU内子模块如FPU等。 在arch的启动流程中一般会预留Hook给芯片平台，以实现芯片平台在不同阶段完成初始化的需求，芯片平台在适配过程中，需要了解arch的启动，并实现需要的Hook API。
@@ -156,7 +176,7 @@ arch提供的能力，通过对外头文件提供给其他功能使用。
 
 启动入口`kernel/nuttx/arch/arm/src/armv8-r/arm_head.S::__start`
 
-![](../_static/image/porting/arch_boot.png)
+![启动流程](../_static/image/porting/arch_boot.png)
 
 armv8-r arch启动留给芯片适配的Hook API如下：
 
@@ -166,11 +186,13 @@ armv8-r arch启动留给芯片适配的Hook API如下：
 | `void arm_boot(void)` | soc chip | armv8r arch初始化完成，即将调到内核初始化| 提供soc chip在arch初始化完成前的初始化，如BMP percpu初始化，mpu和cache配置，串口早期初始化等|
 
 #### 3.2.2 内核启动
+
 这里主要介绍通用的内核启动流程，入口函数 vcos/kernel/nuttx/sched/init/nx_start.c::nx_start。通用内核启动流程图如下：
 
-![](../_static/image/porting/os_kernel_boot.png)
+![通用内核启动流程](../_static/image/porting/os_kernel_boot.png)
 
 nx_start是内核通用的初始化，在其过程中有预留给chip/board执行特定初始化流程的Hook函数。chip/board实现特定的Hook就可以实现特定的初始化处理。也可以理解为移植内核到一个新的芯片，启动部分按需实现这些API。
+
 |  **Hook API**  |  **Hook level**  |  **Hook stage**  |   **Hook Description**  |
 | :--------------| :----------------| :----------------|  :----------------------|
 | `up_allocate_heap` | soc chip | heap内存管理初始化 | 提供user heap memory region |
@@ -186,8 +208,11 @@ nx_start是内核通用的初始化，在其过程中有预留给chip/board执�
 | `board_late_initialize` | board | 板子延迟初始化 | 板子延迟初始化。可以等待事件，在独立的AppBringUP线程中执行。在内核初始化全部完成开启调度，当调度到AppBringUP线程时开始执行。 注意：初始化时机不确定，依赖于调度算法和AppBringUP线程的优先级。 |
 
 ### 3.3. SoC移植
+
 #### 3.3.1. 目录介绍
+
 SoC适配代码放到`vendor/<vendor_name>`目录，目录中文件按需可选，不强制全部实现。 详细如下所示：
+
 ```plain text
 <vendor_name>
 ├── boards
@@ -224,6 +249,7 @@ SoC适配代码放到`vendor/<vendor_name>`目录，目录中文件按需可选�
 ```
 
 #### 3.3.2. 头文件
+
 编译过程中会在编译输出目录的`<out>/<board_name>/<project_name>/include/arch/` 生成软连接到 `vendor/<vendor_name>/chips/xxx/include`,  `vendor/<vendor_name>/boards/<aaa>/include/`。
 芯片对外提供的能力，通过以下头文件对外提供。
 
@@ -233,8 +259,10 @@ SoC适配代码放到`vendor/<vendor_name>`目录，目录中文件按需可选�
 | `vendor/<vendor_name>/boards/<aaa>/include/` | `arch/board` |
 
 #### 3.3.3. 链接脚本
+
 这里只说明VCOS对链接脚本的特殊要求。
 BMP多核 percpu定义
+
 ```plain text
   .percpu_data : ALIGN(64) {
         __percpu_data_start = .;
@@ -255,15 +283,16 @@ BMP多核 percpu定义
 ```
 
 #### 3.3.4. 适配接口
+
 SoC适配ARCH的接口需要查看不同ARCH代码对SoC要求的Hook接口，下列介绍的是板级适配接口，实现文件在`<vendor_name>/boards/<aaa>/src/`，接口说明如下：
 
 |  **接口名称**  |  **实现文件**  |  **接口描述**  |   **注意事项**  |  **配置**  |  **是否必选**  |
 | :-------------| :------------| :-------------|  :-------------|  :--------|  :------------|
 | `void board_early_initialize(void)` | xxx_boot.c | **描述**：实现板子早期初始化，在内核启动的上下文中调用，具体执行阶段看内核启动流程。 | 1. API内部不能阻塞，因为在内核的单线程启动流程中，此时未开启调度。2. 此时内核已基本完成初始化，可以调用大部分内核API，但此时没有初始化stdio，smp多核，workqueue。 | CONFIG_BOARD_EARLY_INITIALIZE  | **可选**，当开启对应功能配置时需实现 |
 | `void board_late_initialize(void)` | xxx_boot.c | **描述**：板子延迟初始化。可以等待事件，不在内核启动线程上下文中执行。在独立的AppBringUP线程中执行，当内核初始化完成，开启调度后，当调度到AppBringUP线程时此函数才开始执行。调用board_bringup。| 此时板子延迟初始化和应用初始化并行，启动流程不保证其初始化时序。请在应用中自行保证时序 | CONFIG_BOARD_LATE_INITIALIZE  | **可选**，board_late_initialize, board_app_initialize 二选一 |
-| `int board_app_initialize(uintptr_t arg)` | xxx_appinit.c | **描述**：app通过boardctl的BOARDIOC_INIT命令字控制板子初始化，调用board_bringup。<br> **入参**: arg, 类型uintptr_t, boardctl透传这个参数给board<br> **返回值**：OK(0)： 成功，<0: 失败，请返回标准POSIX 错误码（负数） | 在app的线程上下文中执行，注意栈的使用和并发问题。 app控制其调用的时机。 | CONFIG_BOARDCTL  | **可选**，board_late_initialize, board_app_initialize 二选一 |
-| `int board_bringup(void)` | xxx_bringup.c | **描述**：板子后期初始化，板级驱动等.<br> **入参**: 无<br> **返回值**：OK(0)： 成功, <0: 失败，请返回标准POSIX 错误码（负数） | 当CONFIG_BOARD_LATE_INITIALIZE开启，其执行在board_late_initialize（AppBringUP线程上下文）否则其执行在board_app_initialize（app线程上下文）. | 无  | **必选** |
-| `int board_reset(int status)` | xxx_reset.c | **描述**：重启板子。<br>**入参**: status, 板子需要重启的事件，板子特定的参数，OS透传参数。 板子重启成功不返回。<br> **返回值**：板子重启失败的原因 | 无 | CONFIG_BOARDCTL_RESET  | **可选**，当开启对应功能配置时需实现 |
+| `int board_app_initialize(uintptr_t arg)` | xxx_appinit.c | **描述**：app通过boardctl的BOARDIOC_INIT命令字控制板子初始化，调用board_bringup。 **入参**: arg, 类型uintptr_t, boardctl透传这个参数给board； **返回值**：OK(0)： 成功，<0: 失败，请返回标准POSIX 错误码（负数） | 在app的线程上下文中执行，注意栈的使用和并发问题。 app控制其调用的时机。 | CONFIG_BOARDCTL  | **可选**，board_late_initialize, board_app_initialize 二选一 |
+| `int board_bringup(void)` | xxx_bringup.c | **描述**：板子后期初始化，板级驱动等。 **入参**: 无 **返回值**：OK(0)： 成功, <0: 失败，请返回标准POSIX 错误码（负数） | 当CONFIG_BOARD_LATE_INITIALIZE开启，其执行在board_late_initialize（AppBringUP线程上下文）否则其执行在board_app_initialize（app线程上下文）. | 无  | **必选** |
+| `int board_reset(int status)` | xxx_reset.c | **描述**：重启板子。**入参**: status, 板子需要重启的事件，板子特定的参数，OS透传参数。 板子重启成功不返回。 **返回值**：板子重启失败的原因 | 无 | CONFIG_BOARDCTL_RESET  | **可选**，当开启对应功能配置时需实现 |
 
 >
 > 注意： 为了APP与板子的交互方式， 内核提供了一种相对标准的实现方式，boardctl，用于实现app通过标准字符设备文件方式和板子交互，其通过ioctl实现。这实现了类似Linux操作文件的方式实现和board交互，但也造成了一定的冗余，当然您也可以选择直接调用board api，简单高效
@@ -271,8 +300,11 @@ SoC适配ARCH的接口需要查看不同ARCH代码对SoC要求的Hook接口，�
 >
 
 ### 3.4. 基础驱动移植
+
 #### 3.4.1. TIMER
+
 内核中普通TIMER为OneshotTimer, 用于支持内核tick和非高精度的rt framework counter。OneshotTimer 需要适配的接口定义位于`kernel/nuttx/include/timers/oneshot.h`:
+
 ```c
 struct oneshot_operations_s
 {
@@ -314,7 +346,9 @@ static const struct oneshot_operations_s g_oneshot_ops =
 ```
 
 #### 3.4.2. HRTIMER
+
 内核中高精度Timer， HRTimer 用于支持高精度的rt framework counter，HRTimer要适配的接口定义位于`kernel/nuttx/hrtimer.h`
+
 ```c
 struct hrtimer_ops_s {
     void (*set_expire)(struct hrtimer_queue_s *, hrtimer_tick_t expiration_time); # 设置timer 的到期点
@@ -324,7 +358,9 @@ struct hrtimer_ops_s {
 };
 
 ```
+
 以上接口适配实现可参考`kernel/nuttx/arch/arm/src/armv8-r/arm_arch_timer.c` 中的 `g_hrtimer_ops`：
+
 ```c
 static const struct hrtimer_ops_s g_hrtimer_ops =
 {
@@ -336,7 +372,9 @@ static const struct hrtimer_ops_s g_hrtimer_ops =
 ```
 
 #### 3.4.3. UART
-Uart需要适配的接口定义位于`kernel/nuttx/include/nuttx/serial/serial.h `：
+
+Uart需要适配的接口定义位于`kernel/nuttx/include/nuttx/serial/serial.h`：
+
 ```c
 struct uart_ops_s
 {
@@ -472,70 +510,360 @@ struct uart_ops_s
 ```
 
 ## 4. 子系统移植
+
 ### 4.1. 通信子系统移植
+
 #### 4.1.1. 通信移植框架
-![](../_static/image/porting/communication_porting_arch.png)
+
+![通信移植框架](../_static/image/porting/communication_porting_arch.png)
 
 #### 4.1.2. 以太适配流程
-![](../_static/image/porting/eth_porting_process.png)
+
+![以太适配流程](../_static/image/porting/eth_porting_process.png)
 
 #### 4.1.3. 以太驱动适配接口
+
 ##### 4.1.3.1. ETH
+
 |  **接口类型**  |  **接口名称**  |  **接口描述**  |   **注意事项**  |  **调用方向**  |  **是否必选**  |
 | :-------------| :------------| :-------------|  :-------------|  :-----------|  :------------|
-| ETH数据面 | BufReq_ReturnType ethif_provide_tx_buffer<br>(<br>uint8 ctrl_idx,<br> eth_frame_type frame_type,<br> uint8 priority,<br> eth_buf_idx_type *bufidx_ptr,<br> eth_data_type **buf_ptr,<br> uint16 *lenbyte_ptr<br>)|  **描述**：ethif获取发送缓存。<br> **入参**：<br>1. ctrl_idx：控制器索引<br> 2. frame_type：以太帧类型（例如VLAN帧）<br>3. priority：帧优先级（0-7）<br>4. bufidx_ptr：指向申请到的缓存索引<br> 5. buf_ptr：指向申请到的缓存<br> 6. lenbyte_ptr：申请到的缓存长度<br> **返回值**：<br> 1. BUFREQ_OK:  获取发送缓存成功<br> 2. BUFREQ_E_NOT_OK:  获取发送缓存失败<br> 3. BUFREQ_E_BUSY:  所有发送缓存都被占用<br> 4. BUFREQ_E_OVFL:  获取的发送缓存过长<br>| 1. 不可跨核裸调<br> 2. 建议由UpLayer发起调用<br>| 向下调用  | **必选** |
-| ETH数据面 | Std_ReturnType ethif_transmit<br>(<br>uint8 ctrl_idx,<br> eth_buf_idx_type buf_idx,<br> eth_frame_type frame_type,<br> boolean tx_confirmation,<br> uint16 len_byte,<br> const uint8 *phys_addr_ptr<br>) | **描述**：ethif发送数据<br> **入参**：<br>1. ctrl_idx：控制器索引<br> 2. buf_idx：发送缓存索引<br> 3. frame_type：以太帧类型（例如VLAN帧）<br> 4. tx_confirmation：是否需要触发发送确认<br> 5. len_byte：数据长度<br>6. phys_addr_ptr：指向物理目标MAC地址<br> **返回值**：<br> 1. E_OK: 发送成功<br> 2. E_NOT_OK: 发送失败<br> | 1. 不可跨核裸调<br> 2. 建议由UpLayer发起调用<br>| 向下调用  | **必选** |
-| ETH数据面 | void ethif_txconfirmation<br>(<br>uint8 ctrl_idx,<br> eth_buf_idx_type buf_idx<br>)| **描述**：ethif发送回调函数<br> **入参**：<br>1. ctrl_idx：控制器索引<br> 2. buf_idx：发送缓存索引<br> **返回值**：无 | 是驱动回调OS的接口 |  向上回调  | **必选** |
-| ETH数据面 | void ethif_rxindication<br>(<br>uint8 ctrl_idx,<br> eth_frame_type frame_type,<br> boolean is_broadcast,<br> const uint8 *phys_addr_ptr,<br> const eth_data_type *data_ptr,<br> uint16 len_byte<br>) | **描述**：ethif接收回调<br> **入参**：<br>1. ctrl_idx：控制器索引<br> 2. frame_type：以太帧类型（例如VLAN帧）<br> 3. is_broadcast：是否为广播报文<br> 4. phys_addr_ptr：指向接收帧的物理源MAC地址<br> 5. data_ptr：指向payload的指针<br> 6. len_byte：payload长度<br> **返回值**：无 | 是驱动回调OS的接口 |  向上回调  | **必选** |
-| ETH管理面 | Std_ReturnType ethif_get_controller_mode<br> (<br> uint8 ctrl_idx, <br> eth_mode_type *ctrlmode_ptr<br>)| **描述**：获取控制器状态<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. ctrlmode_ptr：模式指针<br> ETH_MODE_DOWN：控制器禁用<br> ETH_MODE_ACTIVE：控制器正常工作<br> 返回值：<br>1. E_OK: 获取控制器状态成功<br>2. E_NOT_OK: 获取控制器状态失败 | 1. 不可跨核裸调<br> 2. 对于相同控制器，不可重入 |  向下调用  | **必选** |
-| ETH管理面 | void ethif_ctrlmode_indication<br>(<br> uint8 ctrl_idx,<br> eth_mode_type ctrlmode<br>)| **描述**：设置控制器模式回调<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. ctrlmode：控制器模式<br> ETH_MODE_DOWN：控制器禁用<br> ETH_MODE_ACTIVE：控制器正常工作<br> 返回值：无 | 是驱动回调OS的接口 |  向上回调  | **必选** |
-| ETH管理面 | void ethif_set_phys_addr<br>(<br>uint8 ctrl_idx,<br> const uint8 *phys_addr_ptr<br>) | **描述**：设置PHY地址<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. phys_addr_ptr：指向物理源MAC地址<br> 返回值：无 | 1. 由驱动发起调用，用户不应该调用<br>2. 对于相同控制器，不可重入 |  向上回调  | **必选** |
-| ETH管理面 | void ethif_get_phys_addr<br>(<br>uint8 ctrl_idx,<br> uint8 *phys_addr_ptr<br>) | **描述**：获取PHY地址<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. phys_addr_ptr：指向获取到的物理源MAC地址<br> 返回值：无 | 1. 不可跨核裸调<br>2. 对于相同控制器，不可重入 |  向下调用  | **必选** |
-| ETH管理面 | Std_ReturnType ethif_update_phys_addr_filter<br>(<br>uint8 ctrl_idx,<br>const uint8 *phys_addr_ptr, <br>eth_filter_action_type action<br>) | **描述**：更新PHY地址过滤器<br> **入参**：<br>1. ctrl_idx：控制器Id<br> 2. phys_addr_ptr：要更新的目标PHY地址<br>3. action：<br> ETH_ADD_TO_FILTER：添加Filter<br> ETH_REMOVE_FROM_FILTER：移除Filter<br> 返回值：1. E_OK: 更新PHY地址过滤器成功<br>2. E_NOT_OK: 更新PHY地址过滤器失败 | 1. 不可跨核裸调<br>2. 对于相同控制器，不可重入 |  向下调用  | **可选**，要更新PHY地址过滤器时需要，例如使能多播、广播。 |
-| ETH管理面 | void ethif_mainfunction_state(void) | **描述**：获取link状态主函数<br> **入参**：无 **返回值**：无 | 用户需自实现：<br> `trcv_get_linkstate`<br> `swt_get_linkstate`|  轮询调用  | **必选** |
-
+| ETH数据面 | BufReq_ReturnType ethif_provide_tx_buffer(uint8 ctrl_idx, eth_frame_type frame_type, uint8 priority, eth_buf_idx_type *bufidx_ptr, eth_data_type **buf_ptr, uint16*lenbyte_ptr)|  **描述**：ethif获取发送缓存。 **入参**：1. ctrl_idx：控制器索引； 2. frame_type：以太帧类型（例如VLAN帧）；3. priority：帧优先级（0-7）；4. bufidx_ptr：指向申请到的缓存索引； 5. buf_ptr：指向申请到的缓存； 6. lenbyte_ptr：申请到的缓存长度； **返回值**： 1. BUFREQ_OK:  获取发送缓存成功； 2. BUFREQ_E_NOT_OK:  获取发送缓存失败； 3. BUFREQ_E_BUSY:  所有发送缓存都被占用； 4. BUFREQ_E_OVFL:  获取的发送缓存过长；| 1. 不可跨核裸调； 2. 建议由UpLayer发起调用；| 向下调用  | **必选** |
+| ETH数据面 | Std_ReturnType ethif_transmit(uint8 ctrl_idx, eth_buf_idx_type buf_idx, eth_frame_type frame_type, boolean tx_confirmation, uint16 len_byte, const uint8 *phys_addr_ptr) | **描述**：ethif发送数据 **入参**：1. ctrl_idx：控制器索引； 2. buf_idx：发送缓存索引； 3. frame_type：以太帧类型（例如VLAN帧）； 4. tx_confirmation：是否需要触发发送确认； 5. len_byte：数据长度；6. phys_addr_ptr：指向物理目标MAC地址； **返回值**： 1. E_OK: 发送成功； 2. E_NOT_OK: 发送失败； | 1. 不可跨核裸调； 2. 建议由UpLayer发起调用；| 向下调用  | **必选** |
+| ETH数据面 | void ethif_txconfirmation(uint8 ctrl_idx, eth_buf_idx_type buf_idx)| **描述**：ethif发送回调函数 **入参**：1. ctrl_idx：控制器索引； 2. buf_idx：发送缓存索引； **返回值**：无 | 是驱动回调OS的接口 |  向上回调  | **必选** |
+| ETH数据面 | void ethif_rxindication(uint8 ctrl_idx, eth_frame_type frame_type, boolean is_broadcast, const uint8 *phys_addr_ptr, const eth_data_type*data_ptr, uint16 len_byte) | **描述**：ethif接收回调 **入参**：1. ctrl_idx：控制器索引； 2. frame_type：以太帧类型（例如VLAN帧）； 3. is_broadcast：是否为广播报文； 4. phys_addr_ptr：指向接收帧的物理源MAC地址； 5. data_ptr：指向payload的指针； 6. len_byte：payload长度； **返回值**：无 | 是驱动回调OS的接口 |  向上回调  | **必选** |
+| ETH管理面 | Std_ReturnType ethif_get_controller_mode ( uint8 ctrl_idx,  eth_mode_type *ctrlmode_ptr)| **描述**：获取控制器状态 **入参**：1. ctrl_idx：控制器Id； 2. ctrlmode_ptr：模式指针； ETH_MODE_DOWN：控制器禁用； ETH_MODE_ACTIVE：控制器正常工作； 返回值：1. E_OK: 获取控制器状态成功；2. E_NOT_OK: 获取控制器状态失败 | 1. 不可跨核裸调； 2. 对于相同控制器，不可重入 |  向下调用  | **必选** |
+| ETH管理面 | void ethif_ctrlmode_indication( uint8 ctrl_idx, eth_mode_type ctrlmode)| **描述**：设置控制器模式回调 **入参**：1. ctrl_idx：控制器Id； 2. ctrlmode：控制器模式； ETH_MODE_DOWN：控制器禁用； ETH_MODE_ACTIVE：控制器正常工作； 返回值：无 | 是驱动回调OS的接口 |  向上回调  | **必选** |
+| ETH管理面 | void ethif_set_phys_addr(uint8 ctrl_idx, const uint8 *phys_addr_ptr) | **描述**：设置PHY地址 **入参**：1. ctrl_idx：控制器Id； 2. phys_addr_ptr：指向物理源MAC地址； 返回值：无 | 1. 由驱动发起调用，用户不应该调用；2. 对于相同控制器，不可重入 |  向上回调  | **必选** |
+| ETH管理面 | void ethif_get_phys_addr(uint8 ctrl_idx, uint8 *phys_addr_ptr) | **描述**：获取PHY地址 **入参**：1. ctrl_idx：控制器Id； 2. phys_addr_ptr：指向获取到的物理源MAC地址； 返回值：无 | 1. 不可跨核裸调；2. 对于相同控制器，不可重入 |  向下调用  | **必选** |
+| ETH管理面 | Std_ReturnType ethif_update_phys_addr_filter(uint8 ctrl_idx,const uint8 *phys_addr_ptr, eth_filter_action_type action) | **描述**：更新PHY地址过滤器 **入参**：1. ctrl_idx：控制器Id； 2. phys_addr_ptr：要更新的目标PHY地址；3. action： ETH_ADD_TO_FILTER：添加Filter； ETH_REMOVE_FROM_FILTER：移除Filter； 返回值：1. E_OK: 更新PHY地址过滤器成功；2. E_NOT_OK: 更新PHY地址过滤器失败 | 1. 不可跨核裸调；2. 对于相同控制器，不可重入 |  向下调用  | **可选**，要更新PHY地址过滤器时需要，例如使能多播、广播。 |
+| ETH管理面 | void ethif_mainfunction_state(void) | **描述**：获取link状态主函数 **入参**：无 **返回值**：无 | 用户需自实现： `trcv_get_linkstate`； `swt_get_linkstate`|  轮询调用  | **必选** |
 
 ### 4.2. 存储子系统移植
+
 #### 4.2.1. 存储移植框架
-![](../_static/image/porting/storage_porting_arch.png)
+
+![存储移植框架](../_static/image/porting/storage_porting_arch.png)
 
 #### 4.2.2. 存储适配流程
-![](../_static/image/porting/storage_porting_process.png)
+
+![存储适配流程](../_static/image/porting/storage_porting_process.png)
 
 #### 4.2.3. 存储驱动适配接口
+
 ##### 4.2.3.1. Ea
+
 |  **接口名称**  |  **接口描述**  |  **调用方向**  |  **是否必选**  |
 | :------------| :-------------|  :-----------|  :------------|
-|uint8 ea_read_block<br>(<br>uint16 block_number,<br> uint16 block_offset,<br> uint8 *buffer_ptr,<br> uint16 length<br>)|**描述**：读取存储器中的一个数据块。<br>**参数**：<br> 1. block_number：逻辑数据块编号；<br> 2. block_offset：数据块内偏移量；<br> 3. buffer_ptr：读取的数据存储地址；<br> 4. length：读取的数据长度。<br> **返回值**:<br> E_OK：读操作成功；<br> E_NOT_OK：读操作失败<br>| 向下调用 | **必选** |
-|uint8 ea_write_block<br>(<br>uint16 block_number,<br> uint8 *buffer_ptr<br>)|**描述**：数据写入存储器中的一个数据块。<br> **参数**：<br> 1. block_number：逻辑数据块编号；<br> 2. buffer_ptr：写入的源数据地址。<br> **返回值**:<br> E_OK：写操作成功；<br> E_NOT_OK：写操作失败<br>| 向下调用 | **必选** |
-|uint8 ea_erase_immediate_block(uint16 block_number)|**描述**：擦除存储器中数据块的数据。<br> **参数**：<br> 1. block_number：逻辑数据块编号；<br>  **返回值**:<br> E_OK：擦除操作成功；<br> E_NOT_OK：擦除操作失败<br>| 向下调用 | **必选** |
-|uint8 ea_invalidate_block(uint16 block_number)|**描述**：标记存储器中的一个数据块为无效。<br> **参数**：<br> 1. block_number：逻辑数据块编号；<br>  **返回值**:<br> E_OK：标记无效操作成功；<br> E_NOT_OK：标记无效操作失败<br>| 向下调用 | **必选** |
-|void ea_cancel(void)|**描述**：取消当前正在进行的读/写/擦操作。<br> **参数**： 无 <br> **返回值**:无 | 向下调用 | **必选** |
-|uint8 ea_get_status(void)|**描述**：获取存储器当前的状态信息。<br> **参数**： 无 <br> **返回值**:<br>0：初始化未完成；<br>1：当前未idle状态；<br>2：当前为busy状态<br>3：内部操作busy。<br> | 向下调用 | **必选** |
-|uint8 ea_get_job_result(void)|**描述**：获取读/写/擦操作的结果。<br> **参数**： 无 <br> **返回值**:<br>0：任务成功；<br> 1：任务失败；<br> 2：任务执行中；<br> 3：任务已取消；<br> 4：块数据不连续；<br>5：块数据无效。 | 向下调用 | **必选** |
-|void ea_set_mode(uint8 mode)|**描述**：切换底层EEPROM驱动程序模式的函数。<br> **参数**：<br> 1. mode：需要切换到的模式 <br> **返回值**: 无 | 向下调用 | **必选** |
+|uint8 ea_read_block(uint16 block_number, uint16 block_offset, uint8 *buffer_ptr, uint16 length)|**描述**：读取存储器中的一个数据块。**参数**： 1. block_number：逻辑数据块编号； 2. block_offset：数据块内偏移量； 3. buffer_ptr：读取的数据存储地址； 4. length：读取的数据长度。 **返回值**: E_OK：读操作成功； E_NOT_OK：读操作失败；| 向下调用 | **必选** |
+|uint8 ea_write_block(uint16 block_number, uint8 *buffer_ptr)|**描述**：数据写入存储器中的一个数据块。 **参数**： 1. block_number：逻辑数据块编号； 2. buffer_ptr：写入的源数据地址。 **返回值**: E_OK：写操作成功； E_NOT_OK：写操作失败；| 向下调用 | **必选** |
+|uint8 ea_erase_immediate_block(uint16 block_number)|**描述**：擦除存储器中数据块的数据。 **参数**： 1. block_number：逻辑数据块编号；  **返回值**： E_OK：擦除操作成功； E_NOT_OK：擦除操作失败；| 向下调用 | **必选** |
+|uint8 ea_invalidate_block(uint16 block_number)|**描述**：标记存储器中的一个数据块为无效。 **参数**： 1. block_number：逻辑数据块编号；  **返回值**： E_OK：标记无效操作成功； E_NOT_OK：标记无效操作失败；| 向下调用 | **必选** |
+|void ea_cancel(void)|**描述**：取消当前正在进行的读/写/擦操作。 **参数**： 无  **返回值**:无 | 向下调用 | **必选** |
+|uint8 ea_get_status(void)|**描述**：获取存储器当前的状态信息。 **参数**： 无  **返回值**：0：初始化未完成；1：当前未idle状态；2：当前为busy状态；3：内部操作busy。 | 向下调用 | **必选** |
+|uint8 ea_get_job_result(void)|**描述**：获取读/写/擦操作的结果。 **参数**： 无  **返回值**：0：任务成功； 1：任务失败； 2：任务执行中； 3：任务已取消； 4：块数据不连续；5：块数据无效。 | 向下调用 | **必选** |
+|void ea_set_mode(uint8 mode)|**描述**：切换底层EEPROM驱动程序模式的函数。 **参数**： 1. mode：需要切换到的模式 ； **返回值**: 无 | 向下调用 | **必选** |
 
 ##### 4.2.3.2. Fee
+
 |  **接口名称**  |  **接口描述**  |  **调用方向**  |  **是否必选**  |
 | :------------| :-------------|  :-----------|  :------------|
-|uint8 fee_read_block<br>(<br>uint16 block_number,<br> uint16 block_offset,<br> uint8 *buffer_ptr,<br> uint16 length<br>)|**描述**：读取存储器中的一个数据块。<br>**参数**：<br> 1. block_number：逻辑数据块编号；<br> 2. block_offset：数据块内偏移量；<br> 3. buffer_ptr：读取的数据存储地址；<br> 4. length：读取的数据长度。<br> **返回值**:<br> E_OK：读操作成功；<br> E_NOT_OK：读操作失败<br>| 向下调用 | **必选** |
-|uint8 fee_write_block<br>(<br>uint16 block_number,<br> uint8 *buffer_ptr<br>)|**描述**：数据写入存储器中的一个数据块。<br> **参数**：<br> 1. block_number：逻辑数据块编号；<br> 2. buffer_ptr：写入的源数据地址。<br> **返回值**:<br> E_OK：写操作成功；<br> E_NOT_OK：写操作失败<br>| 向下调用 | **必选** |
-|uint8 fee_erase_immediate_block(uint16 block_number)|**描述**：擦除存储器中数据块的数据。<br> **参数**：<br> 1. block_number：逻辑数据块编号；<br>  **返回值**:<br> E_OK：擦除操作成功；<br> E_NOT_OK：擦除操作失败<br>| 向下调用 | **必选** |
-|uint8 fee_invalidate_block(uint16 block_number)|**描述**：标记存储器中的一个数据块为无效。<br> **参数**：<br> 1. block_number：逻辑数据块编号；<br>  **返回值**:<br> E_OK：标记无效操作成功；<br> E_NOT_OK：标记无效操作失败<br>| 向下调用 | **必选** |
-|void fee_cancel(void)|**描述**：取消当前正在进行的读/写/擦操作。<br> **参数**： 无 <br> **返回值**:无 | 向下调用 | **必选** |
-|uint8 fee_get_status(void)|**描述**：获取存储器当前的状态信息。<br> **参数**： 无 <br> **返回值**:<br>0：初始化未完成；<br>1：当前未idle状态；<br>2：当前为busy状态<br>3：内部操作busy。<br> | 向下调用 | **必选** |
-|uint8 fee_get_job_result(void)|**描述**：获取读/写/擦操作的结果。<br> **参数**： 无 <br> **返回值**:<br>0：任务成功；<br> 1：任务失败；<br> 2：任务执行中；<br> 3：任务已取消；<br> 4：块数据不连续；<br>5：块数据无效。 | 向下调用 | **必选** |
-|void fee_set_mode(uint8 mode)|**描述**：切换底层Flash驱动程序模式的函数。<br> **参数**：<br> 1. mode：需要切换到的模式 <br> **返回值**: 无 | 向下调用 | **必选** |
+|uint8 fee_read_block(uint16 block_number, uint16 block_offset, uint8 *buffer_ptr, uint16 length)|**描述**：读取存储器中的一个数据块。**参数**： 1. block_number：逻辑数据块编号； 2. block_offset：数据块内偏移量； 3. buffer_ptr：读取的数据存储地址； 4. length：读取的数据长度。 **返回值**： E_OK：读操作成功； E_NOT_OK：读操作失败；| 向下调用 | **必选** |
+|uint8 fee_write_block(uint16 block_number, uint8 *buffer_ptr)|**描述**：数据写入存储器中的一个数据块。 **参数**： 1. block_number：逻辑数据块编号； 2. buffer_ptr：写入的源数据地址。 **返回值**： E_OK：写操作成功； E_NOT_OK：写操作失败；| 向下调用 | **必选** |
+|uint8 fee_erase_immediate_block(uint16 block_number)|**描述**：擦除存储器中数据块的数据。 **参数**： 1. block_number：逻辑数据块编号；  **返回值**： E_OK：擦除操作成功； E_NOT_OK：擦除操作失败；| 向下调用 | **必选** |
+|uint8 fee_invalidate_block(uint16 block_number)|**描述**：标记存储器中的一个数据块为无效。 **参数**： 1. block_number：逻辑数据块编号；  **返回值**： E_OK：标记无效操作成功； E_NOT_OK：标记无效操作失败；| 向下调用 | **必选** |
+|void fee_cancel(void)|**描述**：取消当前正在进行的读/写/擦操作。 **参数**： 无  **返回值**:无 | 向下调用 | **必选** |
+|uint8 fee_get_status(void)|**描述**：获取存储器当前的状态信息。 **参数**： 无  **返回值**：0：初始化未完成；1：当前未idle状态；2：当前为busy状态；3：内部操作busy。 | 向下调用 | **必选** |
+|uint8 fee_get_job_result(void)|**描述**：获取读/写/擦操作的结果。 **参数**： 无  **返回值**：0：任务成功； 1：任务失败； 2：任务执行中； 3：任务已取消； 4：块数据不连续；5：块数据无效。 | 向下调用 | **必选** |
+|void fee_set_mode(uint8 mode)|**描述**：切换底层Flash驱动程序模式的函数。 **参数**： 1. mode：需要切换到的模式 ； **返回值**: 无 | 向下调用 | **必选** |
 
-## 5. 移植验证
-### 5.1. 内核验证
+## 5. 编译器移植
+
+编译器的移植涉及到编译器指定、编译选项适配、链接选项适配、链接脚本适配、链接命令适配以及copy table的适配工作。
+针对vcos，上述工作的适配会分布在vcos如下红色标准的模块：
+
+![编译器移植](../_static/image/porting/toolchain_porting.png)
+
+其中红色模块解释如下：
+
+|  **模块**  |  **目录路径**  |  **例子**  |
+| :------------| :-------------|  :-----------|
+| arch|vcos/kernel/nuttx/arch/xx|vcos/kernel/nuttx/arch/tricore|
+|boards|vcos/vendor/xx/boards/yy|vcos/vendor/infineon/boards/a2g_tc397_5v_tft|
+|chips|vcos/vendor/xx/chips/yy|vcos/vendor/infineon/chips/tc3xx|
+|apps|vcos/examples/xx|vcos/examples/rt_demo|
+|cmake编译子系统|kernel/nuttx/CMakeLists.txt|kernel/nuttx/CMakeLists.txt|
+
+接下来假定新增一个名字为CcNew的编译器为例，说明适配过程。
+
+### 5.1 编译器指定方式
+
+编译器的指定是在arch模块下，以tricore arch为例，如果需要新增加编译器，需要在vcos/kernel/nuttx/arch/tricore/src/cmake路径中做如下修改
+
+- 新增ToolchainCcNew.cmake文件，并在ToolchainCcNew.cmake中设置cmake 编译器相关变量（可参考同目录下的ToolchainGnu.cmake文件）
+
+```cmake
+#指定编译器变量
+set(TOOLCHAIN_PREFIX "CcNew-prefix")
+set(CMAKE_LIBRARY_ARCHITECTURE ${TOOLCHAIN_PREFIX})
+set(CMAKE_C_COMPILER_TARGET ${TOOLCHAIN_PREFIX})
+set(CMAKE_CXX_COMPILER_TARGET ${TOOLCHAIN_PREFIX})
+
+set(CMAKE_ASM_COMPILER ${TOOLCHAIN_PREFIX}-gcc)
+set(CMAKE_C_COMPILER ${CMAKE_ASM_COMPILER})
+set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}-g++)
+set(CMAKE_STRIP ${TOOLCHAIN_PREFIX}-strip --strip-unneeded)
+set(CMAKE_OBJCOPY ${TOOLCHAIN_PREFIX}-objcopy)
+set(CMAKE_OBJDUMP ${TOOLCHAIN_PREFIX}-objdump)
+set(CMAKE_ASM_GENERATION_TOOL hldumparm)
+
+set(CMAKE_LINKER ${TOOLCHAIN_PREFIX}-gcc)
+set(CMAKE_LD ${TOOLCHAIN_PREFIX}-gcc)
+set(CMAKE_AR ${TOOLCHAIN_PREFIX}-gcc-ar)
+set(CMAKE_NM ${TOOLCHAIN_PREFIX}-gcc-nm)
+set(CMAKE_RANLIB ${TOOLCHAIN_PREFIX}-gcc-ranlib)
+
+
+set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> rcs <TARGET> <LINK_FLAGS> <
+OBJECTS>")
+set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> rcs <TARGET> <LINK_FLAGS> <OBJECTS>")
+set(CMAKE_ASM_ARCHIVE_CREATE "<CMAKE_AR> rcs <TARGET> <LINK_FLAGS> <OBJECTS>")
+
+#定义预处理变量
+set(PREPROCESS ${CMAKE_C_COMPILER} ${CMAKE_C_FLAG_ARGS} -E -P -x c)
+```
+
+- 在ToolChain.cmake中通过宏来区分不同的编译器配置（CONFIG_TRICORE_TOOLCHAIN_CCNEW宏的定义5.7章节说明）
+
+```cmake
+if(CONFIG_TRICORE_TOOLCHAIN_TASKING)
+  include(${CMAKE_CURRENT_LIST_DIR}/ToolchainTasking.cmake)
+elseif(CONFIG_TRICORE_TOOLCHAIN_GNU)
+  include(${CMAKE_CURRENT_LIST_DIR}/ToolchainGnuc.cmake)
+elseif(CONFIG_TRICORE_TOOLCHAIN_CCNEW)
+  include(${CMAKE_CURRENT_LIST_DIR}/ToolchainCcNew.cmake)
+endif()
+```
+
+### 5.2 编译选项和链接选项适配
+
+链接选项和编译选项都在arch模块新增的ToolchainCcNew.cmake中指定（见5.1章节），以tricore arch为例，指定方式如下：
+
+- 修改vcos/kernel/nuttx/arch/tricore/src/cmake/ToolchainCcNew.cmake文件：
+
+```cmake
+#增加编译选项
+add_compile_options(-mbig-endian)
+add_compile_options(-flto=thin)
+...
+#增加链接选项
+add_link_options(-Wl,--cref -Wl,-Map=nuttx.map)
+add_link_options(-Wl,--no-warn-rwx-segments)
+...
+```
+
+- 在vcos/kernel/nuttx/arch/tricore/src/cmake/tc3xx.cmake中定义chip相关的编译选项和链接选项
+
+```cmake
+set(PLATFORM_FLAGS)
+list(APPEND PLATFORM_FLAGS -mcpu=tc39xx -mtc162)
+#编译选项
+add_compile_options(--cpu=tc39xb)
+add_compile_options(${PLATFORM_FLAGS})
+#链接选项
+add_link_options(-Ctc39xb)
+add_link_options(${PLATFORM_FLAGS})
+```
+
+- 在vcos/kernel/nuttx/arch/tricore/src/cmake/platform.cmake中定义要链接的编译器的库
+
+```cmake
+if(CONFIG_TRICORE_TOOLCHAIN_GNU)
+    execute_process(
+        COMMAND ${CMAKE_C_COMPILER} ${CMAKE_C_FLAG_ARGS} ${NUTTX_EXTRA_FLAGS}
+                --print-libgcc-file-name
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        OUTPUT_VARIABLE extra_library)
+   list(APPEND EXTRA_LIB ${extra_library})
+   nuttx_add_extra_library(${EXTRA_LIB})
+endif()
+```
+
+### 5.3 链接脚本适配
+
+链接脚本的适配在boards模块下，以tricore架构的a2g_tc397_5v_tft board为例，如果要适配新的编译器链接脚本，需要在vcos/vendor/infineon/boards/a2g_tc397_5v_tft/scripts中做如下修改：
+
+新增Lcf_CcNew_Tricore_Tc.lsl作为a2g_tc397_5v_tft board的对应CcNew编译器的链接脚本，链接脚本中需要定义板级以及chip级的memory，并设置系统的heap和bmp memory等（具体实现功能根据arch以及boards的不同而不同，可参考该目录下其他编译器的链接脚本实现），以Lcf_Gnuc_Tricore_Tc.lsl的示例如下：
+
+```cmake
+#宏的定义
+LCF_DSPR0_START = 0x10000000;
+LCF_PSPR0_START = 0x10100000;
+LCF_HEAP0_OFFSET = 0x0;
+LCF_HEAP0_OFFSET = 0x10000;
+LCF_CPU0_BMP_PERCPU_START  =   (LCF_PSPR0_START);
+LCF_CPU0_BMP_PERCPU_OFFSET  =   (0);
+LCF_BMP_PERCPU_SIZE = 48k;
+
+
+#定义memory
+MEMORY
+{
+    dsram0_local (w!xp): org = 0xd0000000, len = 96K
+    dsram0 (w!xp): org = 0x10000000, len = 96K
+    psram0 (w!xp): org = 0x10100000, len = 64K
+    ...
+}
+
+SECTIONS
+{
+    #定义heap
+    CORE_SEC(.heap) (LCF_DSPR0_START + LCF_HEAP0_OFFSET):
+    { PROVIDE(__HEAP0_START = .);    . = . + LCF_HEAP0_SIZE;    PROVIDE(__HEAP0_END = .); }
+
+    #定义bmp memory
+    CORE_SEC(.percpu) (LCF_CPU0_BMP_PERCPU_START + LCF_CPU0_BMP_PERCPU_OFFSET):
+    { PROVIDE(__PERCPU0_START = .);    . = . + LCF_BMP_PERCPU_SIZE;    PROVIDE(__PERCPU0_END = .); }
+}
+
+#percpu data变量定向到percpu data section
+CORE_SEC(.percpu_data) (LCF_CPU0_BMP_PERCPU_START+LCF_CPU0_BMP_PERCPU_OFFSET): FLAGS(awl)
+{
+    . = ALIGN(32);
+    *(.data..percpu*)
+} > percpu_ram AT> pfls0
+
+__PERCPU0_START = SIZEOF(CORE_SEC(.percpu_data)) ? ADDR(CORE_SEC(.percpu_data)) : LCF_CPU0_BMP_PERCPU_START+LCF_CPU0_BMP_PERCPU_OFFSET ;
+_PERCPU_BSS_START_ = __PERCPU0_START + SIZEOF(CORE_SEC(.percpu_data));
+
+#percpu bss变量定向到percpu bss section
+CORE_SEC(.percpu_bss) (_PERCPU_BSS_START_): FLAGS(aw)
+{
+    . = ALIGN(4);
+    *(.bss..percpu*)
+    . = ALIGN(2);
+} > percpu_ram
+__PERCPU0_END = __PERCPU0_START + SIZEOF(CORE_SEC(.percpu_data)) +  SIZEOF(CORE_SEC(.percpu_bss));
+```
+
+### 5.4 链接脚本指定方式
+
+链接脚本在boards模块和apps模块指定，其中会以CONFIG_RT_FRAMEWORK宏是否定义而决定两者哪个生效，分别以tricore架构的a2g_tc397_5v_tft board为例和rt_demo为例，可以在vcos/vendor/infineon/boards/a2g_tc397_5v_tft/src和examples/rt_demo做如下修改：
+
+- 在vcos/vendor/infineon/boards/a2g_tc397_5v_tft/src/CMakeLists.txt中修改（CONFIG_TRICORE_TOOLCHAIN_CCNEW宏的定义5.7章节说明）：
+
+```cmake
+if (NOT CONFIG_RT_FRAMEWORK)
+if(CONFIG_TRICORE_TOOLCHAIN_TASKING)
+  set_property(
+    GLOBAL PROPERTY LD_SCRIPT
+                   "${NUTTX_BOARD_DIR}/scripts/Lcf_Tasking_Tricore_Tc.lsl")
+elseif(CONFIG_TRICORE_TOOLCHAIN_CCNEW)
+    GLOBAL PROPERTY LD_SCRIPT
+                   "${NUTTX_BOARD_DIR}/scripts/Lcf_CcNew_Tricore_Tc.lsl")
+else()
+  set_property(
+    GLOBAL PROPERTY LD_SCRIPT
+                    "${NUTTX_BOARD_DIR}/scripts/Lcf_Gnuc_Tricore_Tc.lsl")
+endif()
+endif()
+```
+
+- examples/rt_demo/CMakeLists.txt修改如下：
+
+```cmake
+if (CONFIG_RT_FRAMEWORK)
+if(CONFIG_TRICORE_TOOLCHAIN_TASKING)
+    set_property(
+    GLOBAL PROPERTY LD_SCRIPT
+                   "${NUTTX_BOARD_DIR}/scripts/Lcf_Tasking_Tricore_Tc.lsl")
+elseif(CONFIG_TRICORE_TOOLCHAIN_CCNEW)
+    set_property(
+    GLOBAL PROPERTY LD_SCRIPT
+                   "${NUTTX_BOARD_DIR}/scripts/Lcf_CcNew_Tricore_Tc.lsl")
+else()
+    set_property(
+    GLOBAL PROPERTY LD_SCRIPT
+                    "${NUTTX_BOARD_DIR}/scripts/Lcf_Gnuc_Tricore_Tc.lsl")
+endif()
+endif()
+```
+
+### 5.5 链接命令适配
+
+链接命令由于涉及到多个.a的链接以及链接脚本的指定，不同的编译器可能指定方式不一样，链接脚本的命令在cmake编译子系统指定，涉及文件为vcos/kernel/nuttx/CMakeLists.txt，要指定不同的链接命令，修改如下：
+
+在vcos/kernel/nuttx/CMakeLists.txt新增如下分支（（CONFIG_TRICORE_TOOLCHAIN_CCNEW宏的定义会在5.7章节说明）：
+
+```cmake
+if(CONFIG_ARCH_TOOLCHAIN_TASKING)
+    target_link_libraries(nuttx PRIVATE --lsl-file=${ldscript} ${nuttx_libs})
+elseif(CONFIG_TRICORE_TOOLCHAIN_CCNEW)
+    target_link_libraries(nuttx PRIVATE //指定链接脚本 //指定链接库 ${nuttx_libs})
+else()
+    target_link_libraries(
+      nuttx
+      PRIVATE ${NUTTX_EXTRA_FLAGS}
+              -T
+              ${ldscript}
+              $<$<NOT:$<BOOL:${DISABLE_LINK_GROUP}>>:-Wl,--start-group>
+              ${nuttx_libs}
+              $<$<NOT:$<BOOL:${DISABLE_LINK_GROUP}>>:-Wl,--end-group>)
+endif()
+```
+
+### 5.6 copy table适配
+
+说明：copy table是c runtime 中的一环，指的是data section的load address到run address的拷贝和bss 段的清零。
+copy table的适配一般在chips模块下，以vcos/vendor/infineon/chips/tc3xx举例如下：
+
+修改vendor/infineon/chips/tc3xx/tc397/Libraries/Infra/Ssw/TC39B/Tricore/Ifx_Ssw_Infra.c文件：
+
+```c
+void Ifx_Ssw_doCppInit(void)
+{
+    Ifx_Ssw_C_InitInline();
+
+    #ifdef __TASKING__
+            extern void _main(void); /* cpp initialization */
+            _main();
+    #elif defined(__HIGHTEC__) && !defined(__clang__)
+            extern void _init(void); /* cpp initialization */
+            _init();
+    #elif defined(__GNUC__) && !defined(__HIGHTEC__)
+            extern void _init(void); /* cpp initialization */
+            _init();
+    #elif defined(__ghs__)
+            extern void _main(void); /* cpp initialization */
+            _main();
+    #elif defined(__CcNew__)
+            extern void _ccnew_main(void);
+            _ccnew_main();
+    #endif
+}
+```
+
+### 5.7 新的编译器使能
+
+编译器在boards中使能，比如要支持CCNew编译器为例，需要在boards的defconfig中配置CONFIG_TRICORE_TOOLCHAIN_CCNEW宏，以以tricore架构的a2g_tc397_5v_tft board为例，需要在vcos/vendor/infineon/boards/a2g_tc397_5v_tft/configs/vcos/defconfig中使能CONFIG_TRICORE_TOOLCHAIN_CCNEW宏：
+
+```cmake
+CONFIG_TRICORE_TOOLCHAIN_CCNEW=y
+```
+
+## 6. 移植验证
+
+### 6.1. 内核验证
+
 内核移植完成后，可以通过apps/testing/ostest用例集验证，此用例集涵盖内核的调度、任务管理、消息队列、同步与互斥、内存管理等基础功能。
 
 打开配置TESTING_OSTEST，可以进一步按需配置其子配置项。配置完成后编译，系统运行后在shell中执行ostest命令即可。命令执行完成，且退出状态为0，即说明测试成功。否则会有错误日志打印。
 
-### 5.2. 子系统验证
-#### 5.2.1. 通信子系统验证
+### 6.2. 子系统验证
+
+#### 6.2.1. 通信子系统验证
+
 以太通信功能移植完成后，验证在VCOS tcpip模块配置的ip地址可以ping通。
 
-## 6. 最佳实践
+## 7. 最佳实践
+
 [芯驰E3650移植实践](./porting_semidrive_e3650.md) （由芯驰科技提供）

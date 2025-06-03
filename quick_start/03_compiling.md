@@ -36,25 +36,30 @@ python ./vcos/build/compiling_env.py
   cd ./vcos/build
   ```
 
-- 编译memory_demo应用：配置使用A2G_TC397_5V_TFT板级配置，使用gcc编译器，使用ninja作为make工具，使用实际开发板运行
+- 编译multicore_com_demo应用：配置使用E3650_DEV_KIT板级配置，使用gcc编译器，使用ninja作为make工具，使用实际开发板运行
 
   ```bash
-  python vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -compiler gcc -maketool ninja -sim 0 -all
+  python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -compiler gcc -maketool ninja -sim 0 -all
   ```
+
   该命令会依次执行以下操作：
-  - 根据memory_demo应用的A2G_TC397_5V_TFT板级配置生成动态代码
+  - 根据multicore_com_demo应用的E3650_DEV_KIT板级配置生成动态代码
   - 通过CMake调用Ninja工具自动化构建
   - 最终编译生成镜像文件
-  - 编译结果默认保存在`haloosspace/output/memory_demo_A2G_TC397_5V_TFT_gcc`目录下
+  - 编译结果默认保存在`haloosspace/output/multicore_com_demo_E3650_DEV_KIT_gcc`目录下
 
 ### 2.2. 编译命令说明
+
 - 添加应用子目录，重新生成cmake：
+
   ```bash
-  python vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -clean  # 清除编译产物
-  python vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -gcmake  # 生成cmake
-  python vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -fc  # 执行全量编译
+  python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -clean  # 清除编译产物
+  python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -gcmake  # 生成cmake
+  python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -fc  # 执行全量编译
   ```
+
 - 修改应用代码后增量编译：
+
   ```bash
-  python vcos_build.py -app_name memory_demo -board_name A2G_TC397_5V_TFT -ic
+  python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -ic
   ```

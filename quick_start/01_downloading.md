@@ -19,6 +19,7 @@
 代码下载同时依赖git和git repo，如果没有安装git请 [下载并安装](https://git-scm.com/downloads/win) (git的安装流程此处略过)
 
 编译过程还需要使用git的patch工具，Windows系统需要将patch工具路径添加到PATH环境变量：
+
 1. 找到git所在的安装路径，添加\usr\bin后就是patch.exe所在路径（例如：C:\Program Files\Git\usr\bin）
 2. 按 Win + S 搜索 “环境变量” → 选择 “编辑系统环境变量”
 3. 在 “用户变量” 中找到 Path → 点击 “编辑” → “新建” → 添加上述patch路径 → 保存
@@ -148,4 +149,5 @@ git repo的安装流程如下：
     > 关于repo的更多使用，可以输入`repo -h`查看
 
 ### 2.4. 获取Infineon iLLD驱动代码
+
 因为没有Linux版本的Aurix Development Studio，因此需要在Window平台上生成Infineon iLLD驱动代码，获取Infineon iLLD驱动代码流程请参照1.4.章节。
