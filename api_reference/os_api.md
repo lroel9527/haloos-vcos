@@ -16,7 +16,6 @@
 | 同步/异步     | 同步调用 |
 | 可重入性     | 可重入 |
 
-
 ## `ActivateTaskAsyn`
 
 | 属性         | 描述                |
@@ -27,7 +26,6 @@
 | 参数[输入] | `TaskType TaskID` 任务标识符  |
 | 同步/异步     | 异步调用 |
 | 可重入性     | 可重入 |
-
 
 ## `TerminateTask`
 
@@ -40,7 +38,6 @@
 | 返回值 | StatusType E_NOT_OK 终止失败（如处于中断上下文） |
 | 同步/异步     | 同步调用 |
 | 可重入性     | 可重入 |
-
 
 ## `StartScheduleTableRel`
 
@@ -58,7 +55,6 @@
 | 同步/异步     | 同步调用 |
 | 可重入性     | 可重入 |
 
-
 ## `StartScheduleTableAbs`
 
 | 属性         | 描述                |
@@ -75,7 +71,6 @@
 | 同步/异步     | 同步调用（阻塞直到调度表加入就绪队列） |
 | 可重入性     | 可重入（采用自旋锁保护调度表状态机） |
 
-
 ## `StopScheduleTable`
 
 | 属性         | 描述                |
@@ -90,7 +85,6 @@
 | 同步/异步     | 同步调用 |
 | 可重入性     | 可重入 |
 
-
 ## `GetScheduleTableStatus`
 
 | 属性         | 描述                |
@@ -104,7 +98,6 @@
 | 返回值 | StatusType E_OS_ID 无效调度表ID（建议结合ListActiveSchedTables接口验证） |
 | 同步/异步     | 同步调用（执行时间<500ns，无上下文切换） |
 | 可重入性     | 可重入（采用RCU机制保障多核读取一致性） |
-
 
 ## `NextScheduleTable`
 
@@ -122,7 +115,6 @@
 | 同步/异步     | 同步调用（最大阻塞时间50us，符合ASIL-D时序约束） |
 | 可重入性     | 可重入（采用双锁机制保护状态迁移） |
 
-
 ## `NextScheduleTableFromStop`
 
 | 属性         | 描述                |
@@ -139,7 +131,6 @@
 | 同步/异步     | 同步调用（执行时间确定，最大延迟15us） |
 | 可重入性     | 可重入（基于每调度表的链式锁实现） |
 
-
 ## `StartScheduleTableSynchron`
 
 | 属性         | 描述                |
@@ -153,7 +144,6 @@
 | 返回值 | StatusType E_OS_STATE 调度表已处于非STOPPED状态 |
 | 同步/异步     | 同步调用 |
 | 可重入性     | 可重入 |
-
 
 ## `SyncScheduleTable`
 
@@ -171,7 +161,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `SetScheduleTableAsync`
 
 | 属性         | 描述                |
@@ -185,7 +174,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `EnableAllInterrupts`
 
 | 属性         | 描述                |
@@ -195,7 +183,6 @@
 | 详细说明      | 该服务可从1类中断2类中断以及任务级别调用，但不能从hook调用。 本服务是DisableAllInterrupts服务的对应操作（必须先调用DisableAllInterrupts）， 其目的是结束临界区。离开临界区时不应调用任何API服务。 实现应根据目标硬件适配本服务以提供最小开销。 通常，该服务会启用CPU对中断的识别。    |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
-
 
 ## `DisableAllInterrupts`
 
@@ -207,7 +194,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `ResumeAllInterrupts`
 
 | 属性         | 描述                |
@@ -217,7 +203,6 @@
 | 详细说明      | 该服务可从1类中断2类中断以及任务级别调用， 但不能从所有钩子例程调用。本服务是SuspendAllInterrupts服务的对应操作 （必须先调用SuspendAllInterrupts），其目的是结束临界区。 在此临界区内，除SuspendAllInterrupts/ResumeAllInterrupts对和 SuspendOSInterrupts/ResumeOSInterrupts对外，不允许调用其他API服务。 实现应根据目标硬件适配本服务以提供最小开销。 SuspendAllInterrupts/ResumeAllInterrupts可嵌套调用。 当嵌套调用SuspendAllInterrupts和ResumeAllInterrupts时， 首次SuspendAllInterrupts调用保存的中断识别状态将由最后一次 ResumeAllInterrupts服务调用恢复。    |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
-
 
 ## `SuspendAllInterrupts`
 
@@ -229,7 +214,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `ResumeOSInterrupts`
 
 | 属性         | 描述                |
@@ -240,7 +224,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `SuspendOSInterrupts`
 
 | 属性         | 描述                |
@@ -250,7 +233,6 @@
 | 详细说明      | 该服务可从ISR和任务级别调用，但不能从钩子例程调用。 本服务用于保护代码临界区，该临界区必须通过调用ResumeOSInterrupts服务来结束。 在此临界区内，除SuspendAllInterrupts/ResumeAllInterrupts对和 SuspendOSInterrupts/ResumeOSInterrupts对外，不允许调用其他API服务。 实现应根据目标硬件适配本服务以提供最小开销。本服务仅禁用类别2中断的识别， 但如果无法高效实现，则可能会禁用更多中断。    |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
-
 
 ## `SetEvent`
 
@@ -268,7 +250,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `SetEventAsyn`
 
 | 属性         | 描述                |
@@ -280,7 +261,6 @@
 | 参数[输入] | `EventMaskType Mask` 待发送的事件掩码  |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
-
 
 ## `ClearEvent`
 
@@ -295,7 +275,6 @@
 | 返回值 | StatusType E_OS_CALLEVEL 在中断上下文中调用 |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
-
 
 ## `GetEvent`
 
@@ -313,7 +292,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `WaitEvent`
 
 | 属性         | 描述                |
@@ -328,7 +306,6 @@
 | 返回值 | StatusType E_OS_CALLEVEL 在中断上下文中调用 |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
-
 
 ## `GetSpinlock`
 
@@ -346,7 +323,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `ReleaseSpinlock`
 
 | 属性         | 描述                |
@@ -363,7 +339,6 @@
 | 返回值 | StatusType E_OS_NOFUNC [扩展:] 在释放本自旋锁前尝试释放其他自旋锁(或资源) |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
-
 
 ## `TryToGetSpinlock`
 
@@ -383,7 +358,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `GetSpinlockRead`
 
 | 属性         | 描述                |
@@ -398,7 +372,6 @@
 | 返回值 | StatusType E_OS_INTERFERENCE_DEADLOCK [扩展:] 任务尝试占用读锁，但该任务已持有 同一读写锁（读/写模式），可能导致死锁 |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
-
 
 ## `GetSpinlockWrite`
 
@@ -415,7 +388,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `ReleaseSpinlockRead`
 
 | 属性         | 描述                |
@@ -431,7 +403,6 @@
 | 返回值 | StatusType E_OS_STATE [扩展:] 读写锁未被当前任务占用 |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
-
 
 ## `ReleaseSpinlockWrite`
 
@@ -450,7 +421,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `TryToGetSpinlockRead`
 
 | 属性         | 描述                |
@@ -468,7 +438,6 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
-
 ## `TryToGetSpinlockWrite`
 
 | 属性         | 描述                |
@@ -485,7 +454,6 @@
 | 返回值 | StatusType E_OS_INTERFERENCE_DEADLOCK [扩展:] 任务尝试占用写锁，但该锁已被同核任务占用， 可能导致死锁 |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
-
 
 ## `GetCoreID`
 

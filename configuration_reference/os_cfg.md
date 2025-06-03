@@ -1,9 +1,10 @@
-#  Os 配置项参考文档
+# Os 配置项参考文档
 
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|Os|
 |描述|Configuration of the Os (Operating System) module.|
+|描述|操作系统（Operating System）模块的配置。|
 |描述|None|
 |多实例个数|0 - 1|
 
@@ -23,11 +24,20 @@
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|OsApplication|
-|描述|An AUTOSAR OS must be capable of supporting a collection of OS objects (tasks, interrupts, alarms, hooks etc.) that form a cohesive functional unit. This collection of objects is termed an OS-Application.|
+|描述|An AUTOSAR OS must be capable of supporting a collection of OS objects (tasks, interrupts, hooks etc.) that form a cohesive functional unit. This collection of objects is termed an OS-Application.|
 |描述|概述：OsApplication配置项用于定义操作系统应用程序的属性，它是AUTOSAR OS模块中的一个基本构建块，用于实现应用程序的隔离和保护。|
 |描述|注意：在配置OsApplication时，需要确保其属性与系统的内存保护和隔离需求相符合；每个OsApplication应有唯一的标识符，并且应正确配置其访问权限和资源；在多核系统中，还需注意OsApplication与特定核心的绑定关系。|
 |说明|属于同一​​OS-Application​​的所有对象均可相互访问。此处的“访问”指允许在API服务中使用这些对象。其他应用程序的访问权限可单独授予。|
 |多实例个数|1 - 32|
+
+| 配置项属性 | 值（整型参数配置项） |
+|-|-|
+|名称|OsAppMemoryProtectionIdentifier|
+|描述|This optional parameter can be used to specify a memory protection identifier for the OS-Application.|
+|描述|概述：OsAppMemoryProtectionIdentifier用于标识操作系统应用程序的内存保护单元，确保应用程序之间的内存访问隔离，提高系统的安全性。|
+|描述|注意：在使能内存保护单元后，需确保每个应用程序都配置了OsAppMemoryProtectionIdentifier。|
+|多实例个数|0 - 1|
+|取值范围|0 - 10|
 
 | 配置项属性 | 值（布尔参数配置项） |
 |-|-|
@@ -78,7 +88,7 @@
 |-|-|
 |名称|OsAppScheduleTableRef|
 |描述|References the OsScheduleTables that belong to the OsApplication.|
-|描述|概述：OsAppScheduleTableRef配置项用于指定操作系统应用程序与调度表之间的关联，确保应用程序能够根据预定的时间表执行。|
+|描述|概述：OsAppScheduleTableRef配置项用于指定OsApplication与调度表之间的映射关系。|
 |描述|注意：在配置时需确保调度表已定义且与应用程序的需求相匹配；此配置项对于实现时间分区和确保应用程序按时执行至关重要；在多应用系统中，正确配置每个应用的OsAppScheduleTableRef是实现时间隔离的关键。|
 |多实例个数|0 - 65535|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsScheduleTable|
@@ -98,6 +108,7 @@
 |-|-|
 |名称|OsCore|
 |描述|The OsCore is used for containing configuration within core scope.|
+|说明|OsCore配置项包含属于该核心的配置信息。|
 |多实例个数|0 - inf|
 
 | 配置项属性 | 值（关联引用配置项） |
@@ -131,7 +142,7 @@
 |名称|OsSecondsPerTick|
 |描述|Time of one counter tick in seconds.|
 |描述|概述：OsSecondsPerTick配置项用于定义操作系统时钟滴答（tick）的时间长度，以秒为单位，这决定了操作系统调度的基本时间单位和精度。|
-|描述|注意：该配置项的值应根据具体硬件平台和系统需求谨慎选择，以平衡系统的实时性和资源消耗；过小的值可能导致CPU过度占用，而过大的值可能影响系统响应时间；在AUTOSAR CP 4.4标准中，通常以毫秒或微秒为单位配置时间，因此直接以秒为单位配置可能不符合标准推荐做法。|
+|描述|注意：该配置项的值应根据具体硬件平台和系统需求谨慎选择，以平衡系统的实时性和资源消耗；过小的值可能导致CPU过度负载，而过大的值可能影响系统响应时间；在AUTOSAR CP 4.4标准中，通常以毫秒或微秒为单位配置时间，因此直接以秒为单位配置可能不符合标准推荐做法。|
 |多实例个数|1 - 1|
 |默认值|0.001|
 |取值范围|0.00000001 - 0.001|
@@ -149,9 +160,9 @@
 | 配置项属性 | 值（整型参数配置项） |
 |-|-|
 |名称|OsCounterMinCycle|
-|描述|The MINCYCLE attribute specifies the minimum allowed number of counter ticks for a cyclic alarm linked to the counter.|
+|描述|The MINCYCLE attribute specifies the minimum allowed number of counter ticks for a cyclic scheduletable linked to the counter.|
 |描述|概述：OsCounterMinCycle 定义了操作系统计数器的最小周期时间，用于设定计数器的最小递增间隔。|
-|描述|注意：该值必须小于或等于OsCounterMaxAllowedValue，以确保计数器的正确循环；设置过小可能导致系统过度负载；在AUTOSAR CP 4.4中，应确保此配置与系统时钟和任务调度需求相匹配。|
+|描述|注意：该值必须小于或等于OsCounterMaxAllowedValue，以确保计数器的正确循环；若设置过小可能导致系统过度负载；在AUTOSAR CP 4.4中，应确保此配置与系统时钟和任务调度需求相匹配。|
 |多实例个数|1 - 1|
 |默认值|1|
 |取值范围|1 - 2147483647|
@@ -180,7 +191,7 @@
 |-|-|
 |名称|OsDriver|
 |描述|This Container contains the information who will drive the counter.|
-|描述|概述：OsDriver配置项用于定义操作系统(OS)层的驱动组件，这些组件直接与底层的硬件或操作系统服务交互，以提供硬件抽象层(HAL)或操作系统服务给上层软件组件。|
+|描述|概述：OsDriver配置项用于定义操作系统(OS)层的驱动组件，这些组件直接与底层的硬件或操作系统服务交互，以提供硬件抽象层（HAL）或操作系统服务给上层软件组件。|
 |描述|注意：在AUTOSAR CP 4.4中，需要确保OsDriver配置与操作系统的支持和硬件抽象层的要求相匹配；OsDriver配置应遵循AUTOSAR OS模块的规范和接口标准；在多核或多分区系统中，还需考虑OsDriver的分配和隔离策略以保证系统的安全性和稳定性。|
 |说明|该配置仅在计数器类型设置为HARDWARE时有效。若容器不存在（即多重性=0），则定时器由操作系统内部管理（OSINTERNAL）。若容器存在，操作系统可通过GPT接口管理定时器，此时用户必须提供GPT通道。若计数器由操作系统外部其他源驱动（例如TPU模块），则必须通过供应商特定扩展进行描述。|
 |多实例个数|0 - 1|
@@ -199,7 +210,7 @@
 |名称|OsHardwareTimerChannelRef|
 |描述|Reference to hardware timer channel.|
 |描述|概述：OsHardwareTimerChannelRef 是一个配置参数，用于指定操作系统硬件定时器通道的引用，确保系统能够正确地使用硬件定时器资源。|
-|描述|注意：在配置OsHardwareTimerChannelRef时，需要确保引用的硬件定时器通道与实际硬件资源相匹配；此外，应避免多个操作系统对象引用同一硬件定时器通道，以防止资源冲突；在多核系统中，还需考虑定时器通道与处理器核心的关联性。|
+|描述|注意：在配置OsHardwareTimerChannelRef时，需要确保引用的硬件定时器通道与实际硬件资源相匹配；此外，必须避免多个操作系统对象引用同一硬件定时器通道，以防止资源冲突；在多核系统中，还需考虑定时器通道与处理器核心的关联性。|
 |多实例个数|1 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsPublishedInformation/OsDerivativeInformation/OsHardWareTimer|
 
@@ -210,7 +221,7 @@
 |名称|OsEvent|
 |描述|Representation of OS events in the configuration context. Adopted from the ISO 17356-6 specification.|
 |描述|概述：OsEvent是操作系统级别的事件，用于任务间或中断服务例程（ISR）与任务之间的同步和通信，允许任务在特定事件发生时被唤醒。|
-|描述|注意：在AUTOSAR CP 4.4中，确保OsEvent与任务和ISR的配置匹配，避免不必要的资源竞争和优先级反转问题；OsEvent的使用应遵循操作系统的限制和规范，例如事件的最大数量；在多核环境下，注意事件的跨核同步问题。|
+|描述|注意：在AUTOSAR CP 4.4中，确保OsEvent与任务和ISR的配置匹配，避免产生资源竞争和优先级反转问题；OsEvent的使用应遵循操作系统的限制和规范，例如事件的最大数量；在多核环境下，注意事件的跨核同步问题。|
 |多实例个数|0 - 65535|
 
 | 配置项属性 | 值（整型参数配置项） |
@@ -236,8 +247,8 @@
 |-|-|
 |名称|OsIsrInitialEnableInterruptSource|
 |描述|Parameter to specify if interrupt source is enable or not.|
-|描述|概述：OsIsrInitialEnableInterruptSource 配置项用于定义中断服务例程（ISR）是否在初始化时自动启用其关联的中断源。|
-|描述|注意：在AUTOSAR CP 4.4标准中，此配置项应确保与系统中断管理策略一致；不恰当的配置可能导致系统启动时中断行为不正确；应仔细考虑中断源的启用时机，以避免在系统未完全初始化时产生中断。|
+|描述|概述：OsIsrInitialEnableInterruptSource 配置项用于定义中断服务例程（ISR）是否在初始化时自动使能其关联的中断源。|
+|描述|注意：在AUTOSAR CP 4.4标准中，此配置项应确保与系统中断管理策略一致；配置不当可能导致系统启动时中断行为不正确；应仔细考虑中断源的启用时机，以避免在系统未完全初始化时产生中断。|
 |多实例个数|1 - 1|
 |默认值|false|
 
@@ -246,7 +257,7 @@
 |名称|OsIsrCategory|
 |描述|This attribute specifies the category of this ISR.|
 |描述|概述：OsIsrCategory配置项用于定义中断服务例程（ISR）的类别，这直接影响ISR的属性和它可以调用的操作系统服务类型。|
-|描述|注意：在AUTOSAR CP 4.4中，有效的ISR类别包括1和2；类别1的ISR不能调用那些可能导致等待的操作系统服务；类别2的ISR可以调用更多类型的操作系统服务，但使用时需要注意可能的优先级反转问题。|
+|描述|注意：在AUTOSAR CP 4.4中，有效的ISR类别包括1和2；类别1的ISR不能调用那些可能引发阻塞的操作系统服务；类别2的ISR可以调用更多类型的操作系统服务，但使用时需特别注意可能的优先级反转问题。|
 |多实例个数|1 - 1|
 |默认值|CATEGORY_2|
 
@@ -255,7 +266,7 @@
 |名称|OsIsrInterruptPriority|
 |描述|This attribute specifies the priority of this ISR.|
 |描述|概述：OsIsrInterruptPriority配置项用于定义中断服务例程（ISR）的优先级，确保系统中断的正确响应和处理顺序。|
-|描述|注意：优先级设置必须遵循硬件和操作系统的要求，避免优先级倒置问题；在多核系统中，还需考虑跨核中断的优先级设置；AUTOSAR CP 4.4标准中，该配置项的属性应与具体实现的OS配置和硬件特性相匹配，确保系统稳定运行。|
+|描述|注意：优先级设置必须遵循硬件和操作系统的要求，避免优先级反转问题；在多核系统中，还需考虑跨核中断的优先级设置；AUTOSAR CP 4.4标准中，该配置项的配置值需与OS实现和硬件特性相匹配，确保系统稳定运行。|
 |多实例个数|1 - 1|
 |取值范围|0 - 4294967295|
 
@@ -264,7 +275,7 @@
 |名称|OsIsrInterruptSource|
 |描述|This attribute specifies the interrupt source number of this ISR.|
 |描述|概述：OsIsrInterruptSource 配置项用于定义中断服务例程（ISR）所响应的中断源，它指定了ISR应当处理的具体硬件中断或软件中断。|
-|描述|注意：在配置OsIsrInterruptSource时，需要确保中断源与ISR之间的映射是唯一的，避免多个ISR响应同一个中断源；中断源的标识符必须符合AUTOSAR CP 4.4标准中定义的硬件资源列表；还需考虑中断优先级，确保高优先级的中断不会被低优先级的中断所阻塞。|
+|描述|注意：在配置OsIsrInterruptSource时，需要确保中断源与ISR之间的映射是唯一的，避免多个ISR响应同一个中断源；中断源的标识符必须符合AUTOSAR CP 4.4标准中定义的硬件资源列表；还需考虑中断优先级，确保高优先级的中断不会被低优先级的中断所屏蔽。|
 |多实例个数|1 - 1|
 |取值范围|0 - 4294967295|
 
@@ -272,26 +283,65 @@
 |-|-|
 |名称|OsIsrEntryFunctionName|
 |描述|This attribute specifies the entry function name of this ISR.|
-|描述|概述：OsIsrEntryFunctionName 配置项用于定义中断服务例程（ISR）的入口函数名称，这是操作系统调用以响应特定中断的函数。|
+|描述|概述：OsIsrEntryFunctionName 配置项用于定义中断服务例程（ISR）的入口函数名称，这是操作系统用于响应特定中断的函数。|
 |描述|注意：在配置时需确保函数名称的唯一性，避免与其他ISR或系统服务的名称冲突；名称应符合C语言标识符的命名规则；在AUTOSAR CP 4.4标准中，应检查与OS模块的兼容性和配置要求。|
 |多实例个数|1 - 1|
 
-## 7. OsScheduleTable
+## 7. OsResource
+
+| 容器属性 | 值（容器） |
+|-|-|
+|名称|OsResource|
+|描述|An OsResource object is used to co-ordinate the concurrent access by tasks and ISRs to a shared resource, e.g. the scheduler, any program sequence, memory or any hardware area.|
+|描述|概述：OsResource 是 AUTOSAR OS模块中定义的资源，用于实现互斥保护，避免系统中的任务或中断服务程序在访问共享资源时出现竞态条件,避免出现优先级反转或死锁等问题。|
+|描述|注意：在配置OsResource时，必须确保资源的使用不会导致死锁；资源应当只在必要时被锁定，并在最短可能时间内释放；确保资源的分配遵循AUTOSAR OS的优先级继承或优先级上限协议。|
+|多实例个数|0 - 65535|
+
+| 配置项属性 | 值（枚举参数配置项） |
+|-|-|
+|名称|OsResourceProperty|
+|描述|This specifies the type of the resource.|
+|描述|概述：OsResourceProperty配置项用于定义操作系统资源的属性，这些属性包括资源的访问权限、优先级和资源的链接方式等，以确保系统中的任务和中断能够正确地管理和使用资源。|
+|描述|注意：在AUTOSAR CP 4.4标准中，资源管理应遵循优先级上限协议（Priority Ceiling Protocol）以避免优先级反转问题；资源属性配置必须与系统设计和任务调度策略相匹配；配置时需确保资源的唯一性和正确的优先级分配，以防止资源冲突和死锁。|
+|说明|此配置项暂不可配置.|
+|多实例个数|1 - 1|
+|默认值|STANDARD|
+
+| 配置项属性 | 值（关联引用配置项） |
+|-|-|
+|名称|OsResourceAccessingApplication|
+|描述|Reference to applications which have an access to this object.|
+|描述|概述：OsResourceAccessingApplication 配置项用于指定哪些AUTOSAR应用程序可以访问操作系统资源，确保资源的合理分配和访问控制。|
+|描述|注意：在配置时需确保应用程序对资源的访问权限符合系统安全和隔离要求；资源访问权限应与应用程序的信任级别和功能需求相匹配；在多应用程序环境中，避免不同应用程序之间的资源访问冲突。|
+|多实例个数|0 - 31|
+|目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsApplication|
+
+| 配置项属性 | 值（关联引用配置项） |
+|-|-|
+|名称|OsResourceLinkedResourceRef|
+|描述|The link to the resource. Must be valid if OsResourceProperty is LINKED. If OsResourceProperty is not LINKED the value is ignored.|
+|描述|概述：OsResourceLinkedResourceRef 配置项用于指定操作系统资源（OsResource）与其他资源的链接关系，这样可以确保在资源管理中维护正确的优先级继承，避免优先级反转问题。|
+|描述|注意：在配置OsResourceLinkedResourceRef时，需要确保引用的资源存在且配置正确；此外，应遵循AUTOSAR OS模块的资源管理策略，避免产生死锁；AUTOSAR CP 4.4标准中对资源链接有明确的规则和限制，需要确保配置符合这些规则。|
+|说明|此配置项暂不可配置.|
+|多实例个数|0 - 1|
+|目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsResource|
+
+## 8. OsScheduleTable
 
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|OsScheduleTable|
 |描述|An OsScheduleTable addresses the synchronization issue by providing an encapsulation of a statically defined set of alarms that cannot be modified at runtime.|
-|描述|概述：OsScheduleTable配置项用于定义操作系统调度表，它规定了操作系统任务和事件的启动模式以及它们的周期性或相对时间安排。|
-|描述|注意：在配置OsScheduleTable时，需要确保调度表的时间设置不会导致任务或事件的冲突；调度表必须与系统的实时性要求相匹配；在多核系统中，还需考虑调度表在不同核心之间的同步问题。|
+|描述|概述：OsScheduleTable配置项用于定义操作系统调度表，它规定了操作系统任务和事件的启动模式、周期性及相对时间安排。|
+|描述|注意：在配置OsScheduleTable时，需要确保调度表的时间设置不会导致任务或事件的冲突；调度表需与系统实时性要求匹配；在多核系统中，还需考虑调度表在不同核心之间的同步问题。|
 |多实例个数|0 - 65535|
 
 | 配置项属性 | 值（布尔参数配置项） |
 |-|-|
 |名称|OsScheduleTableRepeating|
 |描述|true: first expiry point on the schedule table shall be processed at final expiry point delay ticks after the final expiry point is processed.|
-|描述|概述：OsScheduleTableRepeating配置项用于指定操作系统调度表（Schedule Table）是否应该在完成其时间轴上的所有事件后重复执行。|
-|描述|注意：在AUTOSAR CP 4.4标准中，调度表可以配置为单次或重复执行；重复执行的调度表在达到其终点时会自动重新开始；确保调度表的设计考虑到系统的实时性要求和任务的周期性约束。|
+|描述|概述：OsScheduleTableRepeating配置项用于指定操作系统调度表（Schedule Table）是否应该在完成其时间轴所有事件执行完成后重复执行。|
+|描述|注意：在AUTOSAR CP 4.4标准中，调度表可以配置为单次或重复执行；重复执行的调度表在达到其终点后自动重新开始；确保调度表的设计考虑到系统的实时性要求和任务的周期性约束。|
 |说明|错误：调度表处理会在最终到期点被处理时停止。|
 |多实例个数|1 - 1|
 
@@ -308,7 +358,7 @@
 |-|-|
 |名称|OsScheduleTableCounterRef|
 |描述|This parameter contains a reference to the counter which drives the schedule table.|
-|描述|概述：OsScheduleTableCounterRef配置项用于指定操作系统调度表所依赖的计数器，确保调度表能够根据计数器的值进行任务的调度。|
+|描述|概述：OsScheduleTableCounterRef配置项用于指定操作系统调度表所依赖的计数器，确保调度表能够根据计数器的值进行任务调度。|
 |描述|注意：必须确保引用的计数器已经定义且与调度表兼容；在多计数器系统中，选择合适的计数器对于调度精度和性能至关重要；该配置项在AUTOSAR CP 4.4标准中是必需的，缺失会导致调度表无法正常工作。|
 |多实例个数|1 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsCounter|
@@ -317,19 +367,19 @@
 |-|-|
 |名称|OsSchTblAccessingApplication|
 |描述|Reference to applications which have an access to this object.|
-|描述|概述：OsSchTblAccessingApplication配置项用于指定哪些AUTOSAR应用程序可以访问操作系统的调度表，这有助于控制对调度表的访问权限，确保系统的安全性和稳定性。|
+|描述|概述：OsSchTblAccessingApplication配置项用于指定哪些AUTOSAR应用程序可以访问操作系统的调度表，用于控制对调度表的访问权限，确保系统的安全性和稳定性。|
 |描述|注意：在配置时需确保只有被信任的应用程序被授权访问调度表；不当的访问权限配置可能导致系统安全性降低；AUTOSAR CP 4.4标准中对于操作系统调度表的访问控制提供了详细的规范，需要严格遵守。|
 |多实例个数|0 - 32|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsApplication|
 
-### 7.1. OsScheduleTableAutostart
+### 8.1. OsScheduleTableAutostart
 
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|OsScheduleTableAutostart|
 |描述|This container specifies if and how the schedule table is started on startup of the Operating System. The options to start a schedule table correspond to the API calls to start schedule tables during runtime.|
 |描述|概述：OsScheduleTableAutostart配置项用于定义操作系统调度表的自动启动属性，包括启动条件（如系统启动或特定事件触发）和相对偏移时间。|
-|描述|注意：在配置时需确保调度表的启动条件与系统设计一致，避免因错误配置导致系统启动时序问题；自动启动的调度表应避免与手动启动的调度表冲突；AUTOSAR CP 4.4标准中，对于OsScheduleTableAutostart的配置应详细考虑其与系统启动级别的关系，确保系统的稳定性和可预测性。|
+|描述|注意：在配置时需确保调度表的启动条件与系统设计一致，避免因配置错误引发系统启动时序问题；自动启动的调度表应避免与手动启动的调度表冲突；AUTOSAR CP 4.4标准中，对于OsScheduleTableAutostart的配置应详细考虑其与系统启动级别的关系，确保系统的稳定性和可预测性。|
 |多实例个数|0 - 1|
 
 | 配置项属性 | 值（枚举参数配置项） |
@@ -337,7 +387,7 @@
 |名称|OsScheduleTableAutostartType|
 |描述|This specifies the type of the autostart for the schedule table.|
 |描述|概述：OsScheduleTableAutostartType定义了操作系统调度表的自动启动类型，指定调度表是在操作系统启动时自动启动，还是通过特定事件触发启动。|
-|描述|注意：该配置项的值通常包括ABSOLUTE和RELATIVE两种类型，分别对应于系统启动时的绝对时间启动和相对于某个事件的时间启动；在配置时需确保与系统的时间管理策略一致；AUTOSAR CP 4.4标准中对此有明确规定，不遵循可能导致系统启动时序问题。|
+|描述|注意：该配置项的值通常包括ABSOLUTE和RELATIVE两种类型，分别对应于系统启动时的绝对时间启动和相对于某个事件的时间启动；在配置时需确保与系统的时间管理策略一致；AUTOSAR CP 4.4标准中对此有明确规定，配置不当可能导致系统启动时序问题。|
 |多实例个数|1 - 1|
 |默认值|ABSOLUTE|
 
@@ -355,12 +405,12 @@
 |-|-|
 |名称|OsScheduleTableAppModeRef|
 |描述|Reference in which application modes the schedule table should be started during startup|
-|描述|概述：OsScheduleTableAppModeRef 配置项用于将操作系统的调度表与特定的应用模式关联起来，确保调度表仅在该应用模式下被启动。|
+|描述|概述：OsScheduleTableAppModeRef 配置项用于将操作系统的调度表与特定的应用模式关联起来，确保调度表仅在该应用模式下启动。|
 |描述|注意：在配置时需确保引用的应用模式已在系统中定义；调度表与应用模式的关联必须符合系统的运行逻辑和需求；在多应用模式的系统中，正确管理不同调度表与应用模式的关联以避免潜在的冲突。|
 |多实例个数|1 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsAppMode|
 
-### 7.2. OsScheduleTableExpiryPoint
+### 8.2. OsScheduleTableExpiryPoint
 
 | 容器属性 | 值（容器） |
 |-|-|
@@ -374,18 +424,18 @@
 |-|-|
 |名称|OsScheduleTblExpPointOffset|
 |描述|The offset from zero (in ticks) at which the expiry point is to be processed.|
-|描述|概述：OsScheduleTblExpPointOffset配置项用于定义操作系统调度表中的显式点（ExpPoint）相对于调度表开始的偏移时间，这有助于精确控制任务和事件的触发时机。|
-|描述|注意：该配置项的值必须小于调度表的周期，以确保显式点能够在每个调度周期内被准确触发；配置时需考虑系统的实时性要求，避免因偏移设置不当导致任务错过执行时机；在配置多个显式点时，需确保它们之间的偏移时间能够满足任务和事件的执行需求，避免冲突。|
+|描述|概述：OsScheduleTblExpPointOffset配置项用于定义操作系统调度表中的到期点（ExpPoint）相对于调度表开始的偏移时间，这有助于精确控制任务和事件的触发时机。|
+|描述|注意：该配置项的值必须小于调度表的周期，以确保到期点能够在每个调度周期内被准确触发；配置时需考虑系统的实时性要求，避免因偏移设置不当导致任务错过执行时机；在配置多个到期点时，需确保它们之间的偏移时间能够满足任务和事件的执行需求，避免冲突。|
 |多实例个数|1 - 1|
 |取值范围|0 - 4294967295|
 
-#### 7.2.1. OsScheduleTableEventSetting
+#### 8.2.1. OsScheduleTableEventSetting
 
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|OsScheduleTableEventSetting|
 |描述|Event that is triggered by that schedule table.|
-|描述|概述：OsScheduleTableEventSetting用于配置操作系统调度表中的事件设置，它指定了调度表中的特定点应当触发的事件，以此来控制任务的执行和时间管理。|
+|描述|概述：OsScheduleTableEventSetting用于配置操作系统调度表中的事件设置，它指定了调度表中的到期点应当触发的事件，以此来控制任务的执行和时间管理。|
 |描述|注意：在AUTOSAR CP 4.4标准中，对于OsScheduleTableEventSetting的具体属性和使用方式应当仔细参考OS模块的配置规范；确保每个调度点的事件设置不会导致任务的过度抢占或资源竞争；调度表的设计和事件设置应当满足实时性要求，避免系统的不确定性行为。|
 |多实例个数|0 - 65535|
 
@@ -393,7 +443,7 @@
 |-|-|
 |名称|OsScheduleTableSetEventRef|
 |描述|Reference to event that will be set by action|
-|描述|概述：OsScheduleTableSetEventRef 配置项用于将操作系统调度表与特定事件关联起来，使得在调度表的特定点上可以设置（触发）这个事件。|
+|描述|概述：OsScheduleTableSetEventRef 配置项用于将操作系统调度表与特定事件关联起来，使得在调度表的到期点上可以设置或触发这个事件。|
 |描述|注意：在配置时需确保引用的事件是有效的且与调度表兼容；调度表中设置事件的操作必须在定义的时间精度范围内；在多任务环境中，应注意事件触发与任务调度的同步问题。|
 |多实例个数|1 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsEvent|
@@ -404,13 +454,13 @@
 |多实例个数|1 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsTask|
 
-#### 7.2.2. OsScheduleTableTaskActivation
+#### 8.2.2. OsScheduleTableTaskActivation
 
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|OsScheduleTableTaskActivation|
 |描述|Task that is triggered by that schedule table.|
-|描述|概述：OsScheduleTableSetEventTaskRef 配置项用于将操作系统调度表与任务相关联，并指定当调度表到达特定点时，应该设置的事件。|
+|描述|概述：OsScheduleTableTaskActivation 配置项用于将操作系统调度表与任务相关联，并指定当调度表到达到期点时，应该激活任务。|
 |描述|注意：在配置时需确保引用的任务和事件已经定义；调度表中的每个事件只能与一个任务相关联；在配置调度表时，应考虑系统的实时性和任务优先级。|
 |多实例个数|0 - 65535|
 
@@ -418,54 +468,54 @@
 |-|-|
 |名称|OsScheduleTableActivateTaskRef|
 |描述|Reference to task that will be activated by action|
-|描述|概述：OsScheduleTableTaskActivation 配置项用于定义操作系统调度表中的任务激活行为，它指定了在调度表的特定时间点应当激活哪些任务。|
+|描述|概述：OsScheduleTableActivateTaskRef 配置项用于定义操作系统调度表中的任务激活行为，它指定了在调度表的特定时间点应当激活哪些任务。|
 |描述|注意：在配置时需要确保任务的激活时间点不会导致任务间的资源冲突或违反实时性约束；调度表中的任务激活应与任务的周期性和实时性要求相匹配；在多核系统中，还需考虑任务在不同核心间的分配和同步问题。|
 |多实例个数|1 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsTask|
 
-#### 7.2.3. OsScheduleTblAdjustableExpPoint
+#### 8.2.3. OsScheduleTblAdjustableExpPoint
 
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|OsScheduleTblAdjustableExpPoint|
 |描述|Adjustable expiry point|
-|描述|概述：OsScheduleTableActivateTaskRef 配置项用于指定操作系统调度表中激活任务的引用，它定义了调度表中的特定时间点上应当被激活的任务。|
-|描述|注意：在配置OsScheduleTableActivateTaskRef时，需要关注任务的到期点偏移和到期点的执行动作。|
+|描述|概述：OsScheduleTblAdjustableExpPoint 配置项用于指定操作系统调度表中激活任务的引用，它定义了调度表中的特定时间点上应当被激活的任务。|
+|描述|注意：在配置OsScheduleTblAdjustableExpPoint时，需要关注任务的到期点偏移和到期点的执行动作。|
 |多实例个数|0 - 1|
 
 | 配置项属性 | 值（整型参数配置项） |
 |-|-|
 |名称|OsScheduleTableMaxLengthen|
-|描述|The maximum positive adjustment that can be made to the expiry point offset (in ticks).|
-|描述|概述：OsScheduleTblAdjustableExpPoint配置项用于定义可调度表中的可调整过期点，允许系统在运行时调整任务的执行时间点，以适应动态变化的调度需求。|
-|描述|注意：该配置项仅适用于支持可调度表的操作系统；必须确保系统时间同步机制的准确性，以避免调整过程中的时间误差；调整策略应考虑系统的实时性要求，避免因调整导致任务错过关键执行时刻。|
+|描述|OsScheduleTableMaxLengthen defines the maximum number of ticks that can be added to the expiry point’s offset.|
+|描述|概述：OsScheduleTableMaxLengthen 定义了可以添加到到期点偏移量的最大时钟节拍数（tick数），以延长从前一个到期点到当前到期点的延迟。|
+|描述|注意：调度表的周期通常是固定的，但是这个配置项允许系统设计者为调度表预留一些额外的时间，以便在必要时可以进行微调。需要确保相邻两个到期点之间的最大延迟必须小于调度表周期（duration）。此外，过大的MaxLengthen值可能会影响系统的实时性能，因此需要仔细评估和测试。|
 |多实例个数|1 - 1|
 |取值范围|0 - 4294967295|
 
 | 配置项属性 | 值（整型参数配置项） |
 |-|-|
 |名称|OsScheduleTableMaxShorten|
-|描述|The maximum negative adjustment that can be made to the expiry point offset (in ticks).|
-|描述|概述：OsScheduleTableMaxLengthen 配置项用于指定操作系统调度表的最大长度延长值，这是一个用于优化调度表时间精度的参数。|
-|描述|注意：在AUTOSAR CP 4.4标准中，调度表的长度通常是固定的，但是这个配置项允许系统设计者为调度表预留一些额外的时间，以便在必要时可以进行微调。需要确保这个延长值不会导致调度表超出系统的时间分辨率限制。此外，过大的MaxLengthen值可能会影响系统的实时性能，因此需要仔细评估和测试。|
+|描述|OsScheduleTableMaxShorten defines the maximum number of ticks that can be subtracted from the expiry point’s offset.|
+|描述|概述：OsScheduleTableMaxShorten 定义了可以从到期点偏移量中减去的最大时钟节拍数（tick数），以缩短从前一个到期点到当前到期点的延迟。|
+|描述|注意：该配置项仅适用于支持调度表的操作系统；必须确保系统时间同步机制的准确性，以避免调整过程中的时间误差；调整必须确保相邻到期点之间的最小延迟必须大于MINCYCLE。|
 |多实例个数|1 - 1|
 |取值范围|0 - 4294967295|
 
-### 7.3. OsScheduleTableSync
+### 8.3. OsScheduleTableSync
 
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|OsScheduleTableSync|
 |描述|This container specifies the synchronization parameters of the schedule table.|
-|描述|概述：OsScheduleTableMaxShorten 配置项用于指定操作系统调度表（Schedule Table）可以被缩短的最大时间，这是为了提供调度表的灵活性，允许它在运行时适应系统的变化。|
-|描述|注意：该值必须小于或等于调度表周期的一半；过大的缩短值可能会导致调度表的不稳定或错过重要的执行点；在配置此参数时，应确保系统的实时性要求得到满足。|
+|描述|概述：OsScheduleTableSync 配置项用于配置调度表同步类型及同步精度。|
+|描述|注意：精度的基准单位是时钟节拍（tick），只对显式同步有效。|
 |多实例个数|0 - 1|
 
 | 配置项属性 | 值（枚举参数配置项） |
 |-|-|
 |名称|OsScheduleTblSyncStrategy|
 |描述|AUTOSAR OS provides support for synchronization in two ways: explicit and implicit.|
-|描述|概述：OsScheduleTableSync配置项用于定义操作系统调度表的同步策略，确保调度表可以与外部时间源同步，以提高系统的时间精度和可靠性。|
+|描述|概述：OsScheduleTblSyncStrategy 配置项用于定义操作系统调度表的同步策略，确保调度表可以与外部时间源同步，以提高系统的时间精度和可靠性。|
 |描述|注意：同步策略的选择应考虑系统的实时性要求和外部时间源的特性；不恰当的同步设置可能导致系统时间偏差增大，影响任务的准时执行；AUTOSAR CP 4.4标准支持多种同步策略，包括无同步、隐式同步和显式同步，需根据具体应用场景选择合适的同步方式。|
 |多实例个数|1 - 1|
 |默认值|NONE|
@@ -474,26 +524,26 @@
 |-|-|
 |名称|OsScheduleTblExplicitPrecision|
 |描述|This configuration is only valid if the explicit synchronization is used.|
-|描述|概述：OsScheduleTblExplicitPrecision配置项用于定义操作系统调度表的显式精度，即系统可以接受的最大时间偏差，用于调整调度表的时间精度。|
-|描述|注意：精度值设置过大可能导致系统响应时间变慢，而设置过小可能导致系统无法满足时间精确性要求；该配置项对实时系统的时间管理至关重要，需根据实际应用场景谨慎设置；在AUTOSAR CP 4.4标准中，确保该配置项的值与系统的实际能力和需求相匹配。|
+|描述|概述：OsScheduleTblExplicitPrecision配置项用于定义操作系统调度表的显式同步精度，即系统可以接受的最大时间偏差，用于调整调度表的时间精度。|
+|描述|注意：精度值设置过大可能导致系统响应时间变慢，而设置过小可能导致系统无法满足时间精度要求；该配置项对实时系统的时间管理至关重要，需根据实际应用场景谨慎设置；在AUTOSAR CP 4.4标准中，确保该配置项的值与系统的实际能力和需求相匹配。|
 |多实例个数|0 - 1|
 |默认值|0|
 |取值范围|0 - 4294967295|
 
-## 8. OsSpinlock
+## 9. OsSpinlock
 
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|OsSpinlock|
 |描述|An OsSpinlock object is used to co-ordinate concurrent access by TASKs/ISR2s on different cores to a shared resource.|
 |描述|概述：OsSpinlock配置项用于定义操作系统层面的自旋锁，它允许在多核系统中同步对共享资源的访问，确保数据一致性和系统稳定性。|
-|描述|注意：在配置OsSpinlock时，需要确保自旋锁的使用不会导致优先级反转问题；自旋锁应仅用于短时间的数据保护以避免长时间占用CPU资源；AUTOSAR CP 4.4标准中，对自旋锁的支持和配置要求可能与早期版本有所不同，需仔细参考最新标准文档。|
+|描述|注意：在配置OsSpinlock时，需要确保自旋锁的使用不会导致优先级反转问题；通常建议锁定时间不超过临界区执行时间以避免长时间占用CPU资源；AUTOSAR CP 4.4标准中，对自旋锁的支持和配置要求可能与早期版本有所不同，需仔细参考最新标准文档。|
 |多实例个数|0 - 65535|
 
 | 配置项属性 | 值（枚举参数配置项） |
 |-|-|
 |名称|OsSpinlockLockMethod|
-|描述|Lock method which is used when a spinlock is taken. Note that it is possible that a user (e.g. a Task) might hold more than one spinlock. In this case the last lock taken is forced to use at least a lock methode which locks as strong as the current one.|
+|描述|Lock method which is used when a spinlock is taken. Note that it is possible that a user (e.g. a Task) might hold more than one spinlock. In this case the last lock taken is forced to use at least a lock method which locks as strong as the current one.|
 |描述|概述：OsSpinlockLockMethod配置项定义了操作系统中自旋锁的锁定方法，这决定了在多核处理器环境中，如何实现对共享资源的互斥访问。|
 |描述|注意：在配置OsSpinlockLockMethod时，需要确保所选的锁定方法与硬件架构和操作系统的能力相匹配；此外，应考虑锁定方法对系统性能的影响，因为不同的锁定方法可能会导致不同程度的CPU占用和延迟；AUTOSAR CP 4.4标准可能对自旋锁的实现和配置提供了特定的指导，需要确保配置与标准的要求一致。|
 |多实例个数|1 - 1|
@@ -527,25 +577,35 @@
 |多实例个数|0 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsSpinlock|
 
-## 9. OsTask
+## 10. OsTask
 
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|OsTask|
 |描述|This container represents an ISO 17356 task.|
-|描述|概述：OsTask配置项定义了操作系统任务的属性，包括任务的优先级、堆栈大小、调度策略等，是实现多任务调度的基础。|
-|描述|注意：在配置OsTask时，必须确保任务的优先级设置合理，避免优先级反转问题；任务堆栈大小应足够大，以避免堆栈溢出；AUTOSAR CP 4.4标准中，任务的调度策略应支持全抢占式和非抢占式两种模式。|
+|描述|概述：OsTask配置项定义了操作系统任务的属性，包括任务的优先级、栈大小、调度策略等，是实现多任务调度的基础。|
+|描述|注意：在配置OsTask时，必须确保任务的优先级设置合理，避免优先级反转问题；任务栈大小应足够大，以避免栈溢出；AUTOSAR CP 4.4标准中，任务的调度策略应支持全抢占式和非抢占式两种模式。|
 |多实例个数|0 - 65535|
 
 | 配置项属性 | 值（布尔参数配置项） |
 |-|-|
 |名称|OsTaskUsesFpu|
-|描述|true: open floating-point arithmetic.|
-|描述|概述：OsTaskUsesFpu配置项用于指定操作系统任务是否使用浮点单元(FPU)，以确保任务在使用FPU时能够正确保存和恢复浮点寄存器的状态。|
+|描述|true: enable floating-point arithmetic.|
+|描述|概述：OsTaskUsesFpu配置项用于指定操作系统任务是否使用浮点运算单元(FPU)，以确保任务在使用FPU时能够正确保存和恢复浮点寄存器的状态。|
 |描述|注意：在配置时需确保仅对实际使用FPU的任务启用此选项，以避免不必要的性能开销；AUTOSAR CP 4.4标准要求操作系统管理FPU上下文切换，因此正确配置此项对于系统稳定性和性能至关重要；在多任务环境中，未正确配置使用FPU的任务可能导致数据不一致和计算错误。|
 |说明|错误：禁用浮点运算...​|
 |多实例个数|1 - 1|
 |默认值|false|
+
+| 配置项属性 | 值（枚举参数配置项） |
+|-|-|
+|名称|OsTaskSchedule|
+|描述|The OsTaskSchedule attribute defines the preemptability of the task.|
+|描述|概述：OsTaskSchedule配置项用于定义操作系统任务的调度策略，如全抢占式、非抢占式或混合调度策略，影响任务的运行和调度行为。|
+|描述|注意：AUTOSAR CP 4.4标准中，任务调度策略的选择对系统响应时间和资源利用率有重要影响；选择非抢占式调度时，需特别注意任务执行时间，避免长时间占用CPU导致系统响应延迟；在配置OsTaskSchedule时，应确保与系统设计的实时性要求相匹配。|
+|说明|此配置项暂不可配置.|
+|多实例个数|1 - 1|
+|默认值|FULL|
 
 | 配置项属性 | 值（枚举参数配置项） |
 |-|-|
@@ -580,8 +640,8 @@
 |-|-|
 |名称|OsTaskStackSize|
 |描述|The size of a task stack is defined by the value of this attribute.|
-|描述|概述：OsTaskStackSize 配置项用于指定操作系统任务的堆栈大小，确保任务有足够的堆栈空间来执行其分配的函数和调用。|
-|描述|注意：堆栈大小必须足够以避免堆栈溢出，这可能导致系统不稳定；同时，过大的堆栈可能会浪费系统资源；在配置堆栈大小时，应考虑任务的复杂性和调用深度。|
+|描述|概述：OsTaskStackSize 配置项用于指定操作系统任务的栈大小，确保任务有足够的栈空间来执行其分配的函数和调用。|
+|描述|注意：栈大小必须足够以避免栈溢出，这可能导致系统不稳定；同时，过大的栈可能会浪费系统资源；在配置栈大小时，应考虑任务的复杂性和调用深度。|
 |多实例个数|1 - 1|
 |默认值|1024|
 |取值范围|128 - 65535|
@@ -591,7 +651,7 @@
 |名称|OsTaskAccessingApplication|
 |描述|Reference to applications which have an access to this object.|
 |描述|概述：OsTaskAccessingApplication 配置项用于指定哪些AUTOSAR应用程序可以访问特定的操作系统任务，确保任务的访问控制符合系统安全要求。|
-|描述|注意：在配置时需确保只有授权的应用程序能够访问对应的任务；此配置项与系统的安全等级和隔离机制密切相关；在多应用系统中，正确配置此项对于避免潜在的安全风险至关重要。|
+|描述|注意：在配置时需确保只有授权的应用程序能够访问对应的任务；此配置项与系统的功能安全等级和隔离机制密切相关；在多应用系统中，正确配置此项对于避免潜在的安全风险至关重要。|
 |多实例个数|0 - 32|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsApplication|
 
@@ -599,12 +659,21 @@
 |-|-|
 |名称|OsTaskEventRef|
 |描述|This reference defines the list of events the extended task may react on.|
-|描述|概述：OsTaskEventRef 配置项用于指定操作系统任务（OsTask）与事件（Event）之间的关联，这样当事件被触发时，相应的任务可以被激活或者通知。|
+|描述|概述：OsTaskEventRef 配置项用于指定操作系统任务（OsTask）与事件（Event）之间的关联，这样当事件被触发时，相应的任务可以通过事件触发任务激活。|
 |描述|注意：在配置OsTaskEventRef时，需要确保引用的事件与任务是兼容的，并且在系统中是唯一的；此外，事件驱动的任务调度必须符合AUTOSAR OS的任务管理规范；在多任务环境中，还需注意任务优先级和事件处理的实时性要求。|
 |多实例个数|0 - 32|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsEvent|
 
-### 9.1. OsTaskAutostart
+| 配置项属性 | 值（关联引用配置项） |
+|-|-|
+|名称|OsTaskResourceRef|
+|描述|This reference defines a list of resources accessed by this task.|
+|描述|概述：OsTaskResourceRef用于指定操作系统任务（OsTask）与其所需资源（OsResource）之间的关联，确保任务在执行时能够正确地访问和控制其所需的资源。|
+|描述|注意：在配置OsTaskResourceRef时，必须确保引用的资源已经定义且与任务兼容；资源的使用应遵循优先级倒置协议，以避免优先级反转问题；AUTOSAR CP 4.4标准要求资源的分配和释放操作必须严格遵循LIFO（后进先出）原则。|
+|多实例个数|0 - 65535|
+|目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsResource|
+
+### 10.1. OsTaskAutostart
 
 | 容器属性 | 值（容器） |
 |-|-|
@@ -624,7 +693,7 @@
 |多实例个数|1 - 1|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsAppMode|
 
-## 10. OsPublishedInformation
+## 11. OsPublishedInformation
 
 | 容器属性 | 值（容器） |
 |-|-|
@@ -637,7 +706,7 @@
 | 配置项属性 | 值（字符串参数配置项） |
 |-|-|
 |名称|OsKernelVersion|
-|描述|Defines the kernel source code generation.|
+|描述|Defines the kernel source code version.|
 |描述|概述：OsKernelVersion 配置项用于指定操作系统内核的版本信息，确保系统组件与操作系统的兼容性。|
 |描述|注意：在AUTOSAR CP 4.4标准中，需要确保配置的内核版本与实际使用的AUTOSAR OS模块版本一致；不正确的版本信息可能导致系统行为不符合预期；在进行系统集成时，应仔细核对所有组件的版本信息以避免兼容性问题。|
 |多实例个数|1 - 1|
@@ -645,16 +714,18 @@
 | 配置项属性 | 值（字符串参数配置项） |
 |-|-|
 |名称|OsPlatformName|
-|描述|Defines the name of the platform supported with this BSWMD.|
+|描述|Defines the name of the platform supported with this BSWMD(Basic Software Module Description).|
 |描述|概述：OsPlatformName 配置项用于指定操作系统平台的名称，这通常是为了与特定的硬件架构或操作系统实现相关联。|
 |描述|注意：在AUTOSAR CP 4.4标准中，操作系统的名称应与实际使用的操作系统平台保持一致；如果使用标准的AUTOSAR OS，应选择相应的标准名称；在配置时需确保名称的唯一性和正确性，以避免与其他软件组件的兼容性问题。|
 |多实例个数|1 - 1|
 
-### 10.1. OsDerivativeInformation
+### 11.1. OsDerivativeInformation
 
 | 容器属性 | 值（容器） |
 |-|-|
 |名称|OsDerivativeInformation|
+|描述|概述：OsDerivativeInformation配置项包含了操作系统(OS)衍生信息，这些信息用于描述操作系统的特定属性，如供应商标识、OS版本号等，以确保操作系统的正确实现和兼容性。|
+|描述|注意：在配置OsDerivativeInformation时，需要确保所提供的信息与实际使用的操作系统版本和供应商信息一致；此配置项对于操作系统模块的集成和验证至关重要，因此应谨慎处理；AUTOSAR CP 4.4标准可能对操作系统的特定版本或衍生品有特定要求，所以需要参照标准文档来配置这些信息。|
 |多实例个数|0 - 1|
 
 | 配置项属性 | 值（字符串参数配置项） |
@@ -662,7 +733,7 @@
 |名称|OsStackAlignment|
 |多实例个数|1 - 1|
 
-#### 10.1.1. OsPhysicalCore
+#### 11.1.1. OsPhysicalCore
 
 | 容器属性 | 值（容器） |
 |-|-|
@@ -673,13 +744,13 @@
 |-|-|
 |名称|OsPhysicalCoreId|
 |描述|This parameter defines the physical Id of the core.|
-|描述|概述：OsDerivativeInformation配置项包含了操作系统(OS)衍生信息，这些信息用于描述操作系统的特定属性，如供应商标识、OS版本号等，以确保操作系统的正确实现和兼容性。|
-|描述|注意：在配置OsDerivativeInformation时，需要确保所提供的信息与实际使用的操作系统版本和供应商信息一致；此配置项对于操作系统模块的集成和验证至关重要，因此应谨慎处理；AUTOSAR CP 4.4标准可能对操作系统的特定版本或衍生品有特定要求，所以需要参照标准文档来配置这些信息。|
+|描述|概述：OsPhysicalCoreId定义多核系统中物理核心的标识号，用于操作系统对多核处理器的资源管理|
+|描述|注意：物理核心ID必须与硬件实际核心数量匹配，且在多核系统中保持唯一性。|
 |多实例个数|1 - 1|
 |默认值|0|
 |取值范围|0 - 255|
 
-#### 10.1.2. OsHardWareTimer
+#### 11.1.2. OsHardWareTimer
 
 | 容器属性 | 值（容器） |
 |-|-|
@@ -703,69 +774,228 @@
 |多实例个数|0 - 1|
 |取值范围|0 - Inf|
 
-## 11. OsMemmoryMap
+#### 11.1.3. OsMemoryRegionSpecifics
 
 | 容器属性 | 值（容器） |
 |-|-|
-|名称|OsMemmoryMap|
-|描述|OsMemmoryMap is used for additional memmap parameters and information.|
-|描述|概述：OsMemmoryMap配置项定义了操作系统模块生成内存映射代码需要的信息。|
-|描述|注意：完成OsMemmmoryMap配置后，还需要结合内存映射方法对变量使用内存映射属性进行指定和修改内存映射脚本，来实现完整的内存映射流程。|
+|名称|OsMemoryRegionSpecifics|
+|多实例个数|0 - 1|
+
+##### 11.1.3.1. OsMemoryRegionAccess
+
+| 容器属性 | 值（容器） |
+|-|-|
+|名称|OsMemoryRegionAccess|
+|多实例个数|1 - inf|
+
+| 配置项属性 | 值（枚举参数配置项） |
+|-|-|
+|名称|OsMemoryRegionAccessRights|
+|描述|Defines the access rights for a memory protection region.NONE: No access rights.R: Read access rights.W: Write access rights.X: Execution access rights|
+|描述|概述：OsMemoryRegionAccess配置项用于定义操作系统内存区域的访问权限，确保特定的软件组件或模块能够访问指定的内存区域，同时保护内存区域不被未授权访问。|
+|描述|注意：在配置OsMemoryRegionAccess时，需要确保正确匹配内存区域与访问权限，避免潜在的安全风险；AUTOSAR CP 4.4标准中对内存保护和访问控制有详细规定，需要遵守这些规定以确保系统的安全性；配置不当可能导致系统运行异常或安全漏洞。|
 |多实例个数|1 - 1|
+|默认值|NONE|
 
-### 11.1 OsMemmapLayer
+##### 11.1.3.2. OsMemoryRegionFlags
 
 | 容器属性 | 值（容器） |
 |-|-|
-|名称|OsMemmapLayer|
-|描述|OsMemmapLayer defines the name of the memmap layer provided.|
-|描述|概述：OsMemmapLayer 配置项用于指定内存映射中的软件层级，允许多个内存映射软件层级。|
-|描述|注意：用户必须配置至少一个内存映射软件层级，并存在唯一一个内部软件层级，作为内部底层的软件层级。|
-|多实例个数|1 - 16|
+|名称|OsMemoryRegionFlags|
+|多实例个数|0 - inf|
+
+| 配置项属性 | 值（枚举参数配置项） |
+|-|-|
+|名称|OsMemoryRegionMemoryAttributes|
+|描述|Defines the memory attributes for a memory protection region.|
+|描述|概述：OsMemoryRegionMemoryAttributes配置项用于定义操作系统内存区域的内存属性，确保特定的区域有特定的属性。|
+|描述|注意：在配置OsMemoryRegionMemoryAttributes时，需要确保正确匹配内存区域与内存属性，避免潜在的安全风险。|
+|多实例个数|1 - 1|
+|默认值|NONE|
+
+## 12. OsOS
+
+| 容器属性 | 值（容器） |
+|-|-|
+|名称|OsOS|
+|描述|OS is the object used to define ISO 17356-3 properties for an ISO 17356 application.|
+|描述|概述：OsOS 是 AUTOSAR OS模块的主配置容器，包含操作系统的全局属性，如安全级别等。|
+|描述|注意：在配置OsOS时，必须确保所有参数符合AUTOSAR CP 4.4标准的要求；配置应考虑系统的实时性和资源限制；正确配置OsOS对系统稳定性和性能至关重要。|
+|多实例个数|0 - 1|
+
+| 配置项属性 | 值（枚举参数配置项） |
+|-|-|
+|名称|OsScalabilityClass|
+|描述|A scalability class for each System Object "OS" has to be selected. In order to customize the operating system to the needs of the user and to take full advantage of the processor features the operating system can be scaled according to the scalability classes.|
+|描述|概述：OsScalabilityClass 定义了操作系统的安全级别，这影响了操作系统的功能和性能特性。|
+|描述|注意：选择合适的OsScalabilityClass对于系统资源的优化和性能提升至关重要，但也同样关系着系统的安全级别。|
+|多实例个数|0 - 1|
+
+### 12.1. OsHooks
+
+| 容器属性 | 值（容器） |
+|-|-|
+|名称|OsHooks|
+|描述|Container to structure all hooks belonging to the OS|
+|描述|概述：OsHooks 配置项用于定义操作系统钩子函数，这些钩子函数在操作系统的特定点被调用，以实现自定义的行为，例如在任务切换或系统错误时执行特定操作。|
+|描述|注意：在AUTOSAR CP 4.4标准中，需要确保钩子函数的使用不会违反操作系统的实时性和可预测性；钩子函数应当简短且执行时间可控，以避免对系统调度造成不必要的影响；正确配置钩子函数的启用和禁用，以满足系统安全和性能要求。|
+|多实例个数|1 - 1|
 
 | 配置项属性 | 值（布尔参数配置项） |
 |-|-|
-|名称|OsInternalLayer|
-|描述|Parameter to specify if the layer is defined as the internal memmap layer or not. |
-|描述|概述：OsInternalLayer说明该层级作为内部底层的内存映射软件层级。|
-|描述|注意：必须存在唯一一个OsInternalLayer。|
-|说明|错误：该层级并不是内部底层内存映射软件层级。|
+|名称|OsErrorHook|
+|描述|Error hook as defined by ISO 17356|
+|描述|概述：OsErrorHook配置项用于定义操作系统是否启用错误钩子（Error Hook），这是一个操作系统服务，当操作系统检测到错误时会调用该钩子函数。|
+|描述|注意：在AUTOSAR CP 4.4标准中，启用OsErrorHook可能会影响系统的性能，因为每次操作系统错误时都会调用该钩子；此外，需要确保Error Hook的实现不会引入新的错误，避免错误处理过程中的递归调用；最后，应当仔细考虑Error Hook对系统内存和时间行为的影响。|
+|说明|错误: 禁用错误钩子|
 |多实例个数|1 - 1|
+|默认值|true|
 
-### 11.2 OsMemmapModule
-
-| 容器属性 | 值（容器） |
+| 配置项属性 | 值（整型参数配置项） |
 |-|-|
-|名称|OsMemmapModule|
-|描述|OsMemmapModule defines the name of a memmap module.|
-|描述|概述：OsMemmapModule 配置项用于指定内存映射中的用户自定义模块的模块名称。|
-|描述|注意：用户可自定义多个内存映射模块，操作系统会为每一个模块生成对应的模块头文件供用户使用。|
-|多实例个数|0 - 65535|
+|名称|OsErrorHookStackSize|
+|描述|The size of a ErrorHook stack is defined by the value of this attribute.|
+|描述|概述：OsErrorHookStackSize配置项定义了操作系统错误钩子（Error Hook）函数使用的栈大小，确保有足够的栈空间来处理操作系统级别的错误。|
+|描述|注意：栈大小需根据错误处理代码的复杂度合理配置，避免栈溢出；在多任务系统中，应考虑各任务对栈的共享和影响；AUTOSAR CP 4.4标准中未明确指定默认栈大小，需根据实际应用需求和硬件资源配置。|
+|多实例个数|1 - 1|
+|默认值|1024|
+|取值范围|128 - 65535|
 
 | 配置项属性 | 值（布尔参数配置项） |
 |-|-|
-|名称|OsMemmapUseCalibration|
-|描述|True: generate calibration mapping for the module.|
-|描述|概述：OsMemmapUseCalibration说明该模块需要生成标定段。|
-|描述|注意：如果在不需要标定段的情况下，打开了这个选项，会造成冗余代码。|
-|说明|错误：该层级不生成标定段。|
+|名称|OsProtectionHook|
+|描述|Switch to enable/disable the call to the (user supplied) protection hook.|
+|描述|概述：OsProtectionHook配置项用于定义操作系统保护钩子函数，该函数在操作系统检测到严重错误（如内存访问违规、时间违规等）时被调用，用于执行错误处理或系统恢复。|
+|描述|注意：在AUTOSAR CP 4.4标准中，确保OsProtectionHook仅用于处理不可恢复的错误；配置时需注意其对系统响应时间的影响；保护钩子的实现必须遵循AUTOSAR的错误处理规范。|
+|说明|错误: 禁用保护钩子|
+|多实例个数|0 - 1|
+|默认值|true|
+
+| 配置项属性 | 值（整型参数配置项） |
+|-|-|
+|名称|OsProtectionHookStackSize|
+|描述|The size of a ProtectionHook stack is defined by the value of this attribute.|
+|描述|概述：OsProtectionHookStackSize 配置项用于定义操作系统保护钩子（Protection Hook）的栈大小，这是一个用于错误处理和系统监控的回调函数，当操作系统检测到严重错误时会调用。|
+|描述|注意：栈大小必须足够以支持保护钩子函数内的所有操作，包括局部变量、函数调用和可能的上下文切换；过小的栈可能导致栈溢出，而过大的栈则会浪费宝贵的系统资源；在配置栈大小时，应考虑目标硬件的内存限制和操作系统的具体实现。|
+|多实例个数|1 - 1|
+|默认值|1024|
+|取值范围|128 - 65535|
+
+| 配置项属性 | 值（布尔参数配置项） |
+|-|-|
+|名称|OsShutdownHook|
+|描述|Shutdown hook as defined by ISO 17356|
+|描述|概述：OsShutdownHook是一个操作系统配置参数，用于指定系统关闭时是否调用ShutdownHook回调函数，以执行特定的关闭操作。|
+|描述|注意：在AUTOSAR CP 4.4标准中，需要确保如果启用OsShutdownHook，相应的回调函数应当被正确实现；此外，应当注意ShutdownHook的执行时间不应过长，以避免延迟系统关闭过程；最后，需要考虑ShutdownHook的调用可能与系统的安全需求相关联，因此应当遵循相关的功能安全要求（如ASIL等级）。|
+|说明|错误: 禁用Shutdown Hook|
+|多实例个数|1 - 1|
+|默认值|true|
+
+| 配置项属性 | 值（整型参数配置项） |
+|-|-|
+|名称|OsShutdownHookStackSize|
+|描述|The size of a ShutdownHook stack is defined by the value of this attribute.|
+|多实例个数|1 - 1|
+|默认值|1024|
+|取值范围|128 - 65535|
+
+| 配置项属性 | 值（布尔参数配置项） |
+|-|-|
+|名称|OsStartupHook|
+|描述|Startup hook as defined by ISO 17356|
+|描述|概述：OsStartupHook配置项用于定义操作系统启动时是否调用Startup Hook函数，这是一个在操作系统启动完成后，任何任务或中断服务例程被调度之前执行的钩子函数。|
+|描述|注意：在使用OsStartupHook时，需要确保操作系统配置支持钩子函数的使用；此外，过多的逻辑处理在Startup Hook中可能会影响系统启动性能；AUTOSAR标准要求此配置项应谨慎使用，以避免影响系统的实时性和可预测性。|
+|说明|错误: 禁用Startup Hook|
+|多实例个数|1 - 1|
+|默认值|true|
+
+| 配置项属性 | 值（整型参数配置项） |
+|-|-|
+|名称|OsStartupHookStackSize|
+|描述|The size of a StartupHook stack is defined by the value of this attribute.|
+|描述|概述：OsStartupHookStackSize配置项用于定义操作系统启动钩子（Startup Hook）的栈大小，确保有足够的栈空间执行启动时的启动初始化代码。|
+|描述|注意：栈大小需根据启动钩子中的代码复杂度合理设置，避免栈溢出；AUTOSAR CP 4.4标准中未明确指定默认栈大小，需根据具体实现和硬件条件确定；过大的栈大小可能会浪费系统资源。|
+|多实例个数|1 - 1|
+|默认值|1024|
+|取值范围|128 - 65535|
+
+## 13. OsMemoryProtection
+
+| 容器属性 | 值（容器） |
+|-|-|
+|名称|OsMemoryProtection|
+|描述|Container to structure all memory protection relevant configuration parameters.Memory protection is only allowed if OS scalability class is set to SC3 or SC4.|
+|描述|概述：OsMemoryProtection配置项用于定义操作系统的内存保护设置，确保系统内存区域的隔离和保护，防止未授权的访问和潜在的错误影响系统的稳定性。|
+|描述|注意：在配置OsMemoryProtection时，需要确保与硬件支持的内存保护机制相匹配；应考虑不同运行实体间的内存隔离需求；在多核系统中，还需注意核间的内存保护策略一致性。|
+|多实例个数|0 - 1|
+
+### 13.1. OsMemoryRegion
+
+| 容器属性 | 值（容器） |
+|-|-|
+|名称|OsMemoryRegion|
+|描述|Container to structure the configuration parameters of one memory protection region.|
+|描述|概述：OsMemoryRegion配置项用于定义操作系统内存保护区域的属性，如地址界限、访问权限和内存属性等，确保内存区域的访问符合系统安全和性能要求。|
+|描述|注意：在配置OsMemoryRegion时，需要确保所选标志与处理器架构和操作系统的内存保护机制兼容。|
+|多实例个数|0 - inf|
+
+| 配置项属性 | 值（字符串参数配置项） |
+|-|-|
+|名称|OsMemoryRegionStartAddress|
+|描述|Start address of a memory protection region. The address can be specified either as a valid decimal (1024) or hexadecimal (0x4000) value, or as a valid linker symbol.StartAddress \<= Memory to be accessed|
+|描述|概述：OsMemoryRegionStartAddress 配置项用于定义操作系统内存区域的起始地址，这是为了确保操作系统组件能够访问正确的内存区域。|
+|描述|注意：在配置时必须确保地址与实际的硬件内存映射一致；避免与其他内存区域的地址重叠，以防止数据冲突和系统不稳定；在多核或多分区系统中，还需考虑内存隔离和保护机制。|
 |多实例个数|1 - 1|
 
+| 配置项属性 | 值（字符串参数配置项） |
+|-|-|
+|名称|OsMemoryRegionEndAddress|
+|描述|End address of a memory protection region. The address can be specified either as a valid decimal (1024) or hexadecimal (0x4000) value, or as a valid linker symbol.Depending on the underlying hardware:Memory to be accessed \<= EndAddress or Memory to be accessed \< EndAddress|
+|描述|概述：OsMemoryRegionEndAddress 配置项指定了操作系统内存区域的结束地址，用于定义内存分区的边界，确保内存访问的安全性和合法性。|
+|描述|注意：在配置OsMemoryRegionEndAddress时，需要确保地址对齐并且不超出实际物理内存范围；此外，结束地址应该大于等于对应内存区域的起始地址；在AUTOSAR CP 4.4标准中，内存保护和分区管理是关键特性，因此正确配置内存区域地址是系统稳定性和安全性的重要因素。|
+|多实例个数|1 - 1|
+
+| 配置项属性 | 值（整型参数配置项） |
+|-|-|
+|名称|OsMemoryRegionIndex|
+|描述|Defines the optional hardware specific memory protection region index.The interpretation of this parameter is hardware specific.|
+|描述|概述：OsMemoryRegionIndex配置项用于定义操作系统级别的内存保护区域的顺序。|
+|描述|注意：OsMemoryRegionIndex与硬件架构相关。|
+|多实例个数|0 - 1|
+|取值范围|0 - 32|
+
+| 配置项属性 | 值（选择引用配置项） |
+|-|-|
+|名称|OsMemoryRegionOwner|
+|描述|Specifies whether a memory protection region is OS-Application, Task or ISR specific or Global.|
+|描述|概述：OsMemoryRegionOwner配置项用于定义内存保护设置所保护的范围，可以是Core级别的，也可以是App、Task或者ISR级别的。|
+|描述|注意：当没有设置OsMemoryRegionOwner时，默认为Core级别的内存保护设置。|
+|多实例个数|0 - 1|
+|目标引用|/AUTOSAR/EcucDefs/Os/OsApplication/AUTOSAR/EcucDefs/Os/OsIsr/AUTOSAR/EcucDefs/Os/OsTask|
+
+| 配置项属性 | 值（选择引用配置项） |
+|-|-|
+|名称|OsMemoryRegionProtectionUnit|
+|描述|References on which memory protection unit (core or system) the memory protection region shall be used.|
+|描述|概述：OsMemoryRegionProtectionUnit配置项用于定义内存保护设置所属核。|
+|描述|注意：OsMemoryRegionProtectionUnit需与硬件架构相适配。|
+|多实例个数|1 - 1|
+|目标引用|/AUTOSAR/EcucDefs/Os/OsPublishedInformation/OsDerivativeInformation/OsPhysicalCore|
 
 | 配置项属性 | 值（关联引用配置项） |
 |-|-|
-|名称|OsMemmapUseLayer|
-|描述|Defines the name of the memmap layer the module is related to.|
-|描述|概述：OsMemmapUseLayer 配置项用于指定模块关联的内存映射软件层级。|
-|描述|注意：用户必须将配置的内存映射模块定义到一个内存映射软件层级上。|
+|名称|OsMemoryRegionAccessRights|
+|描述|This reference is used to set access rights for the memory protection region.|
+|描述|概述：OsMemoryRegionAccessRights配置项用于定义内存保护区域的访问属性。|
+|描述|注意：AUTOSAR CP 4.4标准中对内存保护有严格的规范，需要确保配置符合标准的内存分区和访问权限要求；在多核系统中，还需考虑跨核访问的内存保护策略；配置错误可能导致系统启动失败或运行时异常。|
 |多实例个数|1 - 1|
-|目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsMemmoryMap/OsMemmapLayer|
+|目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsPublishedInformation/OsDerivativeInformation/OsMemoryRegionSpecifics/OsMemoryRegionAccess|
 
 | 配置项属性 | 值（关联引用配置项） |
 |-|-|
-|名称|OsMemmapApplicationRef|
-|描述|Defines the name of the applications the module is related to.|
-|描述|概述：OsMemmapApplicationRef 配置项用于指定模块相关的applications。|
-|描述|注意：用户可以配置关联多个application，根据无关联，单关联或多关联，会产生不一样的内存映射宏供用户使用。|
-|多实例个数|0 - 32|
-|目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsMemmoryMap/OsMemmapLayer|
+|名称|OsMemoryRegionFlags|
+|描述|Specific memory protection region flag. e.g. Cachable, Device, ...|
+|描述|概述：OsMemoryRegionAccessRights配置项用于定义内存保护区域的访问属性。|
+|描述|注意：OsMemoryRegionAccessRights配置时需参考硬件特性。|
+|多实例个数|0 - 1|
+|目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsPublishedInformation/OsDerivativeInformation/OsMemoryRegionSpecifics/OsMemoryRegionFlags|
