@@ -36,17 +36,19 @@ python ./vcos/build/compiling_env.py
   cd ./vcos/build
   ```
 
-- 编译multicore_com_demo应用：配置使用E3650_DEV_KIT板级配置，使用gcc编译器，使用ninja作为make工具，使用实际开发板运行
+- 编译multicore_com_demo应用：配置使用e3650_dev_kit板级配置，使用gcc编译器，使用ninja作为make工具，使用实际开发板运行
 
   ```bash
   python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -compiler gcc -maketool ninja -sim 0 -all
   ```
 
   该命令会依次执行以下操作：
-  - 根据multicore_com_demo应用的E3650_DEV_KIT板级配置生成动态代码
+  - 根据multicore_com_demo应用的e3650_dev_kit板级配置生成动态代码
   - 通过CMake调用Ninja工具自动化构建
   - 最终编译生成镜像文件
-  - 编译结果默认保存在`haloosspace/output/multicore_com_demo_E3650_DEV_KIT_gcc`目录下
+  - 编译结果默认保存在`haloosspace/output/multicore_com_demo_e3650_dev_kit_gcc`目录下
+
+  > 提示：智能车控系统（VCOS）支持app和board情况详见 [VCOS编译框架说明](https://gitee.com/haloos/vcos_build/blob/master/README.md)
 
 ### 2.2. 编译命令说明
 
@@ -63,3 +65,6 @@ python ./vcos/build/compiling_env.py
   ```bash
   python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -ic
   ```
+
+  > 提示：
+  > `vcos_build.py` 脚本在编译时会在同目录下生成一个名为 `./tmp/{app_name}_{board_name}_build_temp.json` 的临时json文件，该文件中存放对应app+board编译步骤信息，如多次编译同一个app时出现报错，可以删除此json文件，或者增加 -update 参数来强制更新json文件内容

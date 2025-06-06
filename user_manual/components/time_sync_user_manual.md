@@ -134,7 +134,7 @@ tsync时间同步主节点功能默认开启，上电后即开启SYNC和FUP报�
 
 ![Tsync Master Tx](../../_static/image/time/user_manual/tsync_master_sync_fup_tx.png)
 
-### 5.6. 启用时间同步主节点功能
+### 5.6. 启用时间同步从节点功能
 
 ![Tsync Master Principle](../../_static/image/time/user_manual/tsync_slave.png)
 
