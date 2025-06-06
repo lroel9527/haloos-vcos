@@ -753,7 +753,7 @@ FUNC(void, CANNM_CODE) cannm_bs_to_rpt_msg_proc(const cannm_chnl_cate *channel_c
 
 cannm切换到网络模式之后，会周期性发送网络管理报文，实现网络唤醒
 
-### 5.4. 被动唤醒
+### 5.4. 被动休眠
 
 停发网络管理报文之后，cannm切换到prepare bussleep，通知comm进入silent模式。之后cannm切换到bussleep，通知comm进入nocom模式
 
@@ -796,6 +796,44 @@ FUNC(Std_ReturnType, CANSM_CODE) cansm_stop_wake_up_source(network_handle_type n
 ```
 
 网络切换到no通信之后，不再发送网络管理报文，网络进入休眠状态
+
+### 5.5. 休眠唤醒验证
+
+#### 5.5.1. 物理接线图
+
+![Board Link](../../_static/image/can/import/boardlink.png)
+
+#### 5.5.2. 上位机连接示意图
+
+![Host](../../_static/image/can/import/host.png)
+
+#### 5.5.3. 主动唤醒和主动休眠
+
+can4通过主动请求FULL通信实现唤醒（有报文发出），can2通过主动请求NO通信实现休眠（没有报文发出）：
+
+![Active Wakeup And Sleep](../../_static/image/net_manager/can4_active_wake_can2_active_sleep.png)
+
+#### 5.5.4. 被动唤醒
+
+通过对can2上发送网络管理报文，实现can2的被动唤醒，出现报文外发：
+
+![Passive Startup](../../_static/image/net_manager/can2_passive_startup.png)
+
+#### 5.5.5. 被动休眠
+
+停止对can2的报文发送，观察该路报文逐渐不再发送，实现can2的网络休眠：
+
+![Passive Sleep](../../_static/image/net_manager/can2_passive_sleep.png)
+
+#### 5.5.6. 多次测试
+
+支持多次的被动唤醒和休眠。通过对can2发送网络管理报文，可以再次实现被动唤醒，该路继续出现报文外发：
+
+![Passive Startup](../../_static/image/net_manager/can2_passive_startup.png)
+
+停止对can2的报文发送，观察该路报文逐渐不再发送，实现can2的网络休眠：
+
+![Passive Sleep](../../_static/image/net_manager/can2_passive_sleep.png)
 
 ## 6. 配置项参考规范
 
