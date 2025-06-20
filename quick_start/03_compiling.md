@@ -6,12 +6,12 @@
 
 ### 1.1. 安装编译环境
 
-> 安装编译环境前，需要先按照[配置工具安装](./02_installing.md)要求，执行Studio依赖插件的安装
+> 安装编译环境前，需要先按照[配置工具安装](./02_installing.md)要求，执行Studio依赖插件的安装。Linux系统可使用Docker容器，实现与本地环境的隔离。Docker容器创建参考[HaloOS部署运行流程](https://gitee.com/haloos/docs/blob/master/quick_start/03_running.md)
 
 在`haloosspace`根目录，执行以下命令安装编译工具链：
 
 ```bash
-python ./vcos/build/compiling_env.py
+python ./vcos/build/compiling_build_env.py
 ```
 
 该命令依次执行以下安装步骤：
@@ -22,7 +22,6 @@ python ./vcos/build/compiling_env.py
 - 安装ninja工具，并设置`NINJA_TOOL_PATH`环境变量
 - 安装tricore-gcc编译工具链，并将安装路径添加到PATH环境变量
 - 安装arm-gcc编译工具链，并将安装路径添加到PATH环境变量
-- 安装docker工具
 
 ## 2. 编译
 
