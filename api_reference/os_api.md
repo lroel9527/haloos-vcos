@@ -39,6 +39,21 @@
 | 同步/异步     | 同步调用 |
 | 可重入性     | 可重入 |
 
+## `task_tickdelay`
+
+| 属性         | 描述                |
+|--------------|---------------------|
+| 函数定义      | `StatusType task_tickdelay(TickType ticks_to_delay)`        |
+| 简要描述      | 任务延时函数             |
+| 详细说明      | 使当前任务阻塞等待一段时间    |
+| 参数[输入] | `TickType ticks_to_delay` 阻塞等待Tick  |
+| 返回值 | StatusType E_OK 无错误 |
+| 返回值 | StatusType E_OS_CALLEVEL 在ISR上下文中调用 |
+| 返回值 | StatusType E_OS_RESOURCE 资源被占用 |
+| 返回值 | StatusType E_OS_VALUE 参数小于0 |
+| 同步/异步     | 同步调用 |
+| 可重入性     | 可重入 |
+
 ## `StartScheduleTableRel`
 
 | 属性         | 描述                |
@@ -174,6 +189,22 @@
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
+## `DeviateScheduleTable`
+
+| 属性         | 描述                |
+|--------------|---------------------|
+| 函数定义      | `StatusType DeviateScheduleTable(ScheduleTableType schedtable_id, DeviateType deviate_value)`        |
+| 简要描述      | 调度表偏差值注入             |
+| 详细说明      | 向显式同步调度表注入指定的偏差值，用于补偿调度表与同步计数器之间的时间漂移    |
+| 参数[输入] | `ScheduleTableType schedtable_id` 调度表ID  |
+| 参数[输入] | `DeviateType deviate_value` 偏差值（正值=加速调度表，负值=减速调度表，绝对值不得超过调度表duration ） |
+| 返回值 | StatusType E_OK 偏差注入成功，调度表将在后续执行中逐步消除偏差 |
+| 返回值 | StatusType E_OS_ID 无效ID或策略非显式同步 |
+| 返回值 | StatusType E_OS_VALUE 偏差值超出允许范围 |
+| 返回值 | StatusType E_OS_STATE 调度表未处于运行状态 |
+| 同步/异步     | 同步 |
+| 可重入性     | 可重入 |
+
 ## `EnableAllInterrupts`
 
 | 属性         | 描述                |
@@ -304,6 +335,52 @@
 | 返回值 | StatusType E_OS_ACCESS 调用任务不是扩展任务 |
 | 返回值 | StatusType E_OS_RESOURCE 调用任务占用资源 |
 | 返回值 | StatusType E_OS_CALLEVEL 在中断上下文中调用 |
+| 同步/异步     | 同步 |
+| 可重入性     | 可重入 |
+
+## `event_tickwait`
+
+| 属性         | 描述                |
+|--------------|---------------------|
+| 函数定义      | `StatusType event_tickwait(EventMaskType mask, TickType ticks_to_wait)`        |
+| 简要描述      | 带超时的等待事件             |
+| 详细说明      | 当未发生任何事件时，调用任务将进入等待状态。当等待的一个或多个事件发生时，任务将转为就绪状态。如果在指定的超时时间内没有事件发生，任务也会转为就绪状态。此调用可能触发任务重新调度当任务处于等待状态时，其内部资源将被释放。该接口只能由拥有事件对象的扩展任务调用    |
+| 参数[输入] | `EventMaskType mask` 等待的事件掩码  |
+| 参数[输入] | `TickType ticks_to_wait` 等待的超时时间(系统节拍数)  |
+| 返回值 | StatusType E_OK 等待事件成功 |
+| 返回值 | StatusType E_OS_ACCESS 调用任务不是扩展任务 |
+| 返回值 | StatusType E_OS_RESOURCE 调用任务占用资源 |
+| 返回值 | StatusType E_OS_CALLEVEL 在中断上下文中调用 |
+| 返回值 | StatusType E_OS_TIMEOUT 等待超时 |
+| 同步/异步     | 同步 |
+| 可重入性     | 可重入 |
+
+## `GetResource`
+
+| 属性         | 描述                |
+|--------------|---------------------|
+| 函数定义      | `StatusType GetResource( ResourceType ResourceID )`        |
+| 简要描述      | 进入代码中由 ResID 引用的资源分配的关键区域。关键区域应始终使用 ReleaseResource 离开。             |
+| 详细说明      | 仅当内层关键区域完全在外围关键区域内执行时，才允许嵌套资源占用。同一资源的嵌套占用也是禁止的！建议在同一函数内出现对应的 GetResource 和 ReleaseResource 调用。在关键区域内不允许使用对不可抢占任务进行重新调度的服务。此外，必须在中断服务例程完成之前离开关键区域。一般来说，关键区域应尽量简短。本服务可从 ISR 和任务级别调用。    |
+| 参数[输入] | `ResourceType ResourceID` 资源引用实例标识符  |
+| 返回值 | StatusType E_OK 无错误 |
+| 返回值 | StatusType E_OS_ID 资源 ResID 无效 |
+| 返回值 | StatusType E_OS_ACCESS 尝试获取已被任何任务或 ISR 占用的资源，或调用任务或中断例程的静态分配优先级高于计算的顶级优先级 |
+| 同步/异步     | 同步 |
+| 可重入性     | 可重入 |
+
+## `ReleaseResource`
+
+| 属性         | 描述                |
+|--------------|---------------------|
+| 函数定义      | `ReleaseResource( ResourceType ResourceID )`        |
+| 简要描述      | ReleaseResource 是 GetResource 的对应操作，用于离开代码中由 ResID 引用的资源分配的关键区域。             |
+| 详细说明      | 有关嵌套条件的信息，请参阅 GetResource 的详细说明。本服务可从 ISR 和任务级别调用。    |
+| 参数[输入] | `ResourceType ResourceID` 资源引用实例标识符  |
+| 返回值 | StatusType E_OK 无错误 |
+| 返回值 | StatusType E_OS_ID 资源 ResID 无效 |
+| 返回值 | StatusType E_OS_NOFUNC 尝试释放未被任何任务或 ISR 占用的资源，或应先释放另一个资源 |
+| 返回值 | StatusType E_OS_ACCESS 尝试获取已被任何任务或 ISR 占用的资源，或调用任务或中断例程的静态分配优先级高于计算的顶级优先级 |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |
 
@@ -463,5 +540,36 @@
 | 简要描述      | OS服务GetCoreID()             |
 | 详细说明      | 返回调用核的唯一逻辑核标识符。从物理核到逻辑CoreID的映射由具体实现决定。 本API仅允许在AUTOSAR核上使用。如需在非AUTOSAR核上使用该API， 可将该核配置为AUTOSAR核，但使用StartNonAutosarCore() API以非AUTOSAR核方式启动。    |
 | 返回值 | CoreIdType 调用核的唯一ID |
+| 同步/异步     | 同步 |
+| 可重入性     | 可重入 |
+
+## `IncrementCounter`
+
+| 属性         | 描述                |
+|--------------|---------------------|
+| 函数定义      | `StatusType IncrementCounter(CounterType CounterID)`        |
+| 简要描述      | OS服务IncrementCounter()            |
+| 详细说明      | 该服务增加一个软件计数器    |
+| 参数[输入] | `CounterType CounterID` 计数器索引值  |
+| 返回值 | StatusType E_OK 无错误 |
+| 返回值 | StatusType E_OS_ID  CounterID不是有效的软件计数器ID。 |
+| 返回值 | StatusType E_OS_CALLEVEL 从无效的上下文调用。 |
+| 返回值 | StatusType E_OS_CORE 给定对象属于外部核心。 |
+| 返回值 | StatusType E_OS_ACCESS 调用者可以使用。 |
+| 返回值 | StatusType E_OS_DISABLEDINT 调用者在中断API序列中。 |
+| 同步/异步     | 同步 |
+| 可重入性     | 可重入 |
+
+## `GetCounterValue`
+
+| 属性         | 描述                |
+|--------------|---------------------|
+| 函数定义      | `StatusType GetCounterValue(CounterType CounterID,  TickRefType TickValue)`        |
+| 简要描述      | 读取计数器的当前计数值            |
+| 详细说明      | 读取计数器的当前计数值(如果计数器由硬件驱动，则返回硬件计时器的计数值，如果由用户驱动，则返回软件计时器的计数值)    |
+| 参数[输入] | `CounterType CounterID` 计数器索引值  |
+| 参数[输入] | `TickRefType TickValue` 计数器的当前计数值  |
+| 返回值 | StatusType E_OK 无错误 |
+| 返回值 | StatusType E_OS_ID CounterID不是有效的软件计数器ID |
 | 同步/异步     | 同步 |
 | 可重入性     | 可重入 |

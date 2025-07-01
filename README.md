@@ -22,16 +22,18 @@ VCOS文档在haloosspace/vcos/docs目录下，目录结构如下图所示：
 
 ``` text
 docs
-├── OVERVIEW.md             # 项目概述
-├── README.md               # 文档结构简介（即本文）
 ├── _static/image           # 文档中用到的图片资源
 ├── api_reference           # API参考文档
 ├── configuration_reference # 配置项参考文档
+├── DISCLAIMER.md           # 免责声明
 ├── key_technical           # 关键技术说明
+├── LICENSE                 # 许可协议
+├── OVERVIEW.md             # 项目概述
 ├── porting                 # 芯片移植文档
 ├── quick_start             # 快速入门指南
+├── README.md               # 文档结构简介（即本文）
 └── user_manual             # 开发者手册与详细说明
-    ├── components          # 功能组件使用说明
-    ├── kernel              # 内核模块文档
-    └── studio              # Studio集成开发环境相关文档
+    ├── components          # 功能组件相关开发者手册
+    ├── kernel              # 内核相关开发者手册
+    └── studio              # 工具与集成开发环境相关开发者手册
 ```
