@@ -299,6 +299,41 @@ SoC适配ARCH的接口需要查看不同ARCH代码对SoC要求的Hook接口，�
 如想在板子支持更多的ioctl功能，请参考`kernel/nuttx/boards/boardctl.c`，实现其要求的API。
 >
 
+rt framework 需要有专门的接口适配，实现文件在arch 层的接口说明如下：
+
+|  **接口名称**  |  **实现文件**  |  **接口描述**  |   **注意事项**  |  **配置**  |  **是否必选**  |
+| :-------------| :------------| :-------------|  :-------------|  :--------|  :------------|
+| `void up_set_contexthdl(void *const ctxhdl)` | xxx/irq.h | **描述**：设置rt framework 上下文。**入参**: ctxhdl, 当前任务，中断或者hook的上下文句柄。 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK  | **可选**，当开启对应功能配置时需实现 |
+| `void *up_get_contexthdl(void)` | xxx/irq.h | **描述**：获取 rt framework 上下文。**入参**: 无。 **返回值**：当前rt framework 上下文句柄 | 无 | CONFIG_RT_FRAMEWORK  | **可选**，当开启对应功能配置时需实现 |
+| `void up_set_privilege_to_user(void)` | xxx/irq.h | **描述**：将当前上下文权限设置成user。**入参**: 无。 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK_SYSCALL  | **可选**，当开启对应功能配置时需实现 |
+| `void up_syscall_set_enter_int_state(uint32_t *regs)` | xxx/irq.h | **描述**：设置系统调用开关中断状态。**入参**: 当前保存的上下文。 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK_SYSCALL  | **可选**，当开启对应功能配置时需实现 |
+| `void up_syscall_set_exit_int_state(uint32_t *regs)` | xxx/irq.h | **描述**：设置系统调用退出时的中断状态。**入参**: 当前保存的上下文。 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK_SYSCALL  | **可选**，当开启对应功能配置时需实现 |
+| `bool up_syscall_get_prev_privilege(uint32_t *regs)` | xxx/irq.h | **描述**获取系统调用前的上下文权限**入参**: 当前保存的上下文。 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK_SYSCALL  | **可选**，当开启对应功能配置时需实现 |
+| `bool up_syscall_set_prev_privilege(uint32_t *regs)` | xxx/irq.h | **描述**设置系统调用返回后的上下文权限**入参**: 当前保存的上下文。 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK_SYSCALL  | **可选**，当开启对应功能配置时需实现 |
+| `bool up_syscall_set_prev_int_state(uint32_t *regs)` | xxx/irq.h | **描述**设置系统调用返回后的开关中断状态**入参**: 当前保存的上下文。 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK_SYSCALL  | **可选**，当开启对应功能配置时需实现 |
+| `void up_mpu_enable(uint8_t enable)` | xxx/xxx_mpu.c | **描述**开关mpu**入参**: enable: true 打开mpu, false 关闭mpu **返回值**：无 | 无 | CONFIG_KERNEL_MEMORY_PROTECTION  | **可选**，当开启对应功能配置时需实现 |
+| `int up_mpu_check_region_cfg(uint8_t region_cnt, const struct mpu_region_cfg_s *region_cfg, uint8_t max_region_num, uint32_t alignment_mask)` | xxx/xxx_mpu.c | **描述**开关mpu**入参**: region_cnt: mpu region 的数量， region_cfg: mpu region 配置， max_region_num: 最大支持的mpu region 数量, alignment_mask: mpu region 基地址对齐要求**返回值**：0: 成功， -1： region 数量超过最大允许范围， -2: region 高地址低于低地址, -3: region 低地址不满足对齐要求, -4: region的高地址不满足对齐要求 | 无 | CONFIG_KERNEL_MEMORY_PROTECTION  | **可选**，当开启对应功能配置时需实现 |
+| `int up_mpu_core_init(const struct mpu_core_access_right_s *core_access_right)` | xxx/xxx_mpu.c | **描述**core 级别mpu配置的初始化**入参**: core_access_right: core 级别mpu的配置 **返回值**：0: 成功, -1： region 数量超过最大允许范围， -2: region 高地址低于低地址, -3: region 低地址不满足对齐要求, -4: region的高地址不满足对齐要求 | 无 | CONFIG_KERNEL_MEMORY_PROTECTION  | **可选**，当开启对应功能配置时需实现 |
+| `void up_mpu_enable_stack_region(uint32_t low_addr, uint32_t high_addr)` | xxx/xxx_mpu.c | **描述**栈保护区域设置**入参**: low_addr: 栈起始地址,  high_addr: 栈结束地址 **返回值**：无 | 无 | CONFIG_KERNEL_MEMORY_PROTECTION  | **可选**，当开启对应功能配置时需实现 |
+| `void up_mpu_enable_set(uint8_t set_num)` | xxx/xxx_mpu.c | **描述**mpu set 设置**入参**: set_num: mpu set号 **返回值**：无 | 无 | CONFIG_KERNEL_MEMORY_PROTECTION  | **可选**，当开启对应功能配置时需实现 |
+| `void up_mpu_switch_access_right(const struct mpu_access_right_s *current_access_right, const struct mpu_access_right_s *next_access_right)` | xxx/xxx_mpu.c | **描述**mpu 权限切换**入参**: current_access_right: 当前mpu 权限配置， next_access_right：新的mpu权限配置 **返回值**：无 | 无 | CONFIG_KERNEL_MEMORY_PROTECTION  | **可选**，当开启对应功能配置时需实现 |
+| `void up_mpu_switch(void *rtcb, void *tcb)` | xxx/xxx_mpu.c | **描述**任务mpu 权限切换**入参**: rtcb: 当前任务配置， tcb：新的任务配置 **返回值**：无 | 无 | CONFIG_KERNEL_MEMORY_PROTECTION  | **可选**，当开启对应功能配置时需实现 |
+
+rt framework 适配相关，实现文件在`<vendor_name>/boards/<aaa>/src/`，接口说明如下：
+
+|  **接口名称**  |  **实现文件**  |  **接口描述**  |   **注意事项**  |  **配置**  |  **是否必选**  |
+| :-------------| :------------| :-------------|  :-------------|  :--------|  :------------|
+| `void up_custom_sc(int cpu)` | xxx_switchcore.c | **描述**：切核实现， 将当前核的串口中断关闭， 使能指定核的串口中断。**入参**: cpu: 指定核。 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK  | **可选**，当开启对应功能配置时需实现 |
+| `void up_ipicall_isr_handler(void *arg)` | xxx_ipicall.c | **描述**：ipicall 中断处理函数实现。**入参**: arg: 忽略 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK_IPICALL  | **可选**，当开启对应功能配置时需实现 |
+| `void up_ipicall_attach(void *handler)` | xxx_ipicall.c | **描述**：挂接ipicall 中断处理回调函数。**入参**: handler: ipicall 中断处理回调函数 **返回值**：0: 触发成功，-1： 触发失败 | 无 | CONFIG_RT_FRAMEWORK_IPICALL  | **可选**，当开启对应功能配置时需实现 |
+| `int up_trigger_ipicall(unsigned int cpu)` | xxx_ipicall.c | **描述**：触发指定单个核的ipicall 中断。**入参**: cpu: 指定的核 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK_IPICALL  | **可选**，当开启对应功能配置时需实现 |
+| `void up_trigger_ipicalls(unsigned int cpu_mask)` | xxx_ipicall.c | **描述**：触发指定单个核的ipicall 中断。**入参**: cpu_mask: 指定的多个核 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK_IPICALL  | **可选**，当开启对应功能配置时需实现 |
+| `void up_trigger_ipicalls(unsigned int cpu_mask)` | xxx_ipicall.c | **描述**：触发指定单个核的ipicall 中断。**入参**: cpu_mask: 指定的多个核 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK_IPICALL  | **可选**，当开启对应功能配置时需实现 |
+| `void up_init_irq(int irq, int irq_prio)` | xxx_irq.c | **描述**：初始化中断。**入参**: irq: 中断号，  irq_prio： 中断优先级 **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK  | **可选**，当开启对应功能配置时需实现 |
+| `bool up_irq_is_enabled(int irq)` | xxx_irq.c | **描述**： 判断中断是否使能。**入参**: irq: 中断号，  **返回值**：true: 中断使能了， false: 中断没有使能 | 无 | CONFIG_RT_FRAMEWORK  | **可选**，当开启对应功能配置时需实现 |
+| `void up_clear_irq(int irq)` | xxx_irq.c | **描述**： 清楚中断的pending 状态。**入参**: irq: 中断号，  **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK  | **可选**，当开启对应功能配置时需实现 |
+| `void up_udelay(uint32_t us)` | xxx_timestamp.c | **描述**： 等待指定时间。**入参**: us: 等待的时间（微秒），  **返回值**：无 | 无 | CONFIG_RT_FRAMEWORK  | **可选**，当开启对应功能配置时需实现 |
+
 ### 3.4. 基础驱动移植
 
 #### 3.4.1. TIMER

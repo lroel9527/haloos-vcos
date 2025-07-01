@@ -650,11 +650,11 @@ Properties 输出用于输出配置项的特性
 
    | **函数项** | **描述**                                                                                                    |
    | :--------- | :---------------------------------------------------------------------------------------------------------- |
-   | 函数名     | excute_validation(validation_module_list:list，validation_level:str) -> List[dict]                          |
+   | 函数名     | excute_validation(validation_module_list:list，validation_level:str) -> Union[bool, Tuple[dict, dict]][dict]                          |
    | 功能       | 对关注的模块进行校验得到完整校验详情                                                                        |
    | 输入参数   | 1. validation_module_list(list)：关注的模块列表; 2. validation_level(str)：校验等级，详情见参数说明         |
    | 输出参数   | 无                                                                                                          |
-   | 返回值     | 1. validation_dict 校验结果字典，key 为模块名，value 为校验结果 True/False; 2. validation_logs 校验结果详情 |
+   | 返回值     | 执行失败返回False 或 返回2个字典：1. validation_dict 校验结果字典，key 为模块名，value 为校验结果 True/False; 2. validation_logs 校验结果详情 |
 
    validation_level 参数说明：
 

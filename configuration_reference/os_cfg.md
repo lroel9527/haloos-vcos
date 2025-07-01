@@ -102,6 +102,43 @@
 |多实例个数|0 - 65535|
 |目标引用项的路径|/AUTOSAR/EcucDefs/Os/OsTask|
 
+### 2.1. OsApplicationHooks
+
+| 容器属性 | 值（容器） |
+|-|-|
+|名称|OsApplicationHooks|
+|描述|Container to structure the OS-Application-specific hooks|
+|描述|概述：OsApplicationHooks配置项用于定义操作系统应用程序钩子函数，这些钩子函数在特定的操作系统事件或状态下被调用，以实现特定的行为或处理。|
+|描述|注意：在AUTOSAR CP 4.4标准中，需确保钩子函数的使用不会导致系统的实时性和安全性降低；钩子函数应避免执行长时间操作；在配置钩子函数时，应注意其对系统资源的影响和潜在的优先级反转问题。|
+|多实例个数|0 - 1|
+
+| 配置项属性 | 值（布尔参数配置项） |
+|-|-|
+|名称|OsAppErrorHook|
+|描述|Select the OS-Application error hook.|
+|描述|概述：OsAppErrorHook配置项用于定义操作系统级别的错误钩子函数，该函数在应用程序遇到不可恢复的错误时被调用，用于错误处理和诊断。|
+|描述|注意：在AUTOSAR CP 4.4标准中，需要确保每个应用程序最多只配置一个OsAppErrorHook；错误钩子函数的实现需要遵循AUTOSAR的错误处理规范；在多应用系统中，每个应用的OsAppErrorHook需要独立配置和实现。|
+|说明|错误: 禁用Application遇到不可恢复的错误时执行的钩子函数|
+|多实例个数|1 - 1|
+
+| 配置项属性 | 值（布尔参数配置项） |
+|-|-|
+|名称|OsAppShutdownHook|
+|描述|Select the OS-Application specific shutdown hook for the OS-Application.|
+|描述|概述：OsAppShutdownHook配置项用于指定操作系统应用程序的ShutdownHook函数，该函数在应用程序被操作系统终止时调用，用于执行必要的清理工作。|
+|描述|注意：在AUTOSAR CP 4.4标准中，确保OsAppShutdownHook仅在支持ShutdownHook的操作系统中使用；正确配置ShutdownHook以避免在应用程序终止时出现资源泄露；如果应用程序不需要特定的清理操作，可以不配置OsAppShutdownHook。|
+|说明|错误: 禁用Application Shutdown时执行的钩子函数|
+|多实例个数|1 - 1|
+
+| 配置项属性 | 值（布尔参数配置项） |
+|-|-|
+|名称|OsAppStartupHook|
+|描述|Select the OS-Application specific startup hook for the OS-Application.|
+|描述|概述：OsAppStartupHook 配置项用于指定操作系统启动时是否调用应用程序的 Startup Hook 函数，这是一个针对每个应用程序的布尔值配置，用于增强启动时的可定制性。|
+|描述|注意：在AUTOSAR CP 4.4标准中，每个应用程序可以独立配置是否使用Startup Hook；确保在启用此配置时，应用程序中已实现相应的 Hook 函数；过多的 Hook 函数可能会影响系统启动时间，需要谨慎使用。|
+|说明|错误: 禁用Application启动时执行的钩子函数|
+|多实例个数|1 - 1|
+
 ## 3. OsCore
 
 | 容器属性 | 值（容器） |
@@ -840,6 +877,36 @@
 |描述|概述：OsHooks 配置项用于定义操作系统钩子函数，这些钩子函数在操作系统的特定点被调用，以实现自定义的行为，例如在任务切换或系统错误时执行特定操作。|
 |描述|注意：在AUTOSAR CP 4.4标准中，需要确保钩子函数的使用不会违反操作系统的实时性和可预测性；钩子函数应当简短且执行时间可控，以避免对系统调度造成不必要的影响；正确配置钩子函数的启用和禁用，以满足系统安全和性能要求。|
 |多实例个数|1 - 1|
+
+| 配置项属性 | 值（布尔参数配置项） |
+|-|-|
+|名称|OsPostTaskHook|
+|描述|Post-task hook as defined by ISO 17356|
+|描述|概述：OsPostTaskHook配置项用于指定操作系统在每个任务执行完毕后调用的钩子函数，这可以用于执行任务级别的清理工作或状态检查。|
+|描述|注意：在AUTOSAR CP 4.4标准中，确保OsPostTaskHook的使用不会引入过多的运行时开销，从而影响系统性能；此外，钩子函数中应避免执行可能导致任务阻塞的操作；最后，钩子函数应该是可重入的，以支持多任务环境下的安全执行。|
+|说明|错误: 禁用任务完毕后调用的钩子函数|
+|多实例个数|1 - 1|
+|默认值|true|
+
+| 配置项属性 | 值（布尔参数配置项） |
+|-|-|
+|名称|OsPreTaskHook|
+|描述|Pre-task hook as defined by ISO 17356|
+|描述|概述：OsPreTaskHook 是一个操作系统配置参数，用于启用或禁用任务执行前的钩子函数，这可以用于执行特定的预处理操作。|
+|描述|注意：在AUTOSAR CP 4.4中，确保在使用OsPreTaskHook时考虑系统的实时性和性能影响；此配置应与OsPostTaskHook配合使用以保持系统行为的一致性；过多使用钩子可能会导致系统开销增加，影响整体性能。|
+|说明|错误: 禁用任务执行前钩子函数|
+|多实例个数|1 - 1|
+|默认值|true|
+
+| 配置项属性 | 值（布尔参数配置项） |
+|-|-|
+|名称|OsPanicHook|
+|描述|Panic-task hook as defined by ISO 17356|
+|描述|概述：OsPanicHook是一个操作系统配置参数，用于定义当操作系统检测到严重错误（如违反OS内部逻辑或硬件错误）时是否调用Panic Hook函数。|
+|描述|注意：在AUTOSAR CP 4.4标准中，应确保OsPanicHook的配置与系统的错误处理策略一致；如果启用了Panic Hook，需要提供相应的Hook函数实现；在资源受限的系统中，使用Panic Hook可能会增加额外的资源消耗。|
+|说明|错误: 禁用Panic Hook|
+|多实例个数|1 - 1|
+|默认值|true|
 
 | 配置项属性 | 值（布尔参数配置项） |
 |-|-|
