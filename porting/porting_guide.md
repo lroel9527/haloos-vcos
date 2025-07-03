@@ -166,7 +166,7 @@ arch提供的能力，通过对外头文件提供给其他功能使用。
 
 启动流程一般从板子上电后，启动Bootloader，Bootloader加载系统固件，开始系统固件的启动。Bootloader阶段，不同芯片平台各自不同，这里主要介绍系统固件的启动。
 
-#### 3.2.1 ARCH启动
+#### 3.2.1. ARCH启动
 
 系统固件的启动， 从arch的汇编代码执行，一般为`__start`函数。
 
@@ -185,7 +185,7 @@ armv8-r arch启动留给芯片适配的Hook API如下：
 | `void arm_el_init(void)` | soc chip | armv8r el2初始化完成，即将跳转到el1| 提供soc chip在arm el2初始化阶段的需要完成的初始化|
 | `void arm_boot(void)` | soc chip | armv8r arch初始化完成，即将调到内核初始化| 提供soc chip在arch初始化完成前的初始化，如BMP percpu初始化，mpu和cache配置，串口早期初始化等|
 
-#### 3.2.2 内核启动
+#### 3.2.2. 内核启动
 
 这里主要介绍通用的内核启动流程，入口函数 vcos/kernel/nuttx/sched/init/nx_start.c::nx_start。通用内核启动流程图如下：
 
@@ -630,7 +630,7 @@ struct uart_ops_s
 
 接下来假定新增一个名字为CcNew的编译器为例，说明适配过程。
 
-### 5.1 编译器指定方式
+### 5.1. 编译器指定方式
 
 编译器的指定是在arch模块下，以tricore arch为例，如果需要新增加编译器，需要在vcos/kernel/nuttx/arch/tricore/src/cmake路径中做如下修改
 
@@ -679,7 +679,7 @@ elseif(CONFIG_TRICORE_TOOLCHAIN_CCNEW)
 endif()
 ```
 
-### 5.2 编译选项和链接选项适配
+### 5.2. 编译选项和链接选项适配
 
 链接选项和编译选项都在arch模块新增的ToolchainCcNew.cmake中指定（见5.1章节），以tricore arch为例，指定方式如下：
 
@@ -723,7 +723,7 @@ if(CONFIG_TRICORE_TOOLCHAIN_GNU)
 endif()
 ```
 
-### 5.3 链接脚本适配
+### 5.3. 链接脚本适配
 
 链接脚本的适配在boards模块下，以tricore架构的a2g_tc397_5v_tft board为例，如果要适配新的编译器链接脚本，需要在vcos/vendor/infineon/boards/a2g_tc397_5v_tft/scripts中做如下修改：
 
@@ -780,7 +780,7 @@ CORE_SEC(.percpu_bss) (_PERCPU_BSS_START_): FLAGS(aw)
 __PERCPU0_END = __PERCPU0_START + SIZEOF(CORE_SEC(.percpu_data)) +  SIZEOF(CORE_SEC(.percpu_bss));
 ```
 
-### 5.4 链接脚本指定方式
+### 5.4. 链接脚本指定方式
 
 链接脚本在boards模块和apps模块指定，其中会以CONFIG_RT_FRAMEWORK宏是否定义而决定两者哪个生效，分别以tricore架构的a2g_tc397_5v_tft board为例和rt_demo为例，可以在vcos/vendor/infineon/boards/a2g_tc397_5v_tft/src和examples/rt_demo做如下修改：
 
@@ -823,7 +823,7 @@ endif()
 endif()
 ```
 
-### 5.5 链接命令适配
+### 5.5. 链接命令适配
 
 链接命令由于涉及到多个.a的链接以及链接脚本的指定，不同的编译器可能指定方式不一样，链接脚本的命令在cmake编译子系统指定，涉及文件为vcos/kernel/nuttx/CMakeLists.txt，要指定不同的链接命令，修改如下：
 
@@ -846,7 +846,7 @@ else()
 endif()
 ```
 
-### 5.6 copy table适配
+### 5.6. copy table适配
 
 说明：copy table是c runtime 中的一环，指的是data section的load address到run address的拷贝和bss 段的清零。
 copy table的适配一般在chips模块下，以vcos/vendor/infineon/chips/tc3xx举例如下：
@@ -877,7 +877,7 @@ void Ifx_Ssw_doCppInit(void)
 }
 ```
 
-### 5.7 新的编译器使能
+### 5.7. 新的编译器使能
 
 编译器在boards中使能，比如要支持CCNew编译器为例，需要在boards的defconfig中配置CONFIG_TRICORE_TOOLCHAIN_CCNEW宏，以以tricore架构的a2g_tc397_5v_tft board为例，需要在vcos/vendor/infineon/boards/a2g_tc397_5v_tft/configs/vcos/defconfig中使能CONFIG_TRICORE_TOOLCHAIN_CCNEW宏：
 

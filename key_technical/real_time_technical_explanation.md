@@ -38,7 +38,7 @@ VCOS实时性设计架构图如下（绿色为VCOS对nuttx原生系统的增强�
 
 ![实时性关键技术](../_static/image/key_technical/real_time_system_design_02.png)
 
-### 2.1 确定性调度
+### 2.1. 确定性调度
 
 - **RM调度策略**
 
