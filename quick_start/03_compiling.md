@@ -6,7 +6,9 @@
 
 ### 1.1. 安装编译环境
 
-> 安装编译环境前，需要先按照[配置工具安装](./02_installing.md)要求，执行Studio依赖插件的安装。Linux系统可使用Docker容器，实现与本地环境的隔离。Docker容器创建参考[HaloOS部署运行流程](https://gitee.com/haloos/docs/blob/master/quick_start/03_running.md)
+> 安装编译环境前，需要先按照[配置工具安装](./02_installing.md)要求，执行Studio依赖插件的安装。
+
+> Linux系统可使用Docker容器，实现与本地环境的隔离。Docker容器创建参考[HaloOS部署运行流程](https://gitee.com/haloos/docs/blob/master/quick_start/03_running.md)
 
 在`haloosspace`根目录，执行以下命令安装编译工具链：
 
@@ -22,6 +24,17 @@ python ./vcos/build/compiling_build_env.py
 - 安装ninja工具，并设置`NINJA_TOOL_PATH`环境变量
 - 安装tricore-gcc编译工具链，并将安装路径添加到PATH环境变量
 - 安装arm-gcc编译工具链，并将安装路径添加到PATH环境变量
+
+> 更新说明（2025.7.30）：为确保模拟器与实际硬件平台的一致性，本次更新在 64 位系统上编译时启用了 GCC 的 -m32 选项，生成 32 位目标代码。因此，在编译前需要安装相应的 32 位依赖库。若本次更新前已通过上述脚本安装编译工具链，请手动执行下述命令：
+
+```bash
+# 升级 gcc/g++ 版本
+[sudo] apt-get update
+[sudo] apt install gcc-10-multilib g++-10-multilib
+# 将 gcc/g++ 指向新版本
+[sudo] ln -sf /usr/bin/gcc-10 /usr/bin/gcc
+[sudo] ln -sf /usr/bin/g++-10 /usr/bin/g++
+```
 
 ## 2. 编译
 

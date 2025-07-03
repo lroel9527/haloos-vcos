@@ -1,11 +1,15 @@
 # 源码下载流程
+
 如果您仅需要下载VCOS相关代码，请按本文操作；如果需要下载全量的HaloOS代码，请跳转至[HaloOS代码下载](https://gitee.com/haloos/docs/blob/master/quick_start/01_downloading.md)
 
 ## 1. Windows系统
+
 >
 > 注意，本系统所有涉及PowerShell的指令，请通过【管理员权限】打开，否则安装可能失败
 >
+
 ### 1.1. 安装Python 3.8.10
+
 >
 > 注意：请使用Python 3.8.10版本，VCOS的配置工具强依赖于此版本
 
@@ -63,31 +67,33 @@ git repo的安装流程如下：
 
 ### 1.4. 获取Infineon iLLD驱动库代码
 
-1. 在 [Infineon Development Center](https://softwaretools.infineon.com/tools?q=aurix&_ga=2.231735327.1826604757.1632363919-1127341224.1631758839) 下载安装 aurix development studio  
+1. 在 [Infineon Development Center](https://softwaretools.infineon.com/tools?q=aurix&_ga=2.231735327.1826604757.1632363919-1127341224.1631758839) 下载安装 aurix development studio
 ![下载安装](../_static/image/quick_start/downloading_01.png)
 
-2. 打开studio选择目录，选择目录后点击launch  
+2. 打开studio选择目录，选择目录后点击launch
 ![选择目录](../_static/image/quick_start/downloading_02.png)
 
-3. 创建新的aurix 工程，点击下图按钮  
+3. 创建新的aurix 工程，点击下图按钮
 ![创建工程](../_static/image/quick_start/downloading_03.png)
 
-4. 定义工程名称为tc397，勾选"Use default location"后点击next  
+4. 定义工程名称为tc397，勾选"Use default location"后点击next
 ![选择工程](../_static/image/quick_start/downloading_04.png)
 
-5. 选择A2G_TC397_5V_TFT demo 工程，选择后点击finish，然后等待代码生成  
+5. 选择A2G_TC397_5V_TFT demo 工程，选择后点击finish，然后等待代码生成
 ![代码生成](../_static/image/quick_start/downloading_05.png)
 
-6. 在工程目录中找到生成的illd驱动库代码  
+6. 在工程目录中找到生成的illd驱动库代码
 ![找到生成代码](../_static/image/quick_start/downloading_06.png)
 
-7. 将illd驱动库代码拷贝到工程，目标仓库目录：vendor/infineon/drivers/tc397  
+7. 将illd驱动库代码拷贝到工程，目标仓库目录：vendor/infineon/drivers/tc397
 ![驱动库代码拷贝](../_static/image/quick_start/downloading_07.png)
 
 ## 2. Linux系统（Ubuntu）
 
+> 系统要求：Ubuntu 20.04 LTS 或更高版本
+
 ### 2.1. 安装Python 3.8.10
->
+
 > 注意：请使用Python 3.8.10版本，VCOS的配置工具强依赖于此版本
 
 1. 安装依赖库
@@ -112,6 +118,7 @@ git repo的安装流程如下：
 3. 如果显示Python的版本号是3.8.10，即表示安装成功
 
 ### 2.2. 安装git repo工具
+
 >
 > Ubuntu通常会自带git工具，可以用`git --version`检查，如果未安装可以通过`sudo apt install git`命令安装
 

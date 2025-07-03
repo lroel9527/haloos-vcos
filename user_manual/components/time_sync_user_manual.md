@@ -17,7 +17,7 @@ time
 │   ├── configs             # 配置项生成文件目录
 │   ├── inc                 # 头文件目录
 │   └── src                 # 源文件目录
-└── user_api                # 用户API代码目录
+└── time_manager            # 用户API代码目录
     ├── CMakeLists.txt      # 用户API编译脚本，用于控制编译相关资源
     ├── config_plug_in      # 配置项生成文件目录
     ├── inc                 # 头文件目录
@@ -35,7 +35,7 @@ time
 
 ## 4. 功能配置方法
 
-tsync是时间同步层的关键组件，user_api是用户接口层的关键组件，其关键配置项介绍如下：
+tsync是时间同步层的关键组件，time_manager是用户接口层的关键组件，其关键配置项介绍如下：
 
 ### 4.1. tsyn配置项介绍
 
@@ -51,7 +51,7 @@ tsync是时间同步层的关键组件，user_api是用户接口层的关键组�
 ![CanTSynGlobalTimeDomain Configurations](../../_static/image/time/user_manual/cantsyn_global_time_domain.png)
 
 * CanTSynGlobalTimeDomain配置项用于定义tsync模块全局时间域的属性，其子配置项包括全局时间域ID（CanTSynGlobalTimeDomainId）、引用时间基（CanTSynSynchronizedTimeBaseRef）等等
-* 当前仅支持一个时间域配置，CanTSynGlobalTimeDomainId默认为0；CanTSynSynchronizedTimeBaseRef需引用user_api中定义的同步时间基
+* 当前仅支持一个时间域配置，CanTSynGlobalTimeDomainId默认为0；CanTSynSynchronizedTimeBaseRef需引用time_manager中定义的同步时间基
 
 #### 4.1.3. CanTSynGlobalTimeMaster
 
@@ -83,13 +83,13 @@ tsync是时间同步层的关键组件，user_api是用户接口层的关键组�
 
 * CanTSynGlobalTimeFupDataIDList配置项定义FUP报文消息列表
 
-### 4.2. user_api配置项介绍
+### 4.2. time_manager配置项介绍
 
 #### 4.2.1. StbMGeneral
 
 ![StbMGeneral Configurations](../../_static/image/time/user_manual/stbm_general.png)
 
-* StbMGeneral是user_api的通用配置项，其子配置项包括主函数周期（StbMMainFunctionPeriod）、是否开启开发错误检测（StbMDevErrorDetect）等等
+* StbMGeneral是time_manager的通用配置项，其子配置项包括主函数周期（StbMMainFunctionPeriod）、是否开启开发错误检测（StbMDevErrorDetect）等等
 * StbMMainFunctionPeriod默认为0.01s
 
 #### 4.2.2. StbMSynchronizedTimeBase
@@ -130,7 +130,7 @@ tsyn_demo是时间同步Demo的演示工程，其使用示例如下：
 
 ![Tsync Master Principle](../../_static/image/time/user_manual/tsync_master.png)
 
-tsync时间同步主节点功能默认开启，上电后即开启SYNC和FUP报文发送，SYNC报文中携带秒信息，FUP中携带纳秒信息；其中，时间信息通过user_api提供的接口获取，且由于本地时间基的类型默认为ETH-MAC时间，上电后从0开始自增，因此报文中携带的时间信息也是从0递增的，上位机接收到的报文展示如下：
+tsync时间同步主节点功能默认开启，上电后即开启SYNC和FUP报文发送，SYNC报文中携带秒信息，FUP中携带纳秒信息；其中，时间信息通过time_manager提供的接口获取，且由于本地时间基的类型默认为ETH-MAC时间，上电后从0开始自增，因此报文中携带的时间信息也是从0递增的，上位机接收到的报文展示如下：
 
 ![Tsync Master Tx](../../_static/image/time/user_manual/tsync_master_sync_fup_tx.png)
 
@@ -138,7 +138,7 @@ tsync时间同步主节点功能默认开启，上电后即开启SYNC和FUP报�
 
 ![Tsync Master Principle](../../_static/image/time/user_manual/tsync_slave.png)
 
-tsync时间同步从节点功能同样默认开启，可以接收主节点发送的SYNC和FUP报文、提取其携带的时间信息、计算全局时间（GlobalTime）并更新至本地；其中，时间更新也是通过user_api提供的接口完成。
+tsync时间同步从节点功能同样默认开启，可以接收主节点发送的SYNC和FUP报文、提取其携带的时间信息、计算全局时间（GlobalTime）并更新至本地；其中，时间更新也是通过time_manager提供的接口完成。
 
 使用上位机模拟时间同步主节点，发送SYNC和FUP报文至开发板（报文的Sequence Counter需要符合配置要求），本地时间会被更新为报文中携带的时间（通过主节点向外发送的SYNC和FUP报文携带的时间信息可以看出时间已更新），整体效果如下图所示：
 
@@ -150,10 +150,10 @@ tsync时间同步从节点功能同样默认开启，可以接收主节点发送
 
 [tsync 配置项参考规范](../../configuration_reference/time_tsync_cfg.md)
 
-[user_api 配置项参考规范](../../configuration_reference/time_user_api_cfg.md)
+[time_manager 配置项参考规范](../../configuration_reference/time_manager_cfg.md)
 
 ## 7. 应用接口参考规范
 
 [tsync 应用接口参考规范](../../api_reference/time_tsync_api.md)
 
-[user_api 应用接口参考规范](../../api_reference/time_user_api.md)
+[time_manager 应用接口参考规范](../../api_reference/time_manager.md)

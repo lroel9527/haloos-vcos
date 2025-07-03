@@ -12,35 +12,66 @@ vcos_studio源代码在haloosspace/vcos/vcos_studio目录下，目录结构如�
 vcos_studio
 └─ configurator                # 配置工具
     ├─ basic_func_module       # 基础功能模块，主要包括功能模块所使用的公用接口，如文件处理、autosar arxml解析编辑接口、日志接口等
+    │  ├─ autosar_utils        # AUTOSAR相关工具
+    │  ├─ base_common          # 基础通用功能
+    │  ├─ base_logger          # 日志功能
+    │  ├─ file_handler         # 文件处理
+    │  ├─ file_management      # 文件管理
+    │  ├─ file_validation      # 文件校验
+    │  ├─ hash_utils           # 哈希工具
+    │  └─ path_handler         # 路径处理
     ├─ cfg_gui                 # 前台 GUI 界面的用户操作交互功能代码，包括 BSW 配置编辑、Rte 配置编辑、导入导出、工程管理、二级菜单、搜索跳转、代码生成及校验等UI功能
     │  ├─ bsw_editor           # BSW 模块配置界面
+    │  ├─ common               # 通用功能模块
+    │  ├─ export_file          # 导出文件界面
     │  ├─ generator            # 代码生成界面
+    │  ├─ import_file          # 导入文件界面
+    │  ├─ main_window.py       # 主窗口
+    │  ├─ project_management   # 工程管理界面
+    │  ├─ resources            # 资源文件
     │  ├─ rte_editor           # Rte二级菜单，包含Task Mapping，Data Mapping，Port Mapping和Service Mapping
+    │  ├─ search_jump          # 搜索跳转功能
     │  ├─ secondary_menu       # 二级菜单界面
+    │  ├─ trace                # trace数据处理模块
     │  ├─ validation           # 校验界面
-    │  └─ ...
+    │  └─ widgets              # UI组件
     ├─ ui_adaptor              # 前台 GUI 适配层，对上提供接口供 GUI 用户交互模块调用，对下调用功能模块层的具体模块业务功能，并管理 GUI 交互数据
+    │  ├─ data_management      # 数据管理
+    │  ├─ func_logic_layer     # 功能逻辑层
+    │  ├─ launch_configurator.py # 启动配置器
+    │  ├─ ui_adaptor.py        # UI适配器
+    │  └─ ui_interaction       # UI交互
     ├─ cmd_api                 # 配置工具提供的 API 及命令行接口，包括供参考使用的演示代码
     │  ├─ api_demo             # 对外 API 使用演示
     │  ├─ cmd_demo             # 命令行接口演示
     │  ├─ auto_cli.py          # 命令行接口
     │  └─ auto_cli_api.py      # 对外API接口
     ├─ cmd_adaptor             # 前台命令行适配层，对上提供 API 及命令行接口，对下调用功能模块层的具体业务功能，管理交互数据
+    │  ├─ cmd_interaction      # 命令行交互
+    │  ├─ data_management      # 数据管理
+    │  └─ func_logic_layer     # 功能逻辑层
     ├─ func_module             # 功能模块层，对前台命令行模块及 UI 界面提供具体功能实现，包括文件导入、导出、代码生成、配置校验、模块管理、mapping、工程管理等
-    │  ├─ import_file          # 导入文件模块
     │  ├─ export_file          # 导出文件模块
-    │  ├─ validation           # 校验模块
     │  ├─ generator            # 代码生成模块
-    │  ├─ mapping              # mapping 模块
     │  ├─ health_monitor       # 健康监控模块
+    │  ├─ import_file          # 导入文件模块
+    │  ├─ mapping              # task mapping、data mapping、port mapping、service mapping等功能模块核心功能实现
     │  ├─ module_management    # 模块管理模块
-    │  └─ project_management   # 工程管理模块
+    │  ├─ project_management   # 工程管理模块
+    │  └─ validation           # 校验模块
     ├─ third_party             # 依赖的第三方库
+    │  ├─ autosar44            # AUTOSAR 4.4 相关库
+    │  ├─ cantools             # cantools库
+    │  ├─ durable              # durable_rules_engine规则引擎库
+    │  ├─ durable_rules_engine.cp38-win_amd64.pyd  # Windows 规则引擎
+    │  └─ durable_rules_engine.cpython-38-x86_64-linux-gnu.so  # Linux 规则引擎
     ├─ configurator.bat        # Windows 环境下 Configurator 工具启动脚本（启动时会显示控制台窗口）
     ├─ configurator.ps1        # Windows 环境下 Configurator 工具启动脚本（无控制台版本）
+    ├─ configurator.py         # Configurator 工具主程序入口
     ├─ configurator.sh         # Linux 环境下 Configurator 工具启动脚本
     ├─ init_env.py             # Configurator 工具环境配置脚本
-    └─ ...
+    ├─ pyproject.toml          # Python 项目配置文件
+    └─ requirements.txt        # Python 依赖包列表
 ```
 
 ## 3. 功能配置方法
@@ -89,7 +120,7 @@ File 菜单主要包含：新建工程、打开工程、工程保存、导入 AR
      - Log Files: 配置 Log 文件生成路径，选择 Project File 路径以后在 Project Name 文件夹下自动创建 Log 文件夹；
      - Configurator PlugIn Path: config_support 目录路径；
    - Target:
-     - Select Target: 选择芯片型号，例如：AURIX2G_TC397 和 Sim_Common 等；
+     - Select Target: 选择芯片型号，例如：AURIX2G_TC397 和 E3650 等；
      - MCAL VERSION: Mcal 支持“MC-ISAR_AS422_TC3xx_BASIC_1.40.0”版本
      - Select Compiler: 选择编译器
      - Compiler Path: 编译器路径选择 bin 文件夹的上一级目录，

@@ -1,6 +1,6 @@
 # SemiDrive E3650 芯片移植最佳实践
 ## 1. E3650 集成说明
-### 1.1 集成建议
+### 1.1. 集成建议
 - 禁止直接对 semidrive/drivers/platform 中的 MCAL 静态代码进行修改；
 - OS实现了临界区保护的情况下，要注意MCAL的模块可能在OS实现的临界区保护接口可用前调用临界区相关接口；因此需要注意OS的初始化和依赖OS初始化后才可用的OS接口（如临界区）的被调用的先后顺序；
 - Wdg模块为了更好的兼容AUTOSAR标准，对instance进行了拆分，集成商需要根据应用需求进行单个或多个instance(s)的配置；
@@ -13,7 +13,7 @@
 - 示例工程配置了相应的MPU属性，集成商可以根据自己实际工程中的使用场景是否进行删除或者增加MPU的保护区域个数；
 - MCAL Driver 提供和硬件模块相关的底层驱动（EA/FEE包含在内），上层协议栈文件（e.g. CanIf_Types.h，MemIf_Types.h）需要使用 VCOS 中间件。
 
-### 1.2 GCC 建议添加的编译选项
+### 1.2. GCC 建议添加的编译选项
 |选项|预定义的值|
 |-|-|
 |-mcpu=|cortex-r52+|
@@ -26,10 +26,10 @@
 |-mno-unaligned-access|NA|
 
 ## 2. E3650 VCOS 内核移植
-### 2.1 芯片相关移植
+### 2.1. 芯片相关移植
 E3650 参考适配代码放到 vendor/semidrive 目录，具体可参考仓库[vcos/haloos/vcos_vendor_semidrive](https://gitee.com/haloos/vcos_vendor_semidrive)，目录中文件按需可选，不强制全部实现，具体驱动代码目录参考 vendor 仓库说明的 [README.md](https://gitee.com/haloos/vcos_vendor_semidrive/blob/master/README.md)。
 
-#### 2.1.1 头文件
+#### 2.1.1. 头文件
 
 编译过程中会在编译输出目录的`<out>/<board_name>/<project_name>/include/arch/` 生成软连接到 `vendor/semidrive/chips/e3650/include`,  `vendor/semidrive/boards/E3650_DEV_KIT/include/`。
 芯片对外提供的能力，通过以下头文件对外提供。
@@ -38,7 +38,7 @@ E3650 参考适配代码放到 vendor/semidrive 目录，具体可参考仓库[v
 |vendor/semidrive/chips/e3650/include|arch/chip|
 |vendor/semidrive/boards/E3650_DEV_KIT/include/|arch/board|
 
-#### 2.1.2 链接脚本
+#### 2.1.2. 链接脚本
 ```
 #include <nuttx/config.h>  
 // 包含操作系统的配置头文件，用于获取编译配置信息
@@ -270,7 +270,7 @@ SECTIONS
         *(.text .
 ```
 
-#### 2.1.3 适配接口
+#### 2.1.3. 适配接口
 适配 E3650 架构的接口需要查看不同ARCH代码对SoC要求的Hook接口，下列介绍的是板级适配接口，实现文件在`semidrive/boards/E3650_DEV_KIT/src/`，接口说明如下：
 |接口名称|实现文件|接口描述|注意事项|配置|是否必选|
 |-|-|-|-|-|-|
@@ -279,8 +279,8 @@ SECTIONS
 |`int board_app_initialize(uintptr_t arg)`|e3650_appinit.c||描述：app通过boardctl的BOARDIOC_INIT命令字控制板子初始化，调用board_bringup。|在app的线程上下文中执行，注意栈的使用和并发问题。 app控制其调用的时机。|CONFIG_BOARDCTL|可选，board_late_initialize, board_app_initialize 二选一|
 |`int e3650_bringup(void)`|e3650_bringup.c|描述：板子后期初始化，板级驱动等.||当CONFIG_BOARD_LATE_INITIALIZE开启，其执行在board_late_initialize（AppBringUP线程上下文）否则其执行在board_app_initialize（app线程上下文）|无|必选|
 
-### 2.2 基础驱动移植
-#### 2.2.1 HRTIMER 
+### 2.2. 基础驱动移植
+#### 2.2.1. HRTIMER 
 
 E3650 集成的 ARM Cortex-R52 Plus 内核集成了 Generic Timer，Cortex-R52+ 的 Generic Timer 是一个系统级定时器框架，提供统一的时间基准和定时功能。它包括一个全局的系统计数器（System Counter），以固定频率递增。每个核心还配备了一组定时器，包括 EL1 物理定时器、EL2 物理定时器和虚拟定时器，用于操作系统和虚拟化环境中的时间管理。定时器通过控制寄存器（CTL）、比较值寄存器（CVAL）和定时值寄存器（TVAL）进行配置，支持绝对时间触发和相对时间触发两种方式。定时器的输出信号可以发送到通用中断控制器（GIC），并触发私有外设中断（PPI），用于中断处理。芯片驱动中提供的常用接口如下，详细说明请见 ARM 官方文档《Arm Cortex-R52+ Processor Technical Reference Manual》；
 
@@ -319,7 +319,7 @@ static const struct hrtimer_ops_s g_hrtimer_ops =
 };
 ```
 
-#### 2.2.2 UART 移植
+#### 2.2.2. UART 移植
 Uart需要适配的接口定义位于kernel/nuttx/include/nuttx/serial/serial.h 。芯驰提供了如下接口，用户可参考 e3650_serial.c 进行适配。
 
 |接口名称|功能描述|
@@ -338,10 +338,10 @@ Uart需要适配的接口定义位于kernel/nuttx/include/nuttx/serial/serial.h 
 |Uart_GetStatus|获取指定通道的发送或接收状态，包括剩余字节数等信息。|
 |Uart_GetVersionInfo|获取 UART 驱动的版本信息，包括供应商 ID、模块 ID、软件版本号等。|
 
-### 2.3 通信子系统移植
-#### 2.3.1 以太网适配流程
+### 2.3. 通信子系统移植
+#### 2.3.1. 以太网适配流程
 ![图2](../_static/image/porting/E3650_ETH.png)
-#### 2.3.2 以太网驱动适配接口
+#### 2.3.2. 以太网驱动适配接口
 Eth 驱动对上向EthIf 提供数据收发服务底层实现，AUTOSAR 定义Eth 驱动的相关概念和接口定义。驱动设计旨在满足相关上述需求文档提到的软件需求，且本文不再重复描述 AUTOSAR 针对Eth定义的接口调用序列等信息，具体概念参考AUTOSAR_SWS_EthernetDriver.pdf 。
 
 | 接口名称 | 功能描述 | 备注 | 
@@ -368,11 +368,11 @@ Eth 驱动对上向EthIf 提供数据收发服务底层实现，AUTOSAR 定义Et
 | Eth_TxConfirmation | 处理指定 Ethernet 控制器的发送确认操作。 | 处理发送确认。 | 
 | Eth_GetVersionInfo | 获取 Ethernet 驱动模块的版本信息。 | 查询驱动模块的版本信息。 | 
 
-### 2.4 存储子系统移植
-#### 2.4.1 存储适配流程
+### 2.4. 存储子系统移植
+#### 2.4.1. 存储适配流程
 ![图3](../_static/image/porting/E3650_EA.png)
-#### 2.4.2 存储驱动适配接口
-##### 2.4.2.1 EA 接口
+#### 2.4.2. 存储驱动适配接口
+##### 2.4.2.1. EA 接口
 | 接口名称 | 功能描述 | 备注 | 
 | --- | --- | --- | 
 | Ea_Init | 初始化 EEPROM Abstraction 模块。 | 初始化 Ea 模块及其内部状态。 | 
@@ -395,16 +395,16 @@ Eth 驱动对上向EthIf 提供数据收发服务底层实现，AUTOSAR 定义Et
 
 
 
-## 3 镜像生成
-### 3.1 手动一键生成启动相关镜像
+## 3. 镜像生成
+### 3.1. 手动一键生成启动相关镜像
 pacconfig_e3650 目录下提供了适用于 Windows 环境的 e3650_pac.bat 脚本，和适用于 Linux 环境的 e3650_pac.sh 脚本。用户可以输入格式如下的命令进行一键打包，生成芯驰下载工具所需的 PAC 文件。输入参数说明请见下方3.3章节。
 
 `e3650_pac.bat <编译产物路径>\nuttx.bin 0x208 0xA64000 0x00b00000`;
 
-### 3.2 镜像分布格式
+### 3.2. 镜像分布格式
 ![图4](../_static/image/porting/E3650_BPT_Table.png)
 
-### 3.3 生成 Boot Package 镜像
+### 3.3. 生成 Boot Package 镜像
 Boot Package 是 Safety BootROM （指 ARM Cortex-R52 Plus 固化在芯片内部的启动程序）的下一级启动镜像。SF BootROM 规定了 Boot Package 的格式是 BPT （Boot package table）头与启动镜像组合的方式。芯驰提供了 pacconfig_e3650 工具包可以将编译产物转为芯片&工具识别的 Boot Package 格式。
 
 atb_signer 工具命令中的参数解析如下表：
