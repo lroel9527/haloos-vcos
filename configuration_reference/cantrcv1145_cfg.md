@@ -30,8 +30,6 @@
 |描述|注意：在设置此配置项时，应考虑系统的容错需求和响应时间要求；重试次数不宜过高，以避免不必要的延迟；此配置项的值应与CAN收发器的特性和系统的实际环境相匹配。|
 |描述|该配置项未使用|
 |多实例个数|0 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|0|
 |取值范围|0 - 255|
 
@@ -43,8 +41,6 @@
 |描述|注意：超时时间应根据系统的实际需求和性能进行配置；过短的超时时间可能导致通信失败，过长的超时时间可能影响系统响应；在AUTOSAR CP 4.4中，确保该配置与CAN驱动和SPI驱动的兼容性。|
 |描述|该配置项未使用|
 |多实例个数|0 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|0|
 |取值范围|0 - 100|
 
@@ -67,8 +63,6 @@
 |描述|概述：CanTrcvChannelId是用于标识CAN传输层通道的唯一标识符，确保CAN通信中每个通道的数据传输和接收能够正确地被区分和管理。|
 |描述|注意：在配置CanTrcvChannelId时，必须确保其在整个项目中的唯一性；该标识符通常与物理硬件通道对应，因此在配置时应参考硬件设计文档；在AUTOSAR CP 4.4标准中，对CanTrcvChannelId的具体数值范围或格式没有特殊要求，但应遵循项目内部的命名和编号规范。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-														|
 |默认值|0|
 |取值范围|0 - 255|
 
@@ -79,8 +73,6 @@
 |描述|概述：CanTrcvChannelUsed配置项用于指定是否使用CAN传输层通道，它决定了相关的CAN通道是否被激活并参与通信。|
 |描述|注意：在配置时需确保所指定的通道与实际硬件资源相匹配；若设置为不使用，相关的通信功能将被禁用，可能影响系统的通信需求；AUTOSAR CP 4.4标准要求明确每个通道的使用情况，以便于系统资源的合理分配和管理。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-														|
 |默认值|true|
 
 |配置项属性|值（布尔参数配置项）|
@@ -91,8 +83,6 @@
 |描述|注意：在设计系统时，需要考虑该配置项对于电源管理策略的影响；如果CAN收发器不支持电源控制功能，该配置项应设置为false；AUTOSAR CP 4.4标准中对于电源管理有详细规定，确保配置与标准一致。|
 |描述|该配置项未使用|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-														|
 |默认值|false|
 
 |配置项属性|值（布尔参数配置项）|
@@ -102,8 +92,6 @@
 |描述|概述：CanTrcvHwPnSupport 是一个配置项，用于指定CAN收发器硬件是否支持部分网络功能（Partial Networking），这是一种节能功能，允许在网络上只唤醒部分节点而不是整个网络。|
 |描述|注意：在配置CanTrcvHwPnSupport时，需要确保硬件实际支持部分网络功能；如果硬件不支持，但软件配置错误地启用了该功能，可能会导致网络通信问题；AUTOSAR CP 4.4标准中，该配置项应与硬件规范和网络管理需求相匹配。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-														|
 |默认值|true|
 
 |配置项属性|值（枚举参数配置项）|
@@ -113,8 +101,6 @@
 |描述|概述：CanTrcvInitState 配置项用于定义CAN收发器（CAN transceiver）在系统启动时的初始状态，通常是指定为在线或离线状态。|
 |描述|注意：在配置CanTrcvInitState时，需要确保它与系统的电源管理策略一致；此外，该配置项的设置应考虑到网络唤醒和诊断需求；在AUTOSAR CP 4.4标准中，应检查该配置项是否支持所有的CAN收发器模式，以确保与标准的兼容性。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-														|
 |默认值|CANTRCV_OP_MODE_NORMAL|
 
 |配置项属性|值（整型参数配置项）|
@@ -124,8 +110,6 @@
 |描述|概述：CanTrcvMaxBaudrate 配置项用于指定CAN收发器（CAN transceiver）支持的最大波特率，这是通信速率的一个重要参数，影响网络的数据传输效率。|
 |描述|注意：在配置CanTrcvMaxBaudrate时，需要确保该值与实际硬件支持的最大波特率相匹配；超出硬件能力范围的配置可能导致通信故障；在AUTOSAR CP 4.4标准中，应当检查该配置项是否与ECU支持的CAN控制器和网络拓扑兼容。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-														|
 |默认值|1000|
 |取值范围|0 - 1000|
 
@@ -136,8 +120,6 @@
 |描述|概述：CanTrcvWakeupByBusUsed 是一个配置项，用于指示是否启用了通过CAN总线唤醒的功能，这对于实现低功耗模式下的网络管理非常关键。|
 |描述|注意：在设计系统时，需要确保硬件支持通过CAN总线唤醒的功能；此配置项应与ECU的低功耗需求和唤醒策略相匹配；AUTOSAR CP 4.4标准中对此功能有明确的支持，但实现时需遵循具体的微控制器和CAN收发器的能力。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-														|
 |默认值|false|
 
 |配置项属性|值（布尔参数配置项）|
@@ -147,8 +129,6 @@
 |描述|概述：CanTrcvEnablePNMD 是一个配置项，用于启用或禁用部分网络管理功能（Partial Networking Management）在CAN收发器（CAN transceiver）中的支持。|
 |描述|注意：在使用该配置项时，需要确保CAN收发器硬件支持部分网络管理功能；此外，该配置项应与网络管理软件模块的要求保持一致；在配置过程中，还需注意与其他网络参与者的兼容性和网络管理策略的一致性。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-														|
 |默认值|true|
 
 |配置项属性|值（布尔参数配置项）|
@@ -158,8 +138,6 @@
 |描述|概述：CanTrcvFdTolerance配置项定义了CAN收发器在CAN FD（Flexible Data-rate）模式下的容忍度，这通常涉及到时间同步和数据传输的稳定性。|
 |描述|注意：在配置CanTrcvFdTolerance时，需要确保值符合CAN FD收发器的硬件规格和网络设计要求；此外，该配置项的设置必须与网络上其他节点的容忍度设置保持一致，以确保网络同步；在AUTOSAR CP 4.4标准中，如果该属性与硬件不兼容或者与网络设计不一致，可能会导致通信问题。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-														|
 |默认值|false|
 
 |配置项属性|值（关联引用配置项）|
@@ -169,8 +147,6 @@
 |描述|概述：CanTrcvWakeupSourceRef 配置项用于将CAN收发器（Transceiver）的唤醒源与ECU唤醒源进行关联，确保在CAN网络上的唤醒事件能够被系统正确识别和处理。|
 |描述|注意：在配置时需确保唤醒源的引用正确指向有效的ECU唤醒源对象；如果系统中存在多个CAN收发器，每个收发器的唤醒源应当被唯一标识和配置；AUTOSAR CP 4.4标准中，唤醒源的配置应当与PNC（Partial Network Cluster）或ECU唤醒源的定义相一致。|
 |多实例个数|0 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-														|
 |目标引用项的路径|/AUTOSAR/EcucDefs/EcuM/EcuMConfiguration/EcuMCommonConfiguration/EcuMWakeupSource|
 
 #### 1.1.1. CanTrcvAccess
@@ -218,16 +194,11 @@
 |描述|注意：在配置时需确保名称的唯一性和正确性，以匹配实际硬件；名称应与ECU中实际的CAN收发器硬件接口相对应；在整个项目中保持一致性，避免在不同的模块或组件中出现混淆。|
 |描述|该配置项未使用|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																				|
-
 |配置项属性|值（选择引用配置项）|
 |---|---|
 |名称|CanTrcvDioSymNameRef|
 |描述|Choice Reference to a DIO Port, DIO Channel or DIO Channel Group.|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																				|
 |目标引用|/AUTOSAR/EcucDefs/Dio/DioConfig/DioPort/DioChannel/AUTOSAR/EcucDefs/Dio/DioConfig/DioPort/DioChannelGroup/AUTOSAR/EcucDefs/Dio/DioConfig/DioPort|
 
 ##### 1.1.1.2. CanTrcvSpiSequence
@@ -250,8 +221,6 @@
 |描述|注意：在AUTOSAR CP 4.4中，异步SPI通信可能需要额外的配置和管理，因此确认硬件和驱动支持同步操作是必要的；同步访问通常意味着在SPI操作完成前，系统会阻塞其他操作，这可能影响系统性能；确保系统设计时考虑了这种阻塞的影响。|
 |描述|该配置项未使用|
 |多实例个数|0 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																		|
 |默认值|false|
 
 ###### 1.1.1.2.1. CanTrcvSpiSequenceAccess
@@ -267,8 +236,6 @@
 |名称|CanTrcvSpiAccessSynchronous|
 |描述|This parameter is used to define whether the access to the Spi sequence is synchronous or asynchronous.|
 |多实例个数|0 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																				|
 |默认值|false|
 
 |配置项属性|值（字符串参数配置项）|
@@ -278,8 +245,6 @@
 |描述|概述：CanTrcvSpiSequenceAccess 配置项用于定义CAN收发器通过SPI接口进行通信时所使用的SPI序列，确保CAN收发器的正确初始化和操作。|
 |描述|注意：在配置CanTrcvSpiSequenceAccess时，需要确保所选的SPI序列与实际的硬件连接和SPI驱动配置相匹配；此外，应当检查该SPI序列是否支持所需的所有操作，例如唤醒和休眠；在多个CAN收发器共享同一SPI接口的情况下，还需考虑SPI序列的共享和冲突管理。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																				|
 
 ##### 1.1.1.3. CanTrcvSbcAccess
 
@@ -294,8 +259,6 @@
 |名称|CanTrcvSbcPeripheralIdRef|
 |描述|Reference to the SBC peripheral that is being used by this CanTrcv channel.|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																		|
 |目标引用|/AUTOSAR/Sbc/Sbc/SbcDevice/SbcCanTrcvPeripheral|
 
 #### 1.1.2. CanTrcvPartialNetwork
@@ -317,8 +280,6 @@
 |描述|概述：CanTrcvBaudRate 配置项用于定义CAN收发器（CAN transceiver）的波特率，这是通信速率的一个参数，决定了CAN网络中数据传输的速度。|
 |描述|注意：在配置CanTrcvBaudRate时，必须确保波特率与网络中其他节点的波特率一致，以保证网络的正常通信；波特率的选择应考虑网络的长度和所需的数据吞吐量；在AUTOSAR CP 4.4标准中，波特率的配置应与ECU支持的硬件能力相匹配。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																|
 |默认值|500|
 |取值范围|0 - 1000|
 
@@ -330,8 +291,6 @@
 |描述|注意：在配置CanTrcvSbcAccess时，需要确保所选接口与实际硬件架构相匹配；如果硬件设计中CAN收发器直接集成于SBC，则该配置项尤为重要；AUTOSAR CP 4.4标准中可能对接口访问方式有特定的要求或限制，需要根据标准文档进行配置。|
 |描述|该配置项未使用|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																|
 |默认值|false|
 
 |配置项属性|值（布尔参数配置项）|
@@ -341,8 +300,6 @@
 |描述|概述：CanTrcvPartialNetwork 配置项用于定义CAN收发器（Transceiver）的局部网络功能，允许在特定条件下仅激活网络的一部分，以减少能耗。|
 |描述|注意：确保该功能与车辆的休眠模式和唤醒策略相兼容；在配置时需遵循ECU的硬件支持和网络需求；AUTOSAR CP 4.4标准中对局部网络管理的实现细节有严格规定，需要仔细遵守。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																|
 |默认值|false|
 
 |配置项属性|值（布尔参数配置项）|
@@ -352,8 +309,6 @@
 |描述|概述：CanTrcvBusErrFlag 是一个配置项，用于启用或禁用CAN收发器的总线错误标志，该标志指示CAN总线的错误状态。|
 |描述|注意：在配置CanTrcvBusErrFlag时，需要确保它与硬件支持的功能相匹配；如果硬件不支持总线错误监控，则不应启用此功能；在AUTOSAR CP 4.4标准中，应当遵循相关模块的配置参数规范来设置此项。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																|
 |默认值|false|
 
 |配置项属性|值（整型参数配置项）|
@@ -363,8 +318,6 @@
 |描述|概述：CanTrcvPnFrameCanId配置项用于定义参与部分网络（Partial Networking）唤醒功能的CAN传输器所需发送的帧的CAN标识符。|
 |描述|注意：该配置项的值必须确保在网络中的唯一性，避免与其他帧的CAN ID冲突；在配置时需考虑网络中所有节点的PN功能和CAN ID分配策略；该配置项在AUTOSAR CP 4.4中应与网络管理需求和配置紧密相关，确保兼容性和网络唤醒功能的正确实现。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																|
 |默认值|0|
 |取值范围|0 - 4294967295|
 
@@ -375,8 +328,6 @@
 |描述|概述：CanTrcvPnFrameCanIdMask 用于定义接收到的部分网络唤醒帧的CAN标识符掩码，以便过滤和识别特定的唤醒帧。|
 |描述|注意：确保掩码正确匹配所需的CAN ID范围；掩码设置错误可能导致无法正确识别唤醒帧；在配置时需考虑网络上所有可能的唤醒帧ID。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																|
 |默认值|0|
 |取值范围|0 - 4294967295|
 
@@ -387,8 +338,6 @@
 |描述|概述：CanTrcvPnFrameDlc配置项用于定义参与部分网络唤醒功能的CAN传输层帧的数据长度代码（DLC），确保唤醒帧的数据长度符合网络要求。|
 |描述|注意：该配置项的值必须符合CAN网络对唤醒帧DLC的具体要求；在配置时需考虑网络的实际情况和其他节点的配置，以保证唤醒功能的正常工作；AUTOSAR CP 4.4标准中未对此配置项的具体取值范围做出限制，但实际应用中应参考具体的CAN网络标准和要求。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																|
 |默认值|8|
 |取值范围|0 - 8|
 
@@ -399,8 +348,6 @@
 |描述|概述：CanTrcvPnCanIdIsExtended 配置项用于指定部分网络管理器使用的唤醒帧的CAN标识符类型，确定其是否为扩展帧（29位标识符）。|
 |描述|注意：在配置此项时，必须确保与实际网络上使用的唤醒帧标识符类型相匹配；如果网络上未使用扩展帧，则不应将此属性设置为true；此配置项的设置应与CanTrcvPnCanId配置项协同工作，确保唤醒帧的标识符和类型一致。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																|
 |默认值|false|
 
 ##### 1.1.2.1. CanTrcvPnFrameDataMaskSpec
@@ -422,8 +369,6 @@
 |描述|概述：CanTrcvPnFrameDataMask 配置项用于定义在局部网络（Partial Networking）中，CAN收发器（Transceiver）用来屏蔽接收到的唤醒帧数据字节的掩码，以确定是否应唤醒网络。|
 |描述|注意：该掩码应与CanTrcvPnFrameDataByte配置项一起使用，以确保正确的唤醒逻辑；掩码的设置必须符合车辆网络唤醒策略的要求；在配置时应确保掩码值正确匹配所需的数据字节，避免错误的网络唤醒。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																		|
 |默认值|0|
 |取值范围|0 - 255|
 
@@ -434,8 +379,6 @@
 |描述|概述：CanTrcvPnFrameDataMaskIndex用于定义在使用部分网络功能时，CAN收发器对接收到的帧数据进行掩码处理的索引值，以便于识别和处理特定的网络管理信息。|
 |描述|注意：该配置项在使用部分网络（Partial Networking）功能时非常关键，需要确保正确配置以匹配网络管理器的要求；在不同的CAN收发器硬件中，对掩码处理的支持可能有所不同，需要参考硬件手册进行配置；AUTOSAR CP 4.4标准中对该配置项的具体要求可能与硬件实现细节有所差异，务必核对标准文档和硬件手册以确保兼容性。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-																		|
 |默认值|0|
 |取值范围|0 - 7|
 
@@ -470,8 +413,6 @@
 |描述|概述：CanTrcvDevErrorDetect 是一个配置参数，用于启用或禁用CAN收发器（Transceiver）的开发错误检测功能，以便在开发和测试阶段识别潜在的错误。|
 |描述|注意：在生产代码中通常禁用此功能以节省资源；确保在开发和测试阶段根据需要启用以便进行故障诊断；在AUTOSAR CP 4.4标准中，此配置应与系统和模块的诊断策略保持一致。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|true|
 
 |配置项属性|值（布尔参数配置项）|
@@ -481,8 +422,6 @@
 |描述|概述：CanTrcvGetVersionInfo 是一个配置项，用于启用或禁用 CAN 收发器模块的版本信息API，该API允许用户获取模块的版本信息，包括主版本号、次版本号和补丁版本号。|
 |描述|注意：在AUTOSAR CP 4.4标准中，如果启用了该配置项，必须实现相应的GetVersionInfo API；如果不需要版本信息，可以禁用以节省空间；确保在配置时遵循项目的规范和需求。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|false|
 
 |配置项属性|值（整型参数配置项）|
@@ -490,8 +429,6 @@
 |名称|CanTrcvSPICommRetries|
 |描述|Not used.This value specifies the maximal number of communication retries in case of failed SPI communication (applies both to timed out communication and to errors/NACK in the response data).|
 |多实例个数|0 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|0|
 |取值范围|0 - 255|
 
@@ -500,8 +437,6 @@
 |名称|CanTrcvSPICommTimeout|
 |描述|Not used.This value specifies the maximal time allowed to the transceiver in order to reply (either positively or negatively) to a SPI command. (value in ms, 0ms means no specific timeout is to be used, communication is executed at the best of the SPI HW capacity)|
 |多实例个数|0 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|0|
 |取值范围|0 - 100|
 
@@ -513,8 +448,6 @@
 |描述|注意：该参数的设置需要根据具体的CAN收发器硬件特性和系统的响应时间要求来确定；过小的值可能导致系统未能成功唤醒CAN收发器，而过大的值可能导致系统响应延迟；在AUTOSAR CP 4.4标准中，确保该配置项与硬件手册和系统性能要求相匹配。|
 |描述|该配置项未使用|
 |多实例个数|0 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|0|
 |取值范围|0 - 4294967295|
 
@@ -525,8 +458,6 @@
 |描述|概述：CanTrcvWakeUpSupport 是一个配置项，用于指定CAN收发器是否支持唤醒功能，这决定了CAN网络节点是否能够在网络空闲时进入低功耗模式，并在检测到网络活动时唤醒。|
 |描述|注意：在配置CanTrcvWakeUpSupport时，需要确保硬件支持唤醒功能；如果硬件不支持，该配置应设置为不支持以避免功能异常；此外，该配置项的设置应与整个系统的低功耗策略和唤醒逻辑相协调。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|CANTRCV_WAKEUP_BY_POLLING|
 
 |配置项属性|值（整型参数配置项）|
@@ -536,8 +467,6 @@
 |描述|概述：CanTrcvIndex是用于标识特定CAN收发器（Transceiver）的索引，它在配置CAN通信堆栈时用于区分连接到同一CAN网络上的多个收发器。|
 |描述|注意：在配置多个CAN收发器时，每个收发器的CanTrcvIndex必须是唯一的，以避免配置冲突；确保索引与实际硬件连接和软件驱动匹配，以保证通信的正确性；在AUTOSAR CP 4.4标准中，对CanTrcvIndex的具体数值范围没有特别限制，但应根据实际项目需求合理分配。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|0|
 |取值范围|0 - 255|
 
@@ -548,8 +477,6 @@
 |描述|概述：CanTrcvMainFunctionPeriod配置项定义了CAN收发器主函数的调用周期，即主函数被周期性调度执行的时间间隔，用于处理CAN收发器的状态和诊断信息。|
 |描述|注意：该配置项的值应当与系统的实时性要求和CAN网络的通信需求相匹配；过短的周期可能导致CPU负载过高，而过长的周期可能影响通信效率和诊断能力；在AUTOSAR CP 4.4标准中，确保该配置项的设置符合ECU的实际硬件能力和网络需求。|
 |多实例个数|1 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|0.01|
 |取值范围|0.001 - 1|
 
@@ -560,7 +487,5 @@
 |描述|概述：CanTrcvWaitTime配置项定义了CAN收发器从睡眠状态唤醒到正常状态所需等待的时间，以确保CAN网络的稳定性和可靠性。|
 |描述|注意：该配置项的时间单位和具体值需根据硬件手册和CAN网络的实际需求来设置；过长的等待时间可能会影响系统的响应速度，而过短的等待时间可能导致网络未能稳定即开始通信，引发错误。|
 |多实例个数|0 - 1|
-|IMPLEMENTATION-CONFIG-CLASSES|
-												|
 |默认值|0|
 |取值范围|0 - 255|

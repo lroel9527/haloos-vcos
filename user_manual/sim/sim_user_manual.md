@@ -218,6 +218,16 @@ Linux系统可使用Docker容器，实现与本地环境的隔离。Docker容器
 
 > 提示：Docker容器已预配置模拟器运行环境，使用Docker可跳过以下配置步骤
 
+> 更新说明（2025.7.30）：为确保模拟器与实际硬件平台的一致性，本次更新在 64 位系统上编译时启用了 GCC 的 -m32 选项，生成 32 位目标代码。因此，在运行前需要安装相应的 32 位依赖库。若本次更新前已创建docker容器，请在docker容器内手动执行下述命令：
+
+  ```bash
+  # 启用 32 位架构
+  dpkg --add-architecture i386
+  # 安装 32 位支持库
+  apt-get update
+  apt-get install -y libc6:i386 libstdc++6:i386 libgcc1:i386 libc6-dev-i386 lib32z1 lib32ncurses6
+  ```
+
 ### 5.2. eth配置
 
 1. 运行权限配置
@@ -285,13 +295,15 @@ sim eep驱动程序会自动创建veep.bin文件模拟EEPROM存储器，无需�
 
 ### 6.1. 调试工具
 
+> 提示：使用 chrt -f 99 命令为模拟器进程配置 SCHED_FIFO 实时调度策略和最高优先级（99），确保关键操作的实时性能。
+
 #### 6.1.1. GDB命令行调试
 
 sim支持GDB调试，用户可直接在命令行中使用GDB作为调试工具，常用调试命令如下：
 
 ```bash
 # 1. 启动gdb
-gdb ./sim.elf
+chrt -f 99 gdb ./sim.elf
 
 # 2. 设置初始断点
 (gdb) break nsh_main
@@ -328,9 +340,13 @@ gdb ./sim.elf
                 "name": "(gdb) 启动",
                 "type": "cppdbg",
                 "request": "launch",
+                "program": "/usr/bin/chrt",
                 // 可依据实际情况修改可执行文件的路径
-                "program": "${workspaceFolder}/output/sim.elf",
-                "args": [],
+                "args": [
+                    "-f",
+                    "99",
+                    "${workspaceFolder}/output/sim.elf"
+                ],
                 "stopAtEntry": false,
                 "cwd": "${workspaceFolder}",
                 "environment": [],

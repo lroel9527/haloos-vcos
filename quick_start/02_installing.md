@@ -16,7 +16,20 @@
 
 ### 1.2. 打开Studio工具
 
-在HaloOS根目录`haloosspace`下运行`.\vcos\vcos_studio\configurator\configurator.bat`脚本，打开Studio工具（首次打开可能需要等待一段时间）
+- 进入根目录：确保当前路径在 HaloOS 的根目录haloosspace下。
+- 激活虚拟环境：运行以下命令（虚拟环境路径默认为 VCOS 代码目录，且每次打开 Studio 工具前需重新激活）：
+
+```bash
+.\vcos\.venv\Scripts\activate.bat
+```
+
+- 打开 Studio 工具：激活虚拟环境后，执行以下命令（首次打开可能需要等待一段时间）：
+
+```bash
+.\vcos\vcos_studio\configurator\configurator.bat
+```
+
+按照上述步骤，即可完成虚拟环境的激活和 Studio 工具的启动。如果操作过程中出现路径错误等问题，建议先检查当前目录是否正确，或确认 VCOS 代码目录的实际路径是否与默认路径一致。
 
 ### 1.3. 打开系统预设工程
 
@@ -24,7 +37,7 @@
 
     ![选择打开工程](../_static/image/quick_start/start_02.jpeg "选择打开工程")
 
-2. 在弹出的文件选择界面里选择`haloosspace/apps/rt_demo/platform_cfg/tc397_cfg/rt_demo.vcosproject`，点击【打开】
+2. 在弹出的文件选择界面里选择`haloosspace/apps/rt_demo/system_cfg/tc397_cfg/rt_demo.vcosproject`，点击【打开】
     > 提示：这里以rt_demo为例，如果需要打开其他工程，可以选择相应的vcosproject工程文件
 
     ![打开预设工程](../_static/image/quick_start/start_03.png "打开预设工程")
@@ -39,7 +52,7 @@
 
     ![生成代码](../_static/image/quick_start/start_05.png "生成代码")
 
-3. 等待一段时间后，在`haloosspace/apps/rt_demo/platform_cfg/tc397_cfg/gen_data`下检查如果有代码生成，即代表运行成功
+3. 等待一段时间后，在`haloosspace/apps/rt_demo/system_cfg/tc397_cfg/gen_data`下检查如果有代码生成，即代表运行成功
 
 ## 2. Linux（Ubuntu）
 
@@ -70,9 +83,9 @@
 3. 执行以下命令（该脚本可以打开工程，以及生成代码）
 
     ```bash
-    python ./vcos/vcos_studio/configurator/cmd_api/auto_cli.py -p ./apps/rt_demo/platform_cfg/tc397_cfg/rt_demo.vcosproject Generate
+    python ./vcos/vcos_studio/configurator/cmd_api/auto_cli.py -p ./apps/rt_demo/system_cfg/tc397_cfg/rt_demo.vcosproject Generate
     ```
 
     > 提示：此处以rt_demo工程为例，如需操作其他工程，请相应替换工程路径及文件名
 
-4. linux终端提示`AutoCli successfully`，并在`haloosspace/apps/rt_demo/platform_cfg/tc397_cfg/gen_data`下检查如果有代码生成，即代表生成成功
+4. linux终端提示`AutoCli successfully`，并在`haloosspace/apps/rt_demo/system_cfg/tc397_cfg/gen_data`下检查如果有代码生成，即代表生成成功

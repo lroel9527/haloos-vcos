@@ -1,4 +1,4 @@
-# time_user_api 接口参考文档
+# time_manager 接口参考文档
 
 > 提示：本API参考文档仅代表功能栈的接口描述和功能说明，帮助开发者快速了解接口作用。应用开发者应通过服务映射调用对应的RTE接口，而非直接调用本文接口
 
@@ -20,8 +20,8 @@
 |属性|描述|
 |---|---|
 |函数定义|`void tm_init(const tm_config_type *config_ptr)`|
-|简要描述|初始化user_api |
-|详细说明|初始化user_api模块|
+|简要描述|初始化time_manager|
+|详细说明|初始化time_manager模块|
 |参数[输入]|`const tm_config_type *config_ptr` 指向配置参数结构体的指针 |
 |同步/异步|同步|
 |可重入性|不可重入|
@@ -134,7 +134,7 @@
 |属性|描述|
 |---|---|
 |函数定义|`tm_initialized_type tm_init_status_check(void)`|
-|简要描述|检查user_api初始化状态 |
-|详细说明|检查user_api模块是否已成功初始化|
+|简要描述|检查time_manager初始化状态 |
+|详细说明|检查time_manager模块是否已成功初始化|
 |同步/异步|同步|
 |可重入性|不可重入|
