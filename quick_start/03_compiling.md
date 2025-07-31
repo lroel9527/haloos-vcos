@@ -68,6 +68,7 @@ python ./vcos/build/compiling_build_env.py
 
   ```bash
   python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -clean  # 清除编译产物
+  python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -codegen  # 动态代码生成，等同于UI界面操作生成代码。如已通过UI操作代码生成，可跳过此命令
   python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -gcmake  # 生成cmake
   python vcos_build.py -app_name multicore_com_demo -board_name e3650_dev_kit -fc  # 执行全量编译
   ```
