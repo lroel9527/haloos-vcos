@@ -3,7 +3,7 @@
 |容器属性|值（容器）|
 |---|---|
 |名称|Det|
-|描述|Configuration of the Default Error Tracer (Det) module.|
+|描述|Configuration of the Development Error Tracer (Det) module.|
 |描述|概述：概述：Det（Development Error Tracer）模块用于提供开发时错误跟踪功能，它记录软件模块在运行时发生的开发错误，并提供错误报告机制。|
 |描述|注意：Det模块的配置应确保与系统的错误处理策略一致；Det模块通常在开发和测试阶段使用，而在生产环境中可能被禁用或配置为最小化资源占用；配置Det时，应注意不同错误级别的区分和相应的错误处理动作。|
 |多实例个数|0 - 1|
