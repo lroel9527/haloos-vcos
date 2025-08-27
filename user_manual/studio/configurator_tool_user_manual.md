@@ -137,7 +137,7 @@ File 菜单主要包含：新建工程、打开工程、工程保存、导入 AR
 
    ![Open Project File](../../_static/image/tool_chain/configuration/open_project_file.png)
 
-##### 3.2.1.4. 工程保存
+##### 3.2.1.3. 工程保存
 
 ![Project Save Button](../../_static/image/tool_chain/configuration/project_save.png)
 
@@ -228,6 +228,34 @@ File 菜单主要包含：新建工程、打开工程、工程保存、导入 AR
 
    这样可以在原始工程的 Excel 文件中进行增量修改，不需要重新新建 Excel 文件，相对方便一些。
 
+##### 3.2.1.7. MCAL配置文件导入VCOS
+
+使用EB tresos工具配置MCAL层代码以及导出配置文件，再将配置文件导入VCOS Studio工具是开发过程中的一个重要步骤，本小节主要描述此过程的主要操作步骤：
+
+1. 选中工程:在EB 工具中，选中你需要导出ARXML文件的配置工程。
+
+2. 右键点击选中的工程，然后选择"Im- and Exporters"。
+
+   ![EB config export](../../_static/image/tool_chain/configuration/eb_export_arxml_select.png)
+
+3. 新建导出配置:点击"+" 按钮，在"Name" 字段中输入导出配置的名称，并将"Mode" 设为"Export only"。
+
+   ![EB config export create](../../_static/image/tool_chain/configuration/eb_export_arxml_create.png)
+
+4. 选择导出文件:点击"Next"，然后选择要导出的ARXML文件，并设置文件后缀为".arxml"。在"File Name" 字段中选择该文件，在"Content type" 中选择相应的AUTOSAR 版本。
+
+   ![EB config export next](../../_static/image/tool_chain/configuration/eb_export_arxml_expconfig.png)
+
+5. 完成导出:点击Run Export，最后点击"Finish" 完成导出配置。
+
+   ![EB config export finish](../../_static/image/tool_chain/configuration/eb_export_arxml_finish.png)
+
+6. 按照 3.2.1.5.的arxml文件导入操作，将上一步得到的arxml文件导入到VCOS Studio工具。导入时注意选择需要的模块：
+
+   ![EB arxml import vcos](../../_static/image/tool_chain/configuration/eb_export_arxml_vcos_import.png)
+
+   ![EB arxml import vcos result](../../_static/image/tool_chain/configuration/eb_export_arxml_vcos_impor_result.png)
+
 #### 3.2.2. CodeGen 菜单
 
 ##### 3.2.2.1. Validation
@@ -278,9 +306,9 @@ File 菜单主要包含：新建工程、打开工程、工程保存、导入 AR
    - Select Mode: 选择代码生成模式；Release 模式生成的配置不包含测试代码；Debug 模式生成的代码配置包含测试代码。
    - Incremental generation: 是否增量代码生成，增量代码生成不会重新生成未改变配置的模块
 
-#### 3.2.4. Project 菜单
+#### 3.2.3. Project 菜单
 
-##### 3.2.4.1. ProjectSetting
+##### 3.2.3.1. ProjectSetting
 
 当工程创建完成后，用户可以通过 ProjectSetting 修改工程配置，工程配置如下：
 
@@ -338,7 +366,7 @@ Configurator 支持用户导入自定义模块，用户可以通过 Configurator
 
    ![Module Validation Interface](../../_static/image/tool_chain/user_module/plugin_add_module_03.png)
 
-##### 3.1.4.4. 插件开发
+##### 3.2.4.4. 插件开发
 
 ###### 1. 插件目录结构(MemAcc1为例)
 
@@ -441,9 +469,43 @@ class MemAcc1Rule():
 
    ![Module Configuration Screen](../../_static/image/tool_chain/configuration/module_config.png)
 
-#### 3.3.2. ASW 导入、ARXML 文件导入/导出
+#### 3.3.2. 通信/诊断配置文件导入
 
-##### 3.3.2.1. 导入 ASW 配置文件
+1. 点击Input files按钮
+
+   ![Input Files Button](../../_static/image/tool_chain/configuration/input_files_001.png)
+
+2. 选择要导入的文件（目前支持导入DBC/CDD）,导入DBC后，应选择需要的ECU Instance。
+
+   ![Input Files Button](../../_static/image/tool_chain/configuration/input_files_002.png)
+
+   1. "Add Files"按钮：从UI上添加新的DBC文件
+   2. "Remove"按钮：从UI上移除DBC文件
+   3. "Replace"按钮：从UI上替换选中的DBC文件
+
+   **重要配置选项说明：**
+
+   1. **CDD 文件导入配置**
+
+      选择 `Import DIDs and RIDs as single signal for DCM (backward compatibility)` 选项时，会将 DID/RID 中的多个 Signal 合并为一个信号。
+      > **注意**目前仅支持导入Candela13.0版本的cdd文件，不支持导入其他版本的cdd文件！
+
+   2. **DBC 文件导入配置**
+
+      选择 `Import DBC files with added channel name to the SystemSignals` 选项时，会将网段名作为后缀添加到自动生成的 SystemSignal 名字中，格式为：`<SystemSignal>_<网段名>`。
+
+      **该配置项的勾选必须与应用层开发的 Port 命名保持一致：**
+
+      - **勾选时**：应用层 Port 的名字需要加上对应的网段名作为后缀，格式为：`<Port>_<网段名>`
+      - **不勾选时**：应用层 Port 不需要额外加网段名，格式为：`<Port>`
+
+      > **重要提醒**：如果配置不一致，在进行 Port Mapping 时会匹配不到对应的 SystemSignal。
+      >
+      > **建议**：仅在 CAN 多核部署特性时勾选此选项（需与应用层设计配合使用），其他情况下建议不勾选，以避免不必要的命名后缀。
+
+#### 3.3.3. ASW 导入、ARXML 文件导入/导出
+
+##### 3.3.3.1. 导入 ASW 配置文件
 
 点击 Import Asw 选择需要导入的 ASW 文件夹点击选择文件夹，就会导入文件夹下所有 Asw。
 
@@ -451,7 +513,7 @@ class MemAcc1Rule():
 
 > **注意**：导入的 ASW 中有同名的 swc 会导致导入失败
 
-##### 3.3.2.2. 导入 ARXML(Mcal 或 BSW 模块配置ARXML文件)
+##### 3.3.3.2. 导入 ARXML(Mcal 或 BSW 模块配置ARXML文件)
 
 主界面中的 Import ARXML 与 3.3.1.5 节的 ARXML 导入导出功能一致。
 
@@ -555,6 +617,128 @@ class MemAcc1Rule():
 
    1. 点击 "Export Os info" 按钮，可以导出 Core、Application、ISR、task 和 runnable 的全景表格文件;
    2. 点击 "Export" 按钮，可以导出同 UI 界面一致的 runnable 与 task 之间的映射关系表格文件（Excel 格式）；
+
+##### 3.3.5.2. PortMapping和ServiceMapping配置
+
+Port mapping界面中只显示is-service属性为false的port；Service mapping界面中只显示is-service属性为true的port；
+除了上述区别，其他界面操作完全一致，下面的介绍以port mapping为例
+
+1. 主界面
+
+   ![PortMapping](../../_static/image/tool_chain/configuration/port_mapping_0.png)
+
+   a. 在主界面上可以进行手动连接（Connect）或者断开（Disconnect）
+
+   ![PortMapping](../../_static/image/tool_chain/configuration/port_mapping_1.png)
+
+   b. 点击Connect后的界面
+
+   ![PortMapping](../../_static/image/tool_chain/configuration/port_mapping_2.png)
+
+2. 连接助手
+
+   ![PortMapping](../../_static/image/tool_chain/configuration/port_mapping_3.png)
+
+   a. 勾选Automatic Matching
+
+   ![PortMapping](../../_static/image/tool_chain/configuration/port_mapping_4.png)
+
+   b. 点击next后
+
+   ![PortMapping](../../_static/image/tool_chain/configuration/port_mapping_5.png)
+
+   c. 勾选要做mapping的port之后，点击next，可以在界面上看到自动mapping的结果，点击finish后mapping结果会被更新到主界面上。
+
+   ![PortMapping](../../_static/image/tool_chain/configuration/port_mapping_6.png)
+
+   d. 其他操作跟Automatic matching一致，勾选要mapping的SWC、port，在显示mapping结果后点击finish即可在主界面显示自动mapping结果。
+
+   ![PortMapping](../../_static/image/tool_chain/configuration/port_mapping_7.png)
+
+##### 3.3.5.3. DataMapping配置
+
+1. DataMapping主界面筛选显示功能
+
+   DataMapping功能目前支持SR Port，其他的Port类型暂不支持。如下图所示，DataMapping主界面支持筛选功能，可以根据**方向筛选**、**输入文本筛选**以及**每一列支持列筛选**，所有**筛选条件可以叠加**。也可以通过**重置筛选按钮**清除所有的筛选条件。
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_0.png)
+
+   a. 方向筛选: 可以指定显示Tx方向、Rx方向或所有方向的SR Port
+
+   b. 文本筛选: 可以输入任意文本，匹配的是每一行数据的所有列数据
+
+   c. 列值筛选: 先反选->选择要显示的值->点Apply and close
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_1.png)
+
+2. 导出功能
+
+   DataMapping支持将界面的数据导出为Excel表，在Excel中可以进行更加灵活的查看连接关系。
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_2.png)
+
+3. 手动连接/断开连接
+
+   在选择的行数据上右键，可以看到连接和断开连接的选项，如果要断开连接，直接选择断开连接即可，下面重点介绍连接
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_3.png)
+
+   a. 点击连接后弹出新的连接窗口
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_4.png)
+
+   b. 完成后在主界面可以看到新的连接关系
+
+4. 批量连接
+
+   a. 点击链接打开连接助手
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_5.png)
+
+   b. 选择Port和自动连接规则
+
+   支持筛选功能，选择需要连接的Ports，且可以选择自动匹配或者手动设置匹配规则，点击Next>进入连接确认界面
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_6.png)
+
+   c. 连接确认
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_7.png)
+
+   d. 点击Finish完成连接，完成后可以在主界面看到新的连接关系
+
+5. 信号组连接
+
+   上述小节的操作都以信号为例进行了说明，DataMapping也支持信号组也支持手动连接、断开连接和批量连接操作，由于信号组的连接比较特殊，这里单独进行说明，Port的Element是结构体类型时在连接时需要连接信号组。
+   下图是已连接的Port和信号组在DataMapping界面的显示，一对连接关系根据结构体成员的个数显示成多行，Port的Elment与结构体成员与信号组中的信号一一对应。
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_8.png)
+
+   a. 断开连接操作
+
+   断开操作在其中任意一行上右键Remove即可
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_9.png)
+
+   b. 手动连接
+
+   i. 选择Port右键Map
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_10.png)
+
+   ii. 选择信号组和组信号
+
+   在信号组选择界面可以看到Port根据结构体成员展开成了多行，与信号连接类似，如果有自动推荐的连接关系会自动显示，也可以根据需要修改连接的信号组：
+
+   1. 第1步，先双击信号组的框选择想连接的信号组
+
+   2. 第2步，将结构体成员根据需要依次连接至该信号组的组信号，连接须完整，如果有空的结构体成员没有连接，整个连接将无效
+
+   ![DataMapping](../../_static/image/tool_chain/configuration/data_mapping_11.png)
+
+   c. 批量连接
+
+   主要遵循先选择信号组，再依次将结构体成员连接到该信号组的组信号的原则即可。其他的操作与信号的批量连接操作一样，也可以在批量连接时选择的Ports中既有信号也有信号组的，这里不再赘述。
 
 ### 3.4. 二级菜单
 
