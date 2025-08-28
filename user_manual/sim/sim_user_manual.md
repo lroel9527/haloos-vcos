@@ -295,7 +295,7 @@ sim eep驱动程序会自动创建veep.bin文件模拟EEPROM存储器，无需�
 
 ### 6.1. 调试工具
 
-> 提示：使用 chrt -f 99 命令为模拟器进程配置 SCHED_FIFO 实时调度策略和最高优先级（99），确保关键操作的实时性能。
+> 提示：使用 chrt -r 50 命令为模拟器进程配置 SCHED_RR 实时调度策略和中等优先级（50），在保证关键操作实时性能的同时，避免过度占用系统资源。
 
 #### 6.1.1. GDB命令行调试
 
@@ -303,7 +303,7 @@ sim支持GDB调试，用户可直接在命令行中使用GDB作为调试工具�
 
 ```bash
 # 1. 启动gdb
-chrt -f 99 gdb ./sim.elf
+chrt -r 50 gdb ./sim.elf
 
 # 2. 设置初始断点
 (gdb) break nsh_main
@@ -343,8 +343,8 @@ chrt -f 99 gdb ./sim.elf
                 "program": "/usr/bin/chrt",
                 // 可依据实际情况修改可执行文件的路径
                 "args": [
-                    "-f",
-                    "99",
+                    "-r",
+                    "50",
                     "${workspaceFolder}/output/sim.elf"
                 ],
                 "stopAtEntry": false,
