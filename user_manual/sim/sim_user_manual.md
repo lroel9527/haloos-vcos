@@ -2,7 +2,7 @@
 
 ## 1. 简介
 
-传统的汽车电子业务开发高度依赖商用编译器和特定的硬件设备。VCOS操作系统实现了基于Linux的模拟器（Simulator，简称sim），提供了一个虚拟环境来运行和调试软件代码，而无需特殊的物理硬件支持。
+本文档旨在为开发者提供关于智能车控OS（VCOS）模拟器（Simulator，简称sim）的详细信息，包括其功能、代码目录结构以及如何使用。VCOS操作系统实现了基于Linux系统的模拟器，提供了一个虚拟环境来运行和调试软件代码，而无需特殊的物理硬件支持。**本文中的所有操作除代码下载、Docker环境安装以及特殊说明在宿主机中执行的操作外，其他均在Docker容器中进行，包括编译和运行**
 
 模拟器是运行在Linux上的一个可执行程序，通过Linux的系统软件模拟目标平台的CPU及外设，支持上层BSW模块和ASW的正常运行。
 
@@ -133,6 +133,7 @@ sim can通过Linux内核的vcan模块实现CAN通信模拟。vcan基于SocketCAN
 - 支持canfd协议
 - 支持报文ID过滤功能
 - 支持多个can通道，并支持can通道的多核部署
+- 支持can组网功能
 
 不支持的功能：
 
@@ -142,6 +143,17 @@ sim can通过Linux内核的vcan模块实现CAN通信模拟。vcan基于SocketCAN
 - 总线故障检测和处理
 - 休眠唤醒
 - 轮询模式
+
+CAN组网功能说明：
+
+- CanController 与 vcan 通道之间存在默认映射关系：遵循```vcan<CanControllerId>```规则，例如 CanControllerId 为 0 时自动映射至 vcan0
+- 为支持灵活的组网功能，用户可在启动模拟器进程时指定 JSON 配置文件，自定义各 CanController 所绑定的 vcan 通道。如未提供配置文件，则全部采用默认映射方式
+- JSON 配置需满足以下要求：
+  - 必须包含所有 CanController 的映射设置，如有任一 CanController 未配置，则所有 CanController 将回退至默认映射
+  - 映射以键值对形式表示，key 为 CanController 的 ShortName，value 为目标 vcan 名称。具体格式可参考当前目录下的示例文件：```sim_can_channel_config_example.json```
+- 启动指令示例：
+  - ```./<PATH>/multicore_com_demo ./<PATH>/sim_can_channel_config_example.json```
+  - 该指令将使模拟器进程 ```multicore_com_demo``` 根据指定的 JSON 文件建立 CanController 与 vcan 通道的映射关系
 
 > 注意：sim can 的实现需要复用工程中的MCAL动态配置C代码及其依赖的头文件。由于`vcos/vendor/infineon/chips/tc397`目录未集成MCAL代码，因此 sim can 暂不支持TC397芯片。
 
@@ -196,114 +208,115 @@ sim eep是基于Linux文件系统实现的虚拟化EEPROM存储模块，模拟�
   - 基于Linux文件系统模拟EEPROM存储器，支持通过hexdump命令查看文件内容
   - 支持通过内置的veepcmd view命令查看文件内容
 
-## 4. 编译
+## 4. 代码下载
 
-模拟器支持将目标工程编译为模拟器版本的可执行文件。
+Linux下HaloOS工程下载和相关工具软件安装参考[HaloOS工程下载](https://gitee.com/haloos/docs/blob/master/quick_start/01_downloading.md)章节2，在宿主机中执行。
 
-编译工具链安装参考[HaloOS工程编译](https://gitee.com/haloos/docs/blob/master/quick_start/02_compiling.md)章节。
+## 5. Docker环境安装
 
-以基于E3650芯片平台的rt_demo工程为例，需切换到haloosspace/vcos/build目录，执行以下命令编译生成模拟器镜像文件：
+### 5.1. Dcoker工具安装
 
-```bash
-python vcos_build.py -app_name rt_demo -board_name e3650_dev_kit -compiler gcc -maketool ninja -sim 1 -all
-```
-
-## 5. 运行环境配置
-
-下面主要说明sim运行时对Linux侧相关软件的配置要求及使用方法。
-
-### 5.1. 基于Docker运行
-
-Linux系统可使用Docker容器，实现与本地环境的隔离。Docker容器创建参考[HaloOS部署运行流程](https://gitee.com/haloos/docs/blob/master/quick_start/03_running.md)。
-
-> 提示：Docker容器已预配置模拟器运行环境，使用Docker可跳过以下配置步骤
-
-> 更新说明（2025.7.30）：为确保模拟器与实际硬件平台的一致性，本次更新在 64 位系统上编译时启用了 GCC 的 -m32 选项，生成 32 位目标代码。因此，在运行前需要安装相应的 32 位依赖库。若本次更新前已创建docker容器，请在docker容器内手动执行下述命令：
-
-  ```bash
-  # 启用 32 位架构
-  dpkg --add-architecture i386
-  # 安装 32 位支持库
-  apt-get update
-  apt-get install -y libc6:i386 libstdc++6:i386 libgcc1:i386 libc6-dev-i386 lib32z1 lib32ncurses6
-  ```
-
-### 5.2. eth配置
-
-1. 运行权限配置
-
-    由于sim eth会对tap设备进行读、写、设置等操作，因此在运行时需要sudo权限，否则会报错。
-
-2. 单域以太网配置
-
-    实现sim eth与其他物理或虚拟网卡的通信，需要通过网桥进行桥接。在使用sim eth时，首先需要在Linux主机上创建虚拟网桥，
-    然后在menuconfig中通过`CONFIG_SIM_BRIDGE_NAME`指定网桥名称（默认为br0），sim eth将自动绑定到该网桥。
-
-    假设下位机IP地址为 `192.168.10.71/24` ，想要与上位机IP地址为 `192.168.10.254/24` 的网卡进行通信，Linux网络配置命令参考如下：
-
-    ```bash
-    # 创建网桥
-    sudo ip link add name br0 type bridge
-    sudo ip link set br0 up
-    # 配置IP地址
-    sudo ip addr add 192.168.10.254/24 dev br0
-    # 若ip地址属于某一vlan网段，可增加vlan相关配置
-    sudo bridge vlan add dev br0 vid {vlanid} self   # 配置允许通过的vlan，{vlanid}可配置为具体数值
-    sudo ip link set dev br0 type bridge vlan_filtering 1  # 启用 VLAN 过滤
-    ```
-
-3. 多域组网以太网配置
-
-    支持在同一Linux主机上运行多个模拟器实例，实现多域网络通信的仿真。每个模拟器实例需配置不同的网络参数：
-
-    - 协议栈IP地址：每个域在组网内应具有独立的IP地址，IP地址配置方法详见[以太协议栈开发者手册](../components/ethernet_user_manual.md)
-    - 网桥配置：各控制器的tap均绑定同一网桥即可
-
-### 5.3. can配置
-
-vcan 的接口名字（ifname）需要遵循`vcan{CanControllerId}`命名规则，当工程配置了 N 个 can 控制器， CanControllerId 从0开始，则 vcan 的 ifname 分别为`vcan0`, `vcan1`, ..., `vcanN-1`，这些vcan接口需要在运行模拟器的环境中按如下方法创建。
+在haloosspace目录，执行以下命令安装Docker工具：
 
 ```bash
-# 1. 加载Linux vcan模块
-modprobe vcan
-
-# 2. 根据配置的can控制器，依次创建所有的vcan接口
-ip link add {ifname} type vcan
-
-# 3. 依次启动所有的vcan接口
-ip link set {ifname} up
-
-# 4. 查看vcan接口状态
-ifconfig | grep vcan
+python ./vcos/build/compiling_docker_env.py
 ```
 
-### 5.4. uart配置
+安装完成后，手动注销并重新登录使Docker组生效
 
-1. 基于socat创建虚拟串口对`/dev/vttyS0`、`/dev/vttyM0`，其中`/dev/vttyS0`由模拟器持有，`/dev/vttyM0`由测试系统或用户持有
+### 5.2. VS Code插件安装
 
-    ```bash
-    socat -d -d PTY,link=/dev/vttyS0,raw,echo=0 PTY,link=/dev/vttyM0,raw,echo=0 &
-    ```
+在VS Code中使用GDB插件可视化Debug或者使用Docker连接容器依赖插件支持，如果只使用命令行可跳过插件安装步骤
 
-2. 通过`CONFIG_SIM_UART0_NAME`将uart端口绑定为创建的`/dev/vttyS0`。
+在VS Code中搜索下面的插件包并完成安装：
 
-### 5.5. eep配置
+- Remote Development 插件包：```ms-VS Code-remote.VS Code-remote-extensionpack```
+- Docker 插件包：```ms-azuretools.VS Code-docker```
+- C/C++ 插件包：```ms-VS Code.cpptools```
 
-sim eep驱动程序会自动创建veep.bin文件模拟EEPROM存储器，无需其他特殊配置。
+### 5.3. 创建Docker容器
 
-## 6. 开发工具介绍
+```bash
+# 拉取镜像
+docker pull crpi-yg76q6mito9svmtc.cn-beijing.personal.cr.aliyuncs.com/alicloud_haloos/haloos:latest
 
-### 6.1. 调试工具
+# 查看镜像，可以看到拉取的镜像
+docker images
 
-> 提示：使用 chrt -r 50 命令为模拟器进程配置 SCHED_RR 实时调度策略和中等优先级（50），在保证关键操作实时性能的同时，避免过度占用系统资源。
+# 给镜像设置tag别名
+docker tag crpi-yg76q6mito9svmtc.cn-beijing.personal.cr.aliyuncs.com/alicloud_haloos/haloos:latest haloos:latest
 
-#### 6.1.1. GDB命令行调试
+# 启动容器命名为haloos_sim，其中/home/lixiang:/home/lixiang为挂载代码文件夹路径，需根据自己的代码路径修改
+docker run -it \
+   --user root \
+   --cap-add=NET_ADMIN \
+   --device=/dev/net/tun \
+   --cap-add=SYS_NICE \
+   --ulimit rtprio=99 \
+   --name haloos_sim \
+   -v /home/lixiang:/home/lixiang \
+   haloos:latest \
+   &
+
+# 确认容器启动，可以看到haloos_sim容器的状态为UP
+docker ps -a
+```
+
+### 5.4. 进入Docker容器
+
+有2种方式：命令行或者VS Code UI方式，VS Code UI方式依赖 VS Code 插件安装
+
+#### 5.4.1 命令行方式
+
+```bash
+docker exec -it haloos_sim /bin/bash # 进入容器交互式终端
+exit # 退出容器交互式终端
+```
+
+#### 5.4.2 VS Code UI方式
+
+根据下面的步骤在 VS Code 中通过插件连接 haloos Docker 容器，VS Code 将自动打开 Docker 容器新窗口：
+
+![VS Code 连接Docker容器](../../_static/image/sim/vscode_docker_attach_01.png)
+![VS Code 打开代码文件夹](../../_static/image/sim/vscode_docker_attach_02.png)
+
+## 6. 在 Docker 中编译
+
+Docker容器已集成编译环境，支持将目标工程编译为模拟器版本的可执行文件。
+
+以基于E3650芯片平台的rt_demo工程为例，在 **Docker** 中换到haloosspace/vcos/build目录，执行以下命令编译生成模拟器镜像文件：
+
+```bash
+# 全量编译
+python vcos_build.py -app_name rt_demo -board_name e3650_dev_kit -compiler gcc -maketool ninja -sim 1 -all -update
+
+# 全量编译成功后，再次修改代码可用增量编译
+python vcos_build.py -app_name rt_demo -board_name e3650_dev_kit -compiler gcc -maketool ninja -sim 1 -ic
+```
+
+> 注意：Docker 默认为Root用户，代码生成和编译过程中产生的文件后续在宿主机上修改或者清理时会出现权限问题，通过在宿主机的haloosspace目录下执行指令```sudo chown -R $(whoami):$(whoami) ./```可将文件夹所有者修改为当前用户，即可避免操作的权限问题
+
+>编译优化选项开关在：```vcos/kernel/nuttx/arch/sim/src/cmake/Toolchain.cmake:64 - add_compile_options(-O2)```，如果调试时出现部分代码断点无法命中，可注释掉该行再重新编译
+
+## 7. 开发工具介绍
+
+### 7.1. 调试工具
+
+> 提示：nice -n -20 命令为可选命令，通过该命令可为模拟器进程配置相对较高的优先级，在保证关键操作实时性能的同时，避免过度占用系统资源。
+
+#### 7.1.1. 直接运行
+
+```bash
+nice -n -20 ./rt_demo
+```
+
+#### 7.1.2. GDB命令行调试
 
 sim支持GDB调试，用户可直接在命令行中使用GDB作为调试工具，常用调试命令如下：
 
 ```bash
 # 1. 启动gdb
-chrt -r 50 gdb ./sim.elf
+nice -n -20 gdb ./rt_demo
 
 # 2. 设置初始断点
 (gdb) break nsh_main
@@ -324,28 +337,27 @@ chrt -r 50 gdb ./sim.elf
 (gdb) bt
 ```
 
-#### 6.1.2. VSCode图形化调试
+#### 7.1.2. VSCode图形化调试
 
 相比命令行GDB，VSCode提供了图形界面，尤其对于不熟悉GDB命令的用户，提供了更友好的调试体验。但某些高级功能仍然需要通过调试控制台直接执行GDB命令，建议根据实际需求选择合适的调试方式。在VSCode中通过GDB运行的使用方式如下：
 
-1. 安装 C/C++ 插件
-
-2. 配置launch.json，下文提供了一段可用的launch.json供参考
+1. 在Docker中安装宿主机已经安装的VS Code插件
+2. 在haloosspace根目录下新建文件夹.vscode，并在文件夹中创建文件launch.json
+3. 编辑launch.json，下文提供了一段可用的launch.json供参考
 
     ```json
     {
         "version": "0.2.0",
         "configurations": [
             {
-                "name": "(gdb) 启动",
+                "name": "run-sim",
                 "type": "cppdbg",
                 "request": "launch",
-                "program": "/usr/bin/chrt",
-                // 可依据实际情况修改可执行文件的路径
+                "program": "/usr/bin/nice",
                 "args": [
-                    "-r",
-                    "50",
-                    "${workspaceFolder}/output/sim.elf"
+                  "-n",
+                  "-20",
+                  "${workspaceFolder}/output/rt_demo_e3650_dev_kit_gcc_sim/rt_demo"
                 ],
                 "stopAtEntry": false,
                 "cwd": "${workspaceFolder}",
@@ -369,22 +381,17 @@ chrt -r 50 gdb ./sim.elf
     }
     ```
 
-3. 启动VSCode debug
+4. 启动VSCode debug
+在VSCode左侧栏找到调试图标，点击下拉菜单选择run-sim即可启动Debug会话，界面如下所示：
+![VS Code Debug](../../_static/image/sim/vscode_debug.png)
 
-### 6.2. eth工具
+### 7.2. eth工具
 
-#### 6.2.1. 报文在线观测工具
+#### 7.2.1. 报文在线观测工具
 
-模拟器相关程序运行在Linux端，利用Linux下的wireshark工具即可完成eth报文的在线观测和分析。wireshark下载方式如下：
+模拟器相关程序运行在Linux端，利用Linux下的wireshark工具即可完成eth报文的在线观测和分析，wireshark已集成在Docker容器中。
 
-```bash
-sudo apt update
-sudo apt install wireshark
-# 权限配置
-sudo usermod -aG wireshark $USER
-```
-
-#### 6.2.2. 上位机发包工具
+#### 7.2.2. 上位机发包工具
 
 - ICMP包
 
@@ -429,7 +436,7 @@ sudo usermod -aG wireshark $USER
       sudo apt --fix-broken install
       ```
 
-#### 6.2.3. 性能分析工具
+#### 7.2.3. 性能分析工具
 
 Linux提供iperf3工具，可用于收发包流量统计，使用方式与windows中的iperf相同，其下载方式如下：
 
@@ -438,16 +445,9 @@ sudo apt update
 sudo apt install iperf3
 ```
 
-### 6.3. can工具
+### 7.3. can工具
 
 模拟器程序运行在Linux端，利用Linux下can-utils的cansend和candump工具即可完成can报文的在线观测和分析。
-
-- 安装方式：
-
-    ```bash
-    sudo apt update
-    sudo apt install can-utils
-    ```
 
 - cansend发送can报文使用方式介绍：
 
@@ -490,20 +490,15 @@ sudo apt install iperf3
 
     ```
 
-### 6.4. uart工具
+### 7.4. uart工具
 
 Minicom是一款基于终端的串口调试工具，其核心功能是提供文本终端界面，实现双向数据传输，下载方式如下：
-
-```bash
-sudo apt update
-sudo apt install minicom
-```
 
 使用时，模拟器打开/dev/vttyS0作为串口设备并进行数据读写，用minicom工具打开/dev/vttyM0，即可实现串口的交互。这是一种常见的虚拟串口对的使用模式：一个设备用于模拟器内部（模拟的硬件使用），另一个设备暴露给主机，用户可以使用任何串口工具（如minicom）连接到它，就像连接到一个真实的串口设备一样。
 
 ```bash
 # 打开/dev/vttyM0
-sudo minicom -D /dev/vttyM0 -b 115200
+minicom -D /dev/vttyM0 -b 115200
 
 # 常用快捷键：
 Ctrl+A → Z   # 查看功能帮助菜单
@@ -512,9 +507,9 @@ Ctrl+A → C   # 清除屏幕
 Ctrl+A → L   # 开始/停止日志记录
 ```
 
-### 6.5. eep工具
+### 7.5. eep工具
 
-#### 6.5.1. hexdump
+#### 7.5.1. hexdump
 
 sim eep通过在宿主机创建veep.bin文件模拟EEPROM存储器，因此，可以通过Linux系统中的二进制文件查看工具**hexdump**来查看、分析该文件，常用查看命令如下
 
@@ -530,14 +525,14 @@ hexdump -C veep.bin
 hexdump -C -s 0x100 -n 64 veep.bin
 ```
 
-#### 6.5.2. veepcmd view命令
+#### 7.5.2. veepcmd view命令
 
 sim eep模块中开发了veepcmd view命令用于查看存储文件内容，其功能类似于hexdump。模拟器运行时可在当前终端或串口中输入 **veepcmd view -h** 来查询具体使用方法。
 
-## 7. 配置项参考规范
+## 8. 配置项参考规范
 
 sim 是模拟真实工程，无配置项，直接参考其他模块的配置参数即可。
 
-## 8. 应用接口参考规范
+## 9. 应用接口参考规范
 
 sim 是模拟真实工程，对外API与真实驱动接口一致，直接参考真实驱动的API接口。
